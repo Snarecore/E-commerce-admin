@@ -1,0 +1,95 @@
+{
+    "setting": {
+        "home": {
+            "homePageCmsUrl": "home-page-cms"
+        },
+        "heroSliderUrl": "hero-slider",
+        "promotionsUrl": "promotions",
+        "contactUs": {
+            "contactMessageUrl": "contact-us-message",
+            "contactPageCmsUrl": "contact-page-cms"
+        },
+        "policy": {
+            "exchangeReturnUrl": "return-policy-cms",
+            "privacyPolicyUrl": "privacy-policy-cms",
+            "termsConditionsUrl": "terms-and-conditions-cms",
+            "policyOneUrl": "policy-one-cms",
+            "policyTwoUrl": "policy-two-cms",
+            "policyThreeUrl": "policy-three-cms",
+            "policyFourUrl": "policy-four-cms",
+            "policyFiveUrl": "policy-five-cms",
+            "policySixUrl": "policy-six-cms",
+            "policySevenUrl": "policy-seven-cms",
+            "policyEightUrl": "policy-eight-cms",
+            "policyNineUrl": "policy-nine-cms",
+            "policyTenUrl": "policy-ten-cms",
+            "policyElevenUrl": "policy-eleven-cms",
+            "policyTwelveUrl": "policy-twelve-cms"
+        },
+        "headerFooterCms": "header-footer-cms",
+        "shopPageCms": "shop-page-cms",
+        "faqUrl": "faq"
+    },
+    "inventory": {
+        "mainCategoryUrl": "main-category",
+        "firstCategoryUrl": "first-category",
+        "secondCategoryUrl": "second-category",
+        "thirdCategoryUrl": "third-category",
+        "productUrl": "product",
+        "productListUrl": "product/admin-products",
+        "productStatusUrl": "product/update-status",
+        "productCommentsUrl": "product-comment/all",
+        "productCommentUrl": "product-comment"
+    },
+    "site": {
+        "mainCategoryUrl": "site/main-category",
+        "firstCategoryUrl": "site/first-categories",
+        "secondCategoryUrl": "site/second-categories",
+        "thirdCategoryUrl": "site/third-categories",
+        "productUniqueCodeUrl": "unique-code/product",
+        "vendorListUrl": "site/vendor?role=vendor",
+        "customerListUrl": "site/customer"
+    },
+    "blog": {
+        "blogUrl": "blog"
+    },
+    "order": {
+        "orderListUrl": "orders"
+    },
+    "auth": {
+        "loginUrl": "auth/login",
+        "registrationUrl": "auth/register"
+    },
+    "dashboard": {
+        "adminDashboardUrl": "site/admin-dashboard"
+    },
+    "people": {
+        "user": "user",
+        "vendorMessageUrl": "message"
+    },
+    "socialLinks": {
+        "socialLinks": "social-link"
+    },
+    "messageLinks": {
+        "conversationUrl": "message/conversations",
+        "adminMessageUrl": "message",
+        "adminListUrl": "site/vendor",
+        "converstionThreadUrl": "message/thread"
+    },
+    "pageMeta": {
+        "pageMetaUrl": "page-meta",
+        "productSyncMetaUrl": "product-seo/synchronize",
+        "productMetaUrl": "product-seo/find-all",
+        "productMetaSeoUrl": "product-seo"
+    },
+    "subscription": {
+        "subscriptionUrl": "subscription-tier",
+        "vendorSubscriptionUrl": "vendor/subscription/all",
+        "activeSingleSubcriptionUrl": "vendor/subscription/single",
+        "vendorPayoutSubscriptionUrl": "vendor-payment-request/payment-history",
+        "vendorPayoutUpdateUrl": "vendor-payment-request"
+    },
+    "commission": {
+        "commissionRateUrl": "commission-rate-cms"
+    }
+}

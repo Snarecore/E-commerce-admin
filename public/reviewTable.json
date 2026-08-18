@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "John Doe",
+        "userEmail": "john.doe@example.com",
+        "rating": 5,
+        "message": "Great product! I love the quality and design.",
+        "review": "Highly satisfied with the purchase!",
+        "author": "Admin",
+        "date": "2023-05-15",
+        "status": "Published"
+    },
+    {
+        "id": 2,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Jane Smith",
+        "userEmail": "jane.smith@example.com",
+        "rating": 4,
+        "message": "Very good product, but shipping took a bit longer.",
+        "review": "Good product, but delayed delivery.",
+        "author": "Admin",
+        "date": "2023-05-16",
+        "status": "Published"
+    },
+    {
+        "id": 3,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Michael Johnson",
+        "userEmail": "michael.j@example.com",
+        "rating": 5,
+        "message": "Excellent! Highly recommend.",
+        "review": "Fantastic quality, will buy again!",
+        "author": "Admin",
+        "date": "2023-05-17",
+        "status": "Published"
+    },
+    {
+        "id": 4,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Emily Davis",
+        "userEmail": "emily.d@example.com",
+        "rating": 3,
+        "message": "Good, but I expected better quality.",
+        "review": "Not bad, but could be improved.",
+        "author": "Admin",
+        "date": "2023-05-18",
+        "status": "Published"
+    },
+    {
+        "id": 5,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Chris Wilson",
+        "userEmail": "chris.w@example.com",
+        "rating": 5,
+        "message": "Superb quality and great service.",
+        "review": "Exceptional product, highly recommended.",
+        "author": "Admin",
+        "date": "2023-05-19",
+        "status": "Published"
+    },
+    {
+        "id": 6,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Sarah Brown",
+        "userEmail": "sarah.b@example.com",
+        "rating": 4,
+        "message": "Nice product, but a bit pricey.",
+        "review": "Good but slightly overpriced.",
+        "author": "Admin",
+        "date": "2023-05-20",
+        "status": "Published"
+    },
+    {
+        "id": 7,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "David Martinez",
+        "userEmail": "david.m@example.com",
+        "rating": 5,
+        "message": "Absolutely worth the price! Will buy again.",
+        "review": "Great value for money!",
+        "author": "Admin",
+        "date": "2023-05-21",
+        "status": "Published"
+    },
+    {
+        "id": 8,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Laura White",
+        "userEmail": "laura.w@example.com",
+        "rating": 3,
+        "message": "Okay product, but packaging was damaged.",
+        "review": "Packaging could be improved.",
+        "author": "Admin",
+        "date": "2023-05-22",
+        "status": "Published"
+    },
+    {
+        "id": 9,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Kevin Hall",
+        "userEmail": "kevin.h@example.com",
+        "rating": 5,
+        "message": "Perfect quality! Fast delivery.",
+        "review": "Quick shipping and great quality!",
+        "author": "Admin",
+        "date": "2023-05-23",
+        "status": "Published"
+    },
+    {
+        "id": 10,
+        "productImage": "https://i.ibb.co/Rk4j95CK/1-1000x1000.jpg",
+        "userName": "Sophia Lee",
+        "userEmail": "sophia.l@example.com",
+        "rating": 4,
+        "message": "Good product, but customer support could be better.",
+        "review": "Nice product but service needs improvement.",
+        "author": "Admin",
+        "date": "2023-05-24",
+        "status": "Published"
+    }
+]

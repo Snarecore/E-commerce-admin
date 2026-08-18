@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+@import "tailwindcss";
+
+* {
+	font-family: "Nunito", sans-serif;
+	scroll-behavior: smooth;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: "Nunito", sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	background-color: #f7f7f7;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+@theme {
+	--color-primary: #fe9f43;
+	--color-primary-hover: #e68a2c;
+	--color-secondary: #6a7282;
+	--color-secondary-hover: #364153;
+	--color-active-green: #DBFCE7;
+	--color-inactive-red: #FFE2E2;
+	--color-primary-light: #6366F1;
+	--color-accent: #F59E0B;
+  }
+
+/* :root {
+	--primary-color: #ff9f43;
+	--primary-hover-color: #e68a2c;
+	--primary-black-color: #1b2850;
+	--primary-blue-color: #1b2850;
+	--secondary-black-color: #67748e;
+	--primary-green-color: #00733b;
+} */
+
+input {
+	height: 34px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+	width: 6px;
+	height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background: #b3b3b3;
+	border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: #888;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+::selection {
+	background-color: var(--color-primary);
+	color: #fff;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #b3b3b3;
+	border-radius: 10px;
+}
+
+.menu-active>div {
+	background-color: rgba(254, 159, 67, 0.08);
+	color: var(--primary-color);
+}
+
+.drop-down-menu-active {
+	color: var(--primary-color);
+}
+
+.parent-menu ul {
+	transition: all 0.5s ease-in-out;
+}
+
+.parent-menu ul.hidden {
+	height: 1px;
+	overflow: hidden;
+	transition: all 0.5s ease-in-out;
+}
+
+@layer utilities {
+	.placeholder::placeholder {
+		@apply text-sm italic;
+	}
+}
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  	-webkit-appearance: none;
+  	margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  	-moz-appearance: textfield;
+}
