@@ -12,9 +12,11 @@ interface FirstCategoryDataProps {
 	id: string;
 	name: string;
 	bannerImage: string;
+	image: string;
 	mainCategoryId: string;
 	mainCategoryName: string;
 	status: boolean;
+	showOnHome: boolean;
 }
 
 interface FirstCategoryTableProps {
@@ -48,6 +50,7 @@ const FirstCategoryTable = ({
 		{ key: "name", label: "Name" },
 		{ key: "mainCategoryName", label: "Main Category" },
 		{ key: "status", label: "Status" },
+		{ key: "showOnHome", label: "Show on Home" },
 		{ key: "action", label: "Action" }
 	];
 
@@ -109,6 +112,11 @@ const FirstCategoryTable = ({
 									<td className="px-6 py-4">
 										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-[var(--color-active-green)] text-green-800" : "bg-[var(--color-inactive-red)] text-red-800"}`}>
 											{data.status ? "Active" : "Inactive"}
+										</span>
+									</td>
+									<td className="px-6 py-4">
+										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.showOnHome ? "bg-[var(--color-active-green)] text-green-800" : "bg-gray-100 text-gray-800"}`}>
+											{data.showOnHome ? "Yes" : "No"}
 										</span>
 									</td>
 									<td className="px-6 py-4">

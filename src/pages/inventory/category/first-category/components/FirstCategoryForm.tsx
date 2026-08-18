@@ -17,9 +17,11 @@ interface Option {
 const initialFieldValues = {
 	name: "",
 	bannerImage: "" as string | File,
+	image: "" as string | File,
 	mainCategoryId: "",
 	mainCategoryName: "",
-	status: true
+	status: true,
+	showOnHome: false
 };
 
 const requiredFields = [
@@ -107,10 +109,23 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 		}
 	};
 
+	const handleIconUpload = (file: File | null) => {
+		if (file) {
+			setFieldValues((prevState) => ({ ...prevState, image: file }));
+		}
+	};
+
 	const handleSwitchChange = (checked: boolean) => {
 		setFieldValues((prevState) => ({
 			...prevState,
 			status: checked,
+		}));
+	};
+
+	const handleShowOnHomeChange = (checked: boolean) => {
+		setFieldValues((prevState) => ({
+			...prevState,
+			showOnHome: checked,
 		}));
 	};
 
@@ -166,9 +181,27 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 						value={
 							typeof fieldValues.bannerImage === "string"
 								? fieldValues.bannerImage
-								: URL.createObjectURL(fieldValues.bannerImage)
+								: fieldValues.bannerImage
+								? URL.createObjectURL(fieldValues.bannerImage)
+								: ""
 						}
 						onChange={handleImageUpload}
+					/>
+				</div>
+
+				<div>
+					<h3 className="block text-sm font-medium text-gray-700">Category Icon/Image:
+						<span className="text-xs text-gray-500 ml-1">(Recommended Size: 150x150 PX)</span>
+					</h3>
+					<ImageUpload
+						value={
+							typeof fieldValues.image === "string"
+								? fieldValues.image
+								: fieldValues.image
+								? URL.createObjectURL(fieldValues.image)
+								: ""
+						}
+						onChange={handleIconUpload}
 					/>
 				</div>
 
@@ -195,6 +228,13 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 					name="status"
 					checked={fieldValues.status}
 					onChange={handleSwitchChange}
+				/>
+
+				<ToggleInput
+					label="Show on Home"
+					name="showOnHome"
+					checked={fieldValues.showOnHome}
+					onChange={handleShowOnHomeChange}
 				/>
 			</div>
 		</Modal>
