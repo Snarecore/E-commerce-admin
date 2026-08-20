@@ -72,8 +72,7 @@
     },
     "messageLinks": {
         "conversationUrl": "message/conversations",
-        "adminMessageUrl": "message",
-        "adminListUrl": "site/vendor",
+        "adminReplyUrl": "message/reply",
         "converstionThreadUrl": "message/thread"
     },
     "pageMeta": {

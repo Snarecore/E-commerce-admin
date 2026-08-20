@@ -7,7 +7,7 @@ import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
 import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdSubscriptions } from "react-icons/md";
 import { FiShoppingCart } from "react-icons/fi";
-import { FaBlog, FaFacebookMessenger, FaHandHoldingUsd, FaMoneyBillWave, FaStore, FaTags, FaUser } from "react-icons/fa";
+import { FaBlog, FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 // import { FaQuestion, FaStore, FaUser } from "react-icons/fa";
 

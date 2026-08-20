@@ -24,9 +24,11 @@ const Products = () => {
 	const [selectedFilters, setSelectedFilters] = useState<{
 		mainCategoryId: { label: string; value: string } | null;
 		vendorId: { label: string; value: string } | null;
+		isApprove: { label: string; value: string } | null;
 	}>({
 		mainCategoryId: null,
-		vendorId: null
+		vendorId: null,
+		isApprove: null
 	});
 	const { usePaginatedQuery } = useAPI();
 

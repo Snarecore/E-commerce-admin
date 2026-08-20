@@ -1,230 +1,262 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LuSend } from "react-icons/lu";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
-import { useAtomValue } from "jotai";
-import { userAtom } from "../../../store/user-store";
 import avatar from "/images/avatar.png";
-import { formatDate } from "../../../utils/date-utils";
-import { vendorMessageQueryKey } from "../../../config/query-key";
-
-const initialFieldValues = {
-    content: "",
-};
-
-const requiredFields: any = [
-    { key: "receiverId", value: "admin", label: "dropdown" },
-    { key: "content", value: "message", label: "text" },
-    { key: "senderId", value: "senderId" },
-    { key: "senderRole", value: "senderRole" },
-    { key: "receiverRole", value: "receiverRole" },
-];
+import moment from "moment";
+import { ConversationItem } from "./ChatSidebar";
 
 interface Message {
-    id: number;
-    content: string;
-    time: string;
-    isMe: boolean;
-    avatar?: string;
-    bgColor?: string;
-    senderId: string;
-    createdAt: string;
-    participantOne?: {
-        image?: string;
-    };
-}
-
-interface SelectedUser {
     id: string;
-    name?: string;
-    avatar?: string;
-    participantOneId?: string;
-    participantTwoId?: string;
-    participantOne?: {
-        id: string;
-        name?: string;
-        image?: string;
-        email?: string;
-    };
-    participantTwo?: {
-        id: string;
-        name?: string;
-        image?: string;
-        email?: string;
-    };
+    conversationId: string;
+    senderId: string;
+    senderRole: "customer" | "admin";
+    content: string;
+    isRead: boolean;
+    createdAt: string;
 }
 
-const ChatWindow = ({ selectedUser }: { selectedUser: SelectedUser }) => {
+const requiredFields: any = [
+    { key: "conversationId", value: "conversationId" },
+    { key: "content", value: "content", label: "text" },
+];
+
+const ChatWindow = ({ selectedUser }: { selectedUser: ConversationItem }) => {
     const { fetchData, postMutation, handleApiMutation } = useAPI();
-    const [participantConversations, setPerticipantConversations] = useState<Message[]>([]);
-    const userData = useAtomValue(userAtom);
-    // @ts-ignore
+    const [messages, setMessages] = useState<Message[]>([]);
     const [isMessageLoading, setIsMessageLoading] = useState(false);
-    const adminMessageApiUrl = apiConfig.messageLinks.adminMessageUrl;
-    const [fieldValues, setFieldValues] = useState(initialFieldValues);
+    const [isLoadingThread, setIsLoadingLoadingThread] = useState(false);
+    const [content, setContent] = useState("");
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const oldestCursor = messages.length > 0 ? messages[0].id : undefined;
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const fetchThread = async (isInitial = false) => {
+        if (!selectedUser?.id) return;
+        if (isInitial) setIsLoadingLoadingThread(true);
+
+        try {
+            const response = await fetchData({
+                apiUrl: `${apiConfig.messageLinks.converstionThreadUrl}?conversationId=${selectedUser.id}&limit=50`
+            });
+
+            let items: Message[] = [];
+            if (Array.isArray(response)) {
+                items = response;
+            } else if (Array.isArray(response?.data)) {
+                items = response.data;
+            }
+
+            if (items.length > 0 || isInitial) {
+                setMessages(items);
+                if (isInitial) {
+                    setTimeout(scrollToBottom, 100);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching messages thread:", error);
+        } finally {
+            if (isInitial) setIsLoadingLoadingThread(false);
+        }
+    };
+
+    const handleLoadOlderMessages = async () => {
+        if (!oldestCursor || isLoadingMore) return;
+        setIsLoadingMore(true);
+
+        try {
+            const response = await fetchData({
+                apiUrl: `${apiConfig.messageLinks.converstionThreadUrl}?conversationId=${selectedUser.id}&cursor=${oldestCursor}&limit=50`
+            });
+
+            let items: Message[] = [];
+            if (Array.isArray(response)) {
+                items = response;
+            } else if (Array.isArray(response?.data)) {
+                items = response.data;
+            }
+
+            if (items.length > 0) {
+                setMessages(prev => [...items, ...prev]);
+            }
+        } catch (error) {
+            console.error("Error loading older messages:", error);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    };
 
     useEffect(() => {
-        const getConversationUsers = async () => {
-            if (!selectedUser?.id) return;
+        if (!selectedUser?.id) return;
+        fetchThread(true);
 
-            const response = await fetchData({ apiUrl: `${apiConfig.messageLinks.converstionThreadUrl}?conversationId=${selectedUser.id}` });
+        // Polling thread for incoming customer messages every 2.5s
+        const interval = setInterval(() => {
+            fetchThread(false);
+        }, 2500);
 
-            if (response) {
-                const processedMessages = response.map((msg: Message) => ({
-                    ...msg,
-                    isMe: msg.senderId === userData?.id
-                }));
-                setPerticipantConversations(processedMessages);
-            }
-        }
-        getConversationUsers();
-    }, [selectedUser])
+        return () => clearInterval(interval);
+    }, [selectedUser?.id]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFieldValues(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmitMessage = async () => {
+    const handleSendMessage = async () => {
+        if (!content.trim() || isMessageLoading) return;
         setIsMessageLoading(true);
-        try {
-            const mutation = postMutation;
-            const url = adminMessageApiUrl;
-            const receiverId = (selectedUser.participantOneId === userData?.id ? selectedUser.participantTwoId : selectedUser.participantOneId)
 
+        const currentContent = content.trim();
+        setContent("");
+
+        try {
             const payload = {
-                ...fieldValues,
-                senderId: userData?.id,
-                senderRole: userData?.role,
-                receiverId: receiverId,
-                receiverRole: "vendor"
+                conversationId: selectedUser.id,
+                content: currentContent,
             };
 
             const result = await handleApiMutation({
-                mutation,
-                url,
+                mutation: postMutation,
+                url: apiConfig.messageLinks.adminReplyUrl,
                 body: payload,
-                invalidateQueryKey: [vendorMessageQueryKey],
-                showSuccessMessage: true,
+                showSuccessMessage: false,
                 showErrorMessage: true,
                 requiredFields
             });
 
-            if (result?.success) {
-                setFieldValues(initialFieldValues);
+            if (result?.success || result?.data) {
+                await fetchThread(false);
+                setTimeout(scrollToBottom, 100);
+            } else {
+                // Restore input on failure
+                setContent(currentContent);
             }
         } catch (error) {
-            console.error("Error sending message:", error);
+            console.error("Error sending admin reply:", error);
+            setContent(currentContent);
         } finally {
             setIsMessageLoading(false);
         }
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handleSubmitMessage();
+            handleSendMessage();
         }
     };
 
+    const customerName = selectedUser?.customer?.name || `Customer #${selectedUser.customerId.slice(0, 6)}`;
+    const customerEmail = selectedUser?.customer?.email || "";
+    const customerPhone = selectedUser?.customer?.phone || "";
+
     return (
         <div className="h-full flex flex-col bg-gray-50">
-
-            <div className="bg-white px-6 py-2 border-b border-gray-200 flex items-center justify-between">
+            {/* Header */}
+            <div className="bg-white px-6 py-3 border-b border-gray-200 flex items-center justify-between shadow-xs">
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center text-orange-600 font-bold border border-orange-200">
                         <img
-                            src={selectedUser?.participantTwo?.image || avatar}
-                            alt="Anthony Lewis"
+                            src={avatar}
+                            alt={customerName}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                    parent.className = 'w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold';
-                                    parent.textContent = 'AL';
-                                }
+                                target.style.display = "none";
                             }}
                         />
                     </div>
                     <div>
-                        <p className="font-semibold">{selectedUser?.participantOneId === userData?.id ? selectedUser.participantTwo?.name : selectedUser.participantOne?.name}</p>
-                        <p className="text-sm text-gray-500">{selectedUser?.participantOneId === userData?.id ? selectedUser.participantTwo?.email : selectedUser.participantOne?.email}</p>
+                        <p className="font-semibold text-gray-900 leading-tight">{customerName}</p>
+                        <p className="text-xs text-gray-500">
+                            {customerEmail} {customerPhone ? `• ${customerPhone}` : ""}
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 px-6 py-4 max-h-[610px] overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-transparent">
-                {participantConversations?.map((msg) => {
-                    return (
-                        <div key={msg.id}>
-                            <div className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`flex items-end space-x-2 max-w-xs lg:max-w-md ${msg.isMe ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                                    {!msg.isMe && (
-                                        <div className="w-8 h-8 rounded-full overflow-hidden">
-                                            <img
-                                                src={msg.participantOne?.image || avatar}
-                                                alt="User Avatar"
-                                                className="w-full h-full object-cover"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    target.style.display = 'none';
-                                                    const parent = target.parentElement;
-                                                    if (parent) {
-                                                        parent.className = `w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs ${msg.bgColor}`;
-                                                        parent.textContent = 'AL';
-                                                    }
-                                                }}
-                                            />
+            {/* Messages Area */}
+            <div className="flex-1 px-6 py-4 max-h-[610px] overflow-y-auto space-y-3">
+                {messages.length >= 50 && (
+                    <div className="flex justify-center mb-2">
+                        <button
+                            onClick={handleLoadOlderMessages}
+                            disabled={isLoadingMore}
+                            className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-3 py-1 rounded-full transition-colors cursor-pointer"
+                        >
+                            {isLoadingMore ? "Loading earlier messages..." : "↑ Load earlier messages"}
+                        </button>
+                    </div>
+                )}
+
+                {isLoadingThread ? (
+                    <div className="flex items-center justify-center h-48 text-sm text-gray-400">
+                        Loading messages...
+                    </div>
+                ) : messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-48 text-sm text-gray-400">
+                        <p>No messages yet in this conversation.</p>
+                        <p className="text-xs text-gray-400 mt-1">Send a message below to start chatting.</p>
+                    </div>
+                ) : (
+                    messages.map((msg) => {
+                        const isMe = msg.senderRole === "admin";
+
+                        return (
+                            <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+                                <div className={`flex items-end space-x-2 max-w-xs md:max-w-md ${isMe ? "flex-row-reverse space-x-reverse" : ""}`}>
+                                    {!isMe && (
+                                        <div className="w-7 h-7 rounded-full overflow-hidden bg-gray-200 shrink-0 flex items-center justify-center text-xs font-bold text-gray-600">
+                                            {customerName.charAt(0).toUpperCase()}
                                         </div>
                                     )}
 
                                     <div className="flex flex-col">
-                                        <div className={`px-4 py-2 rounded-2xl ${msg.isMe
-                                            ? 'bg-blue-500 text-white rounded-br-md'
-                                            : 'bg-white text-gray-900 rounded-bl-md border border-gray-200'
-                                            }`}>
-                                            <p className="text-sm whitespace-pre-line">{msg.content}</p>
+                                        <div
+                                            className={`px-4 py-2.5 rounded-2xl shadow-xs text-sm ${
+                                                isMe
+                                                    ? "bg-orange-500 text-white rounded-br-xs"
+                                                    : "bg-white text-gray-900 rounded-bl-xs border border-gray-200"
+                                            }`}
+                                        >
+                                            <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
                                         </div>
-                                        <div className={`flex items-center mt-1 space-x-1 ${msg.isMe ? 'justify-end' : 'justify-start ml-1'}`}>
-                                            <span className="text-xs text-gray-500">{formatDate(msg.createdAt)}</span>
-                                            {msg.isMe && <span className="text-xs text-gray-500">You</span>}
-                                            {msg.isMe && (
-                                                <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                                                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                                                </div>
-                                            )}
+
+                                        <div className={`flex items-center mt-1 space-x-1 ${isMe ? "justify-end mr-1" : "justify-start ml-1"}`}>
+                                            <span className="text-[10px] text-gray-400">
+                                                {moment(msg.createdAt).format("h:mm A")}
+                                            </span>
+                                            {isMe && <span className="text-[10px] text-gray-400 font-medium">· Admin</span>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                })}
+                        );
+                    })
+                )}
+                <div ref={messagesEndRef} />
             </div>
 
-            <div className="bg-white px-6 py-4 border-t border-gray-200">
+            {/* Input Bar */}
+            <div className="bg-white px-6 py-3.5 border-t border-gray-200 shadow-xs">
                 <div className="flex items-center space-x-3">
-                    <div className="flex-1 relative">
-                        <input
-                            name="content"
-                            type="text"
-                            value={fieldValues.content}
-                            onChange={handleChange}
-                            onKeyPress={handleKeyPress}
-                            placeholder="Type Your Message"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
+                    <input
+                        name="content"
+                        type="text"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        placeholder={`Reply to ${customerName}...`}
+                        disabled={isMessageLoading}
+                        className="flex-1 px-4 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all"
+                    />
                     <button
-                        onClick={handleSubmitMessage}
-                        className="bg-orange-500 hover:bg-orange-600 text-white p-1.5 rounded-lg transition-colors cursor-pointer"
+                        onClick={handleSendMessage}
+                        disabled={isMessageLoading || !content.trim()}
+                        className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm text-sm"
                     >
-                        <LuSend className="w-4 h-5" />
+                        <LuSend className="w-4 h-4" />
+                        <span>Send</span>
                     </button>
                 </div>
             </div>

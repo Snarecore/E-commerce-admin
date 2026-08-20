@@ -181,8 +181,8 @@ export const useAPI = () => {
         queryKey,
         url,
         enabled = true,
-        refetchOnWindowFocus = false,
-        refetchOnMount = false,
+        refetchOnWindowFocus = true,
+        refetchOnMount = true,
         refetchInterval,
         showToast = true,
         staleTime = 0
@@ -257,8 +257,12 @@ export const useAPI = () => {
                 const response = await mutation.mutateAsync({ url, body }) as ApiResponse<T>;
                 if (isSuccessfulResponse(response)) {
                     if (showSuccessMessage) showSuccessToast(response?.message);
-                    if (invalidateQueryKey) {
-                        await queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
+                    if (invalidateQueryKey && invalidateQueryKey.length > 0) {
+                        await queryClient.invalidateQueries({
+                            queryKey: invalidateQueryKey,
+                            exact: false,
+                            refetchType: 'all'
+                        });
                     }
                     return { success: true, data: response };
                 } else if (response?.message && showErrorMessage) {
@@ -282,8 +286,12 @@ export const useAPI = () => {
                 if (showSuccessMessage) {
                     showSuccessToast(response.message);
                 }
-                if (invalidateQueryKey) {
-                    await queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
+                if (invalidateQueryKey && invalidateQueryKey.length > 0) {
+                    await queryClient.invalidateQueries({
+                        queryKey: invalidateQueryKey,
+                        exact: false,
+                        refetchType: 'all'
+                    });
                 }
                 return response;
             } else {

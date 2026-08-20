@@ -1,87 +1,161 @@
 import { useEffect, useState } from "react";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
-import avatar from "/images/avatar.png"
-import { userAtom } from "../../../store/user-store";
-import { useAtomValue } from "jotai";
+import avatar from "/images/avatar.png";
+import moment from "moment";
 
-interface User {
+export interface Customer {
     id: string;
     name: string;
-    phone: string;
-    bgColor?: string;
-    participantOne?: {
-        id: string;
-        name?: string;
-        phone?: string;
-    };
-    participantTwo?: {
-        name?: string;
-        phone?: string;
-    };
+    email: string;
+    phone?: string;
 }
 
-const ChatSidebar = ({ setSelectedUser, selectedUser }: any) => {
+export interface ConversationItem {
+    id: string;
+    customerId: string;
+    lastMessage: string | null;
+    lastMessageAt: string | null;
+    unreadCountAdmin: number;
+    customer?: Customer | null;
+}
+
+interface ChatSidebarProps {
+    setSelectedUser: (user: ConversationItem | null) => void;
+    selectedUser: ConversationItem | null;
+}
+
+const ChatSidebar = ({ setSelectedUser, selectedUser }: ChatSidebarProps) => {
     const { fetchData } = useAPI();
-    const [participant, setPerticipant] = useState<User[]>([]);
-    const userData = useAtomValue(userAtom);
+    const [conversations, setConversations] = useState<ConversationItem[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const getConversations = async () => {
+        try {
+            const response = await fetchData({
+                apiUrl: `${apiConfig.messageLinks.conversationUrl}?page=1&limit=50`
+            });
+
+            let items: ConversationItem[] = [];
+            if (Array.isArray(response)) {
+                items = response;
+            } else if (Array.isArray(response?.data)) {
+                items = response.data;
+            } else if (Array.isArray(response?.data?.data)) {
+                items = response.data.data;
+            }
+
+            setConversations(items);
+        } catch (error) {
+            console.error("Error fetching conversations:", error);
+        }
+    };
 
     useEffect(() => {
-        const getConversationUsers = async () => {
-            const response = await fetchData({ apiUrl: `${apiConfig.messageLinks.conversationUrl}` });
-            setPerticipant(response);
-        }
-        getConversationUsers();
-    }, [])
+        setIsLoading(true);
+        getConversations().finally(() => setIsLoading(false));
+
+        // Auto-refresh conversations every 4 seconds for live inbox experience
+        const interval = setInterval(getConversations, 4000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const filteredConversations = conversations.filter((convo) => {
+        const name = convo.customer?.name?.toLowerCase() || "";
+        const email = convo.customer?.email?.toLowerCase() || "";
+        const phone = convo.customer?.phone?.toLowerCase() || "";
+        const query = searchQuery.toLowerCase();
+        return name.includes(query) || email.includes(query) || phone.includes(query);
+    });
 
     return (
-        <div className="h-full flex flex-col bg-white">
-            <div className="px-4 py-3.5 border-b border-gray-200">
-                <p className="text-xl font-bold text-gray-900">Chats</p>
+        <div className="h-full flex flex-col bg-white border-r border-gray-200">
+            <div className="px-4 py-3 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                    <p className="text-xl font-bold text-gray-900">Customer Messages</p>
+                    <span className="text-xs bg-orange-100 text-orange-600 font-semibold px-2 py-0.5 rounded-full">
+                        {conversations.length}
+                    </span>
+                </div>
+                <input
+                    type="text"
+                    placeholder="Search by customer name/email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500"
+                />
             </div>
 
-            <div className="flex-1 p-2">
-                <div className="space-y-2">
-                    {participant?.map((user: User) => (
-                        <div
-                            key={user.id}
-                            onClick={() => setSelectedUser(user)}
-                            className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-all duration-200 rounded-lg ${selectedUser?.id === user.id
-                                ? "bg-orange-50 border-r-2 border-orange-500"
-                                : ""
-                                }`}
-                        >
-                            <div className="w-12 h-12 rounded-full mr-3 overflow-hidden relative">
-                                <img
-                                    src={avatar}
-                                    alt={user.name}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = "none";
-                                        const parent = target.parentElement;
-                                        if (parent) {
-                                            parent.className = `w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3 ${user.bgColor}`;
-                                            parent.textContent = user.name
-                                                .split(" ")
-                                                .map((n) => n[0])
-                                                .join("");
-                                        }
-                                    }}
-                                />
-                            </div>
+            <div className="flex-1 p-2 overflow-y-auto">
+                {isLoading && conversations.length === 0 ? (
+                    <div className="flex items-center justify-center p-6 text-sm text-gray-400">
+                        Loading conversations...
+                    </div>
+                ) : filteredConversations.length === 0 ? (
+                    <div className="flex items-center justify-center p-6 text-sm text-gray-400 text-center">
+                        No customer conversations found.
+                    </div>
+                ) : (
+                    <div className="space-y-1.5">
+                        {filteredConversations.map((convo: ConversationItem) => {
+                            const isSelected = selectedUser?.id === convo.id;
+                            const customerName = convo.customer?.name || `Customer #${convo.customerId.slice(0, 6)}`;
+                            const customerEmail = convo.customer?.email || "";
+                            const hasUnread = convo.unreadCountAdmin > 0;
 
-                            <div className="flex-1 min-w-0">
-                                <p className="font-semibold">
-                                    {
-                                        user.participantOne?.id === userData?.id ? user.participantTwo?.name : user.participantOne?.name
-                                    }
-                                </p>
-                                <p className="text-sm text-gray-700">{user.participantOne?.id === userData?.id ? user.participantTwo?.phone : user.participantOne?.phone}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            return (
+                                <div
+                                    key={convo.id}
+                                    onClick={() => setSelectedUser(convo)}
+                                    className={`flex items-start px-3 py-2.5 hover:bg-gray-50 cursor-pointer transition-all duration-150 rounded-lg border ${
+                                        isSelected
+                                            ? "bg-orange-50/80 border-orange-400 shadow-sm"
+                                            : "border-transparent"
+                                    }`}
+                                >
+                                    <div className="w-10 h-10 rounded-full mr-3 shrink-0 overflow-hidden bg-gradient-to-tr from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+                                        <img
+                                            src={avatar}
+                                            alt={customerName}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = "none";
+                                            }}
+                                        />
+                                        <span className="hidden">
+                                            {customerName.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <p className={`text-sm truncate ${hasUnread ? "font-bold text-gray-900" : "font-medium text-gray-800"}`}>
+                                                {customerName}
+                                            </p>
+                                            {convo.lastMessageAt && (
+                                                <span className="text-[11px] text-gray-400 shrink-0 ml-1">
+                                                    {moment(convo.lastMessageAt).isValid() ? moment(convo.lastMessageAt).fromNow(true) : ''}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <p className="text-xs text-gray-500 truncate mt-0.5">
+                                            {convo.lastMessage || customerEmail || "No messages yet"}
+                                        </p>
+                                    </div>
+
+                                    {hasUnread && (
+                                        <span className="ml-2 shrink-0 bg-orange-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-xs animate-pulse">
+                                            {convo.unreadCountAdmin}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );
