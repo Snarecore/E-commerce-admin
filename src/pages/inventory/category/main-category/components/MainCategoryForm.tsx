@@ -127,7 +127,9 @@ const MainCategoryForm = ({ isOpen, onClose, editData }: any) => {
                         value={
                             typeof fieldValues.image === "string"
                                 ? fieldValues.image
-                                : URL.createObjectURL(fieldValues.image)
+                                : fieldValues.image
+                                ? URL.createObjectURL(fieldValues.image)
+                                : ""
                         }
                         onChange={handleImageUpload}
                     />
@@ -140,7 +142,9 @@ const MainCategoryForm = ({ isOpen, onClose, editData }: any) => {
                         value={
                             typeof fieldValues.bannerImage === "string"
                                 ? fieldValues.bannerImage
-                                : URL.createObjectURL(fieldValues.bannerImage)
+                                : fieldValues.bannerImage
+                                ? URL.createObjectURL(fieldValues.bannerImage)
+                                : ""
                         }
                         onChange={handleBannerImageUpload}
                     />

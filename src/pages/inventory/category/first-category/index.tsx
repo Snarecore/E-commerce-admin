@@ -15,6 +15,7 @@ interface FirstCategoryDataProps {
 	mainCategoryId: string;
 	mainCategoryName: string;
 	status: boolean;
+	position?: number;
 }
 
 const FirstCategory = () => {

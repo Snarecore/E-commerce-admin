@@ -208,7 +208,16 @@ const SecondCategoryForm = ({ isOpen, onClose, editData }: any) => {
 						Banner Image:
 						<span className="text-xs text-gray-500 ml-1">(Recommended Size: 1920x192 PX)</span>
 					</p>
-					<ImageUpload value={fieldValues.bannerImage} onChange={handleImageUpload} />
+					<ImageUpload
+						value={
+							typeof fieldValues.bannerImage === "string"
+								? fieldValues.bannerImage
+								: fieldValues.bannerImage
+								? URL.createObjectURL(fieldValues.bannerImage as any)
+								: ""
+						}
+						onChange={handleImageUpload}
+					/>
 				</div>
 
 				<div>

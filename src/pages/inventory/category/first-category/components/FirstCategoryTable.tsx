@@ -17,6 +17,7 @@ interface FirstCategoryDataProps {
 	mainCategoryName: string;
 	status: boolean;
 	showOnHome: boolean;
+	position?: number;
 }
 
 interface FirstCategoryTableProps {
@@ -46,9 +47,11 @@ const FirstCategoryTable = ({
 
 	const tableHeaders = [
 		{ key: "sl", label: "Sl" },
+		{ key: "image", label: "Image" },
 		{ key: "bannerImage", label: "Banner Image" },
 		{ key: "name", label: "Name" },
 		{ key: "mainCategoryName", label: "Main Category" },
+		{ key: "position", label: "Position" },
 		{ key: "status", label: "Status" },
 		{ key: "showOnHome", label: "Show on Home" },
 		{ key: "action", label: "Action" }
@@ -100,15 +103,27 @@ const FirstCategoryTable = ({
 									</td>
 									<td className="px-6 py-4">
 										<img
-											src={data.bannerImage}
+											src={data.image}
 											alt="image"
 											height={70}
 											width={70}
+											className="rounded-md p-1 hover:scale-105 transition-all ease-in-out duration-300"
+										/>
+									</td>
+									<td className="px-6 py-4">
+										<img
+											src={data.bannerImage}
+											alt="banner image"
+											height={70}
+											width={96}
 											className="rounded-md shadow-sm border border-gray-200 hover:scale-105 transition-all ease-in-out duration-300"
 										/>
 									</td>
 									<td className="px-6 py-4">{data.name}</td>
 									<td className="px-6 py-4">{data.mainCategoryName}</td>
+									<td className="px-6 py-4">
+										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
+									</td>
 									<td className="px-6 py-4">
 										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-[var(--color-active-green)] text-green-800" : "bg-[var(--color-inactive-red)] text-red-800"}`}>
 											{data.status ? "Active" : "Inactive"}
