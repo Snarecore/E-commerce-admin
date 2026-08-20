@@ -212,15 +212,25 @@ const ChatWindow = ({ selectedUser }: { selectedUser: ConversationItem }) => {
                                     )}
 
                                     <div className="flex flex-col">
-                                        <div
-                                            className={`px-4 py-2.5 rounded-2xl shadow-xs text-sm ${
-                                                isMe
-                                                    ? "bg-orange-500 text-white rounded-br-xs"
-                                                    : "bg-white text-gray-900 rounded-bl-xs border border-gray-200"
-                                            }`}
-                                        >
-                                            <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
-                                        </div>
+                                        {/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?.*)?$/i.test(msg.content?.trim()) ? (
+                                            <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                <img
+                                                    src={msg.content}
+                                                    alt="Shared image"
+                                                    className="max-w-[220px] max-h-[200px] rounded-2xl object-cover cursor-pointer hover:opacity-90 transition-opacity border border-gray-200"
+                                                />
+                                            </a>
+                                        ) : (
+                                            <div
+                                                className={`px-4 py-2.5 rounded-2xl shadow-xs text-sm ${
+                                                    isMe
+                                                        ? "bg-orange-500 text-white rounded-br-xs"
+                                                        : "bg-white text-gray-900 rounded-bl-xs border border-gray-200"
+                                                }`}
+                                            >
+                                                <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
+                                            </div>
+                                        )}
 
                                         <div className={`flex items-center mt-1 space-x-1 ${isMe ? "justify-end mr-1" : "justify-start ml-1"}`}>
                                             <span className="text-[10px] text-gray-400">
