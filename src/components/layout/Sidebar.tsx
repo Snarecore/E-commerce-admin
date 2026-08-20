@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TbListDetails, TbLayoutGrid } from "react-icons/tb";
+import { TbListDetails, TbLayoutGrid, TbTablePlus } from "react-icons/tb";
 import { BiCube } from "react-icons/bi";
 import { RiArrowDropRightLine, RiArrowDropDownLine, RiExchangeBoxFill, RiSeoFill } from "react-icons/ri";
 import { Link, useLocation, NavLink } from "react-router-dom";
@@ -56,13 +56,13 @@ const menu = [
 				path: "/product-reviews",
 				subItems: [],
 			},
-			// {
-			// 	id: 4,
-			// 	name: "Create Product",
-			// 	icon: <TbTablePlus />,
-			// 	path: "/create-product",
-			// 	subItems: [],
-			// },
+			{
+				id: 24,
+				name: "Create Product",
+				icon: <TbTablePlus />,
+				path: "/create-product",
+				subItems: [],
+			},
 		],
 	},
 	{
@@ -85,13 +85,6 @@ const menu = [
 				name: "Admins",
 				icon: <MdAdminPanelSettings />,
 				path: "/admins",
-				subItems: [],
-			},
-			{
-				id: 8,
-				name: "Vendors",
-				icon: <FaStore />,
-				path: "/vendors",
 				subItems: [],
 			},
 			{
@@ -233,32 +226,6 @@ const menu = [
 				name: "Subscription",
 				icon: <MdSubscriptions />,
 				path: "/subscription",
-				subItems: [],
-			},
-			{
-				id: 21,
-				name: "Vendor Subscription",
-				icon: <MdSubscriptions />,
-				path: "/vendor-subscription",
-				subItems: [],
-			},
-		],
-	},
-	{
-		sectionName: "Commissions",
-		items: [
-			{
-				id: 22,
-				name: "Commission Rate",
-				icon: <FaMoneyBillWave />,
-				path: "/commission-rate",
-				subItems: [],
-			},
-			{
-				id: 23,
-				name: "Vendor Payouts",
-				icon: <FaHandHoldingUsd />,
-				path: "/vendor-payouts",
 				subItems: [],
 			},
 		],

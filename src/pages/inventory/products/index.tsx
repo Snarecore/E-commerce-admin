@@ -4,6 +4,9 @@ import apiConfig from "../../../config/api.json";
 import { productQueryKey } from "../../../config/query-key";
 import { useEffect, useState } from "react";
 import PageHeader from "../../../components/cards/PageHeader";
+import Button from "../../../components/buttons/ButtonStyleOne";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const Products = () => {
 	const dataLimit = 10;
@@ -21,11 +24,9 @@ const Products = () => {
 	const [selectedFilters, setSelectedFilters] = useState<{
 		mainCategoryId: { label: string; value: string } | null;
 		vendorId: { label: string; value: string } | null;
-		isApprove: { label: string; value: string } | null;
 	}>({
 		mainCategoryId: null,
-		vendorId: null,
-		isApprove: null
+		vendorId: null
 	});
 	const { usePaginatedQuery } = useAPI();
 
@@ -35,8 +36,7 @@ const Products = () => {
 			limit: dataLimit.toString(),
 			...(searchQuery && { searchKeyword: searchQuery }),
 			...(selectedFilters.mainCategoryId?.value && { mainCategoryId: selectedFilters.mainCategoryId.value }),
-			...(selectedFilters.vendorId?.value && { vendorId: selectedFilters.vendorId.value }),
-			...(selectedFilters.isApprove?.value && { isApprove: selectedFilters.isApprove.value })
+			...(selectedFilters.vendorId?.value && { vendorId: selectedFilters.vendorId.value })
 		});
 	
 		return `${apiConfig.inventory.productListUrl}?${queryParams.toString()}`;
@@ -54,7 +54,6 @@ const Products = () => {
 			searchQuery,
 			selectedFilters.mainCategoryId?.value || "",
 			selectedFilters.vendorId?.value || "",
-			selectedFilters.isApprove?.value || "",
 			currentPageNumber.toString()
 		],
 		url: getProductListApiUrl()
@@ -72,6 +71,15 @@ const Products = () => {
 						headerTitle="Product List"
 						headerDescription="Manage your products"
 					/>
+					<Link to="/create-product">
+						<Button
+							label="Add New Product"
+							onClick={() => {}}
+							color="var(--color-primary)"
+							hoverColor="var(--color-primary-hover)"
+							icon={<IoMdAddCircleOutline size={18} />}
+						/>
+					</Link>
 				</div>
 				<div className="grid grid-cols-12 gap-12">
 					<div className="col-span-12 xl:col-span-12">

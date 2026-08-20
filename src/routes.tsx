@@ -81,26 +81,32 @@ const AppRoutes = () => {
 					} />
 				<Route path="/products"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
 							<Products />
 						</RoleProtectedRoute>
 					} />
 				<Route path="/product-reviews"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
 							<ProductReview />
 						</RoleProtectedRoute>
 					} />
 				<Route path="/product-details/:id"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
 							<ProductDetails />
 						</RoleProtectedRoute>
 					} />
 
+				<Route path="/create-product"
+					element={
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+							<CreateProduct />
+						</RoleProtectedRoute>
+					} />
 				<Route path="/edit-product"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
 							<CreateProduct />
 						</RoleProtectedRoute>
 					} />

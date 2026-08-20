@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { FiEye } from "react-icons/fi";
-// import { FaEdit } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import DeleteModal from "../../../../components/modals/DeleteModal";
@@ -119,32 +119,15 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 		}
 	};
 
-	const [vendorList, setVendorList] = useState<{ label: string, value: string }[]>([]);
-	const vendorListUrl = apiConfig.site.vendorListUrl;
-	const fetchVendorData = async () => {
-		try {
-			const result = await fetchData({ apiUrl: vendorListUrl });
-			setVendorList(result.vendorList.map((vendor: any) => ({ label: vendor.name, value: vendor.id })));
-		} catch (error) {
-			console.error("Failed to fetch vendor data:", error);
-		}
-	};
-
 	useEffect(() => {
 		fetchMainCategoryData();
-		fetchVendorData();
 	}, []);
 
 	const dropdownOptions = useMemo(() => {
 		return {
-			mainCategoryId: mainCategories,
-			vendorId: vendorList,
-			isApprove: [
-				{ label: "Approved", value: "true" },
-				{ label: "Pending", value: "false" }
-			]
+			mainCategoryId: mainCategories
 		};
-	}, [mainCategories, vendorList]);
+	}, [mainCategories]);
 
 	const handleRefreshButton = () => {
 		setSelectedFilters({
@@ -163,8 +146,6 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 		{ key: "name", label: "Product Name" },
 		{ key: "sku", label: "SKU" },
 		{ key: "price", label: "Price" },
-		{ key: "vendor", label: "Vendor" },
-		{ key: "isApprove", label: "Approval" },
 		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" },
 	];
@@ -251,6 +232,29 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 		}
 	};
 
+	const handleToggleProductStatus = async (product: ProductDataProps) => {
+		try {
+			const currentStatus = String(product.status) === "true";
+			const newStatus = !currentStatus;
+
+			const result = await handleApiMutation({
+				// @ts-ignore
+				mutation: patchMutation,
+				url: `${statusApiUrl}/${product.id}`,
+				body: { status: newStatus },
+				invalidateQueryKey: [productQueryKey],
+				showSuccessMessage: true,
+				showErrorMessage: true
+			});
+
+			if (result?.success) {
+				fetchProductList();
+			}
+		} catch (error) {
+			console.error('Error toggling product status:', error);
+		}
+	};
+
 	if (isFetching || isLoading) return <TableSkeleton />;
 
 	return (
@@ -329,28 +333,25 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 									</td>
 
 									<td className="px-6 py-4">{data.sku}</td>
-									<td className="px-6 py-4">{`$${data.price}`}</td>
-									<td className="px-6 py-4">{data.vendorName}</td>
-									<td className="px-6 py-4">
-										<span
-											className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.isApprove
-												? "bg-[var(--color-active-green)] text-green-800"
-												: "bg-[var(--color-inactive-red)] text-red-800"
-												}`}
-										>
-											{data.isApprove ? "Approved" : "Pending"}
-										</span>
-									</td>
+									<td className="px-6 py-4">{data.price}</td>
 
-									<td className="px-6 py-4">
-										<span
-											className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status
-												? "bg-[var(--color-active-green)] text-green-800"
-												: "bg-[var(--color-inactive-red)] text-red-800"
-												}`}
-										>
-											{data.status ? "Active" : "Inactive"}
-										</span>
+									<td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+										<div className="flex items-center gap-2">
+											<label className="relative inline-flex items-center cursor-pointer">
+												<input
+													type="checkbox"
+													checked={String(data.status) === "true"}
+													onChange={() => handleToggleProductStatus(data)}
+													className="sr-only peer"
+												/>
+												<div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
+													<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${String(data.status) === "true" ? "translate-x-4" : "translate-x-0"}`} />
+												</div>
+											</label>
+											<span className={`text-xs font-semibold ${String(data.status) === "true" ? "text-green-600" : "text-gray-400"}`}>
+												{String(data.status) === "true" ? "Active" : "Inactive"}
+											</span>
+										</div>
 									</td>
 
 									<td className="px-6 py-4">
@@ -359,13 +360,13 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer">
 												<FiEye />
 											</Link>
-											{/* <Link
+											<Link
 												to="/edit-product"
 												state={{ editData: data }}
 												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer"
 											>
 												<FaEdit />
-											</Link> */}
+											</Link>
 											<button
 												onClick={() => openDeleteModal(data)}
 												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer"
@@ -507,22 +508,7 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 								</label>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">is Approved</span>
-								<label className="relative inline-flex items-center cursor-pointer">
-									<input
-										name="isApprove"
-										type="checkbox"
-										checked={fieldValues.isApprove}
-										onChange={handleSwitchChange}
-										className="sr-only peer"
-									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
-										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isApprove ? "translate-x-5" : "translate-x-0"
-											}`} />
-									</div>
-								</label>
-							</div>
+
 
 							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
 								<span className="text-sm font-medium text-gray-700">Status</span>

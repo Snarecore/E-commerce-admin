@@ -71,7 +71,6 @@ const OrderTable = ({
 		{ key: "sl", label: "Sl" },
 		{ key: "orderId", label: "Order ID" },
 		{ key: "totalAmount", label: "Amount" },
-		{ key: "commission", label: "Commission" },
 		{ key: "paymentStatus", label: "Payment Status" },
 		{ key: "status", label: "Status" },
 		{ key: "createdAt", label: "Created At" },
@@ -226,9 +225,6 @@ const OrderTable = ({
 									</td>
 									<td className="px-6 py-4 font-medium text-gray-800">
 										${data.totalAmount}
-									</td>
-									<td className="px-6 py-4 font-medium text-gray-800">
-										${data.totalCommission}
 									</td>
 									<td className="px-6 py-4">
 										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.paymentStatus === "Paid" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>

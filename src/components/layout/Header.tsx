@@ -3,7 +3,7 @@ import { RiArrowDropDownLine, RiArrowDropRightLine, RiExchangeBoxFill, RiLogoutC
 
 //@ts-ignore
 import { FiShoppingCart } from "react-icons/fi";
-import { TbLayoutGrid, TbListDetails } from "react-icons/tb";
+import { TbLayoutGrid, TbListDetails, TbTablePlus } from "react-icons/tb";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaBlog, FaFacebookMessenger, FaStore, FaUser } from "react-icons/fa";
@@ -75,13 +75,13 @@ const menu = [
 				path: "/products",
 				subItems: [],
 			},
-			// {
-			// 	id: 4,
-			// 	name: "Create Product",
-			// 	icon: <TbTablePlus />,
-			// 	path: "/create-product",
-			// 	subItems: [],
-			// },
+			{
+				id: 24,
+				name: "Create Product",
+				icon: <TbTablePlus />,
+				path: "/create-product",
+				subItems: [],
+			},
 		],
 	},
 	{

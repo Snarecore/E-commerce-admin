@@ -24,6 +24,7 @@ const initialFieldValues = {
     price: "",
     discountType: "",
     discountAmount: "",
+    finalPrice: "",
     sku: "",
     videoUrl: "",
     cost: "",
@@ -44,18 +45,10 @@ const initialFieldValues = {
 
 const requiredFields = [
     { key: "name", value: "name", label: "name" },
-    { key: "vendorName", value: "vendor name", label: "text" },
     { key: "price", value: "price", label: "number" },
     { key: "sku", value: "sku", label: "text" },
-    { key: "videoUrl", value: "video url", label: "text" },
-    { key: "cost", value: "cost", label: "number" },
-    { key: "summary", value: "summary", label: "text" },
-    { key: "description", value: "description", label: "text" },
     { key: "mainCategoryId", value: "main category", label: "dropdown" },
-    { key: "featuredImage", value: "featured image", label: "image" },
-    { key: "productImages", value: "product images", label: "images" },
-    { key: "fileUrl", value: "file url", label: "file" },
-
+    { key: "firstCategoryId", value: "first category", label: "dropdown" },
 ]
 
 // const vendorOptions: Option[] = [
@@ -66,8 +59,8 @@ const requiredFields = [
 // ]
 
 const discountTypeOptions: Option[] = [
-    { label: "Percentage", value: "1" },
-    { label: "Fixed Amount", value: "2" },
+    { label: "Percentage", value: "PERCENT" },
+    { label: "Fixed Amount", value: "FLAT" },
 ]
 
 const ProductCreation = () => {
@@ -84,6 +77,7 @@ const ProductCreation = () => {
     const [selectedFirstCategory, setSelectedFirstCategory] = useState<Option | null>(null);
     const [selectedSecondCategory, setSelectedSecondCategory] = useState<Option | null>(null);
     const [selectedThirdCategory, setSelectedThirdCategory] = useState<Option | null>(null);
+    const [selectedSizes, setSelectedSizes] = useState<string[]>(["S", "M", "L", "XL", "XXL"]);
     const [isOpen, setIsOpen] = useState(true);
     const [fields, setFields] = useState<string[]>([""]);
     const [isFirstCategoryDisabled, setIsFirstCategoryDisabled] = useState(true);
@@ -156,11 +150,24 @@ const ProductCreation = () => {
 
     useEffect(() => {
         if (editData) {
+            const priceVal = Number(editData.price) || 0;
+            const discountVal = Number(editData.discountAmount) || 0;
+            let finalPriceVal = priceVal;
+            if (discountVal > 0) {
+                const typeStr = (editData.discountType || "").toUpperCase();
+                if (typeStr === "PERCENT" || typeStr.includes("PERCENTAGE")) {
+                    finalPriceVal = priceVal - (priceVal * discountVal) / 100;
+                } else if (typeStr === "FLAT" || typeStr.includes("FIXED") || typeStr.includes("AMOUNT")) {
+                    finalPriceVal = priceVal - discountVal;
+                }
+            }
+
             setFieldValues({
                 name: editData.name || "",
                 price: editData.price || "",
                 discountType: editData.discountType || "",
                 discountAmount: editData.discountAmount || "",
+                finalPrice: finalPriceVal > 0 ? finalPriceVal.toFixed(2) : editData.price || "",
                 sku: editData.sku || "",
                 videoUrl: editData.videoUrl || "",
                 cost: editData.cost || "",
@@ -185,13 +192,29 @@ const ProductCreation = () => {
                 setProductImages(editData.productImages.map((img: any) => img.imageUrl));
             }
 
+            if (editData.sizes) {
+                if (Array.isArray(editData.sizes)) {
+                    setSelectedSizes(editData.sizes);
+                } else if (typeof editData.sizes === 'string') {
+                    setSelectedSizes(editData.sizes.split(',').map((s: any) => s.trim()).filter((s: any) => s));
+                }
+            } else {
+                setSelectedSizes(["S", "M", "L", "XL", "XXL"]);
+            }
+
             if (editData.discountType) {
-                const isPercentage = editData.discountType.toLowerCase().includes('percentage');
-                const isFixed = editData.discountType.toLowerCase().includes('fixed');
+                const typeStr = editData.discountType.toUpperCase();
+                const isPercentage = typeStr === "PERCENT" || typeStr.includes("PERCENTAGE");
+                const isFixed = typeStr === "FLAT" || typeStr.includes("FIXED") || typeStr.includes("AMOUNT");
 
                 setSelectedDiscountType({
-                    label: editData.discountType,
-                    value: isPercentage ? "1" : (isFixed ? "2" : "1")
+                    label: isPercentage ? "Percentage" : (isFixed ? "Fixed Amount" : "None"),
+                    value: isPercentage ? "PERCENT" : (isFixed ? "FLAT" : "NONE")
+                });
+            } else {
+                setSelectedDiscountType({
+                    label: "None",
+                    value: "NONE"
                 });
             }
 
@@ -369,14 +392,93 @@ const ProductCreation = () => {
     //     }));
     // };
 
-    const handleDiscountTypeOptionChange = (option: Option | null) => {
-        setSelectedDiscountType(option);
-    };
-
     const handleSummaryChange = (index: number, value: string) => {
         const updated = [...fields];
         updated[index] = value;
         setFields(updated);
+    };
+
+    const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const newPrice = Number(event.target.value) || 0;
+        setFieldValues((prevState) => {
+            const discount = Number(prevState.discountAmount) || 0;
+            let finalPrice = newPrice;
+            if (discount > 0) {
+                const type = selectedDiscountType?.value || "NONE";
+                if (type === "PERCENT") {
+                    finalPrice = newPrice - (newPrice * discount) / 100;
+                } else if (type === "FLAT") {
+                    finalPrice = newPrice - discount;
+                }
+            }
+            return {
+                ...prevState,
+                price: event.target.value,
+                finalPrice: finalPrice > 0 ? finalPrice.toFixed(2) : ""
+            };
+        });
+    };
+
+    const handleDiscountAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const discount = Number(event.target.value) || 0;
+        setFieldValues((prevState) => {
+            const price = Number(prevState.price) || 0;
+            let finalPrice = price;
+            if (discount > 0) {
+                const type = selectedDiscountType?.value || "NONE";
+                if (type === "PERCENT") {
+                    finalPrice = price - (price * discount) / 100;
+                } else if (type === "FLAT") {
+                    finalPrice = price - discount;
+                }
+            }
+            return {
+                ...prevState,
+                discountAmount: event.target.value,
+                finalPrice: finalPrice > 0 ? finalPrice.toFixed(2) : ""
+            };
+        });
+    };
+
+    const handleFinalPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const finalPrice = Number(event.target.value) || 0;
+        setFieldValues((prevState) => {
+            const price = Number(prevState.price) || 0;
+            let discount = 0;
+            if (price > 0 && finalPrice > 0) {
+                const type = selectedDiscountType?.value || "NONE";
+                if (type === "PERCENT") {
+                    discount = ((price - finalPrice) / price) * 100;
+                } else if (type === "FLAT") {
+                    discount = price - finalPrice;
+                }
+            }
+            return {
+                ...prevState,
+                finalPrice: event.target.value,
+                discountAmount: discount > 0 ? discount.toFixed(2) : ""
+            };
+        });
+    };
+
+    const handleDiscountTypeOptionChange = (option: Option | null) => {
+        setSelectedDiscountType(option);
+        setFieldValues((prevState) => {
+            const price = Number(prevState.price) || 0;
+            const discount = Number(prevState.discountAmount) || 0;
+            let finalPrice = price;
+            if (discount > 0 && option) {
+                if (option.value === "PERCENT") {
+                    finalPrice = price - (price * discount) / 100;
+                } else if (option.value === "FLAT") {
+                    finalPrice = price - discount;
+                }
+            }
+            return {
+                ...prevState,
+                finalPrice: finalPrice > 0 ? finalPrice.toFixed(2) : ""
+            };
+        });
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -394,6 +496,7 @@ const ProductCreation = () => {
         setSelectedMainCategory(null);
         setSelectedFirstCategory(null);
         setSelectedSecondCategory(null);
+        setSelectedSizes(["S", "M", "L", "XL", "XXL"]);
     };
 
     const handleFeaturedImageUpload = (file: File | null) => {
@@ -416,12 +519,10 @@ const ProductCreation = () => {
         const existingProductImages = productImages.filter((item) => typeof item === "string" && item.startsWith("http"));
 
         const payload = {
-            ...fieldValues,
+            name: fieldValues.name,
+            price: Number(fieldValues.price) || 0,
             sku: uniqueCode,
-            productImages: productImages,
-            // vendorId: selectedVendorName?.value || "",
-            // vendorName: selectedVendorName?.label || "",
-            discountType: selectedDiscountType?.label || "",
+            discountType: selectedDiscountType?.value || "NONE",
             discountAmount: fieldValues.discountAmount ? Number(fieldValues.discountAmount) : 0,
             summary: summaryString,
             description: description.trim(),
@@ -433,7 +534,12 @@ const ProductCreation = () => {
             secondCategoryName: selectedSecondCategory?.label || "",
             thirdCategoryId: selectedThirdCategory?.value || "",
             thirdCategoryName: selectedThirdCategory?.label || "",
-            existingProductImages: existingProductImages || []
+            featuredImage: fieldValues.featuredImage,
+            productImages: productImages,
+            existingProductImages: existingProductImages || [],
+            fileUrl: fieldValues.fileUrl || null,
+            sizes: selectedSizes,
+            sizesString: selectedSizes.join(',')
         };
 
         const result = await handleApiMutation({
@@ -524,15 +630,7 @@ const ProductCreation = () => {
                                 /> */}
 
                                 <div>
-                                    <InputField label="Video URL" type="text" name="videoUrl" required value={fieldValues.videoUrl} onChange={handleChange} />
-                                </div>
-
-                                <div>
-                                    <InputField label="Price" type="number" name="price" required value={fieldValues.price} onChange={handleChange} />
-                                </div>
-
-                                <div>
-                                    <InputField label="Cost" type="number" name="cost" required value={fieldValues.cost} onChange={handleChange} />
+                                    <InputField label="Price" type="number" name="price" required value={fieldValues.price} onChange={handlePriceChange} />
                                 </div>
 
                                 <SelectInput
@@ -544,7 +642,11 @@ const ProductCreation = () => {
                                 />
 
                                 <div>
-                                    <InputField label="Discount Amount" type="number" name="discountAmount" value={fieldValues.discountAmount} onChange={handleChange} />
+                                    <InputField label="Discount Amount" type="number" name="discountAmount" value={fieldValues.discountAmount} onChange={handleDiscountAmountChange} />
+                                </div>
+
+                                <div>
+                                    <InputField label="Final Price" type="number" name="finalPrice" value={fieldValues.finalPrice} onChange={handleFinalPriceChange} />
                                 </div>
 
                                 <SelectInput
@@ -563,6 +665,7 @@ const ProductCreation = () => {
                                     onChange={handleFirstCategoryChange}
                                     placeholder="Select First Category"
                                     disabled={isFirstCategoryDisabled || !firstCategories.length}
+                                    required
                                 />
 
                                 <SelectInput
@@ -583,6 +686,32 @@ const ProductCreation = () => {
                                     disabled={isThirdCategoryDisabled || !thirdCategories.length}
                                 />
 
+                                <div>
+                                     <p className="text-sm font-medium text-gray-700 w-full mb-1">Available Sizes</p>
+                                     <div className="flex flex-wrap items-center gap-2 mt-1 min-h-10">
+                                         {["S", "M", "L", "XL", "XXL"].map((size) => {
+                                             const isChecked = selectedSizes.includes(size);
+                                             return (
+                                                 <label key={size} className="flex items-center gap-2 cursor-pointer select-none border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 transition duration-150">
+                                                     <input
+                                                         type="checkbox"
+                                                         checked={isChecked}
+                                                         onChange={() => {
+                                                             if (isChecked) {
+                                                                 setSelectedSizes(selectedSizes.filter((s) => s !== size));
+                                                             } else {
+                                                                 setSelectedSizes([...selectedSizes, size]);
+                                                             }
+                                                         }}
+                                                         className="w-4 h-4 accent-[var(--color-primary)] border-gray-300 rounded focus:ring-[var(--color-primary)] cursor-pointer"
+                                                     />
+                                                     <span className="text-sm font-bold text-gray-800">{size}</span>
+                                                 </label>
+                                             );
+                                         })}
+                                     </div>
+                                 </div>
+
                                 <div className="">
                                     <p className="text-sm font-medium text-gray-700 w-full mb-1">Product Summary</p>
                                     <div className="space-y-2 ">
@@ -593,7 +722,6 @@ const ProductCreation = () => {
                                                     value={field}
                                                     onChange={(e) => handleSummaryChange(index, e.target.value)}
                                                     className="w-full h-10 focus:outline-none px-3 text-base border border-gray-200 rounded-lg focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
-                                                    required
                                                 />
                                                 {index !== 0 && (
                                                     <button
