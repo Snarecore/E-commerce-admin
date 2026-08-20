@@ -43,6 +43,8 @@ interface ProductDataProps {
 	isProductSectionSix: string;
 	isApprove: string;
 	status: string;
+	quantity: number;
+	quantityAlert: number;
 }
 
 interface ProductTableProps {
@@ -81,7 +83,9 @@ const initialFieldValues = {
 	isProductSectionFive: false,
 	isProductSectionSix: false,
 	isApprove: false,
-	status: false
+	status: false,
+	quantity: 0,
+	quantityAlert: 0
 };
 
 const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumber, setCurrentPageNumber, handlePagination, isLoading, isFetching, searchQuery, setSearchQuery, selectedFilters, setSelectedFilters }: ProductTableProps) => {
@@ -146,6 +150,7 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 		{ key: "name", label: "Product Name" },
 		{ key: "sku", label: "SKU" },
 		{ key: "price", label: "Price" },
+		{ key: "stock", label: "Stock" },
 		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" },
 	];
@@ -170,7 +175,9 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 			isProductSectionFive: String(product.isProductSectionFive) == "true",
 			isProductSectionSix: String(product.isProductSectionSix) == "true",
 			isApprove: String(product.isApprove) === "true",
-			status: String(product.status) === "true"
+			status: String(product.status) === "true",
+			quantity: product.quantity !== undefined ? Number(product.quantity) : 0,
+			quantityAlert: product.quantityAlert !== undefined ? Number(product.quantityAlert) : 0
 		});
 		setIsSelectionModalOpen(true);
 	};
@@ -202,10 +209,10 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 	};
 
 	const handleSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const { name, checked } = event.target;
+		const { name, checked, type, value } = event.target;
 		setFieldValues((prevState) => ({
 			...prevState,
-			[name]: checked
+			[name]: type === "checkbox" ? checked : Number(value)
 		}));
 	};
 
@@ -334,6 +341,22 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 
 									<td className="px-6 py-4">{data.sku}</td>
 									<td className="px-6 py-4">{data.price}</td>
+
+									<td className="px-6 py-4">
+										{Number(data.quantity) === 0 ? (
+											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+												Out of Stock
+											</span>
+										) : Number(data.quantity) <= Number(data.quantityAlert || 5) ? (
+											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+												Low Stock ({data.quantity})
+											</span>
+										) : (
+											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+												In Stock ({data.quantity})
+											</span>
+										)}
+									</td>
 
 									<td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
 										<div className="flex items-center gap-2">
@@ -509,6 +532,32 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 							</div>
 
 
+
+							<div className="flex flex-col gap-1 mb-4 bg-gray-50 border border-gray-200 p-3 rounded-md">
+								<span className="text-sm font-semibold text-gray-700">Stock Settings</span>
+								<div className="grid grid-cols-2 gap-2 mt-2">
+									<div>
+										<label className="text-[12px] font-medium text-gray-500 block mb-1">Quantity</label>
+										<input
+											name="quantity"
+											type="number"
+											value={fieldValues.quantity}
+											onChange={handleSwitchChange}
+											className="w-full h-9 px-2 text-sm border border-gray-300 rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+										/>
+									</div>
+									<div>
+										<label className="text-[12px] font-medium text-gray-500 block mb-1">Qty Alert</label>
+										<input
+											name="quantityAlert"
+											type="number"
+											value={fieldValues.quantityAlert}
+											onChange={handleSwitchChange}
+											className="w-full h-9 px-2 text-sm border border-gray-300 rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+										/>
+									</div>
+								</div>
+							</div>
 
 							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
 								<span className="text-sm font-medium text-gray-700">Status</span>

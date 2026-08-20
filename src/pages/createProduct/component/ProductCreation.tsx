@@ -41,6 +41,8 @@ const initialFieldValues = {
     productImages: [],
     featuredImage: null as string | null,
     fileUrl: "",
+    quantity: "",
+    quantityAlert: "",
 }
 
 const requiredFields = [
@@ -184,6 +186,8 @@ const ProductCreation = () => {
                 productImages: editData.productImages || [],
                 featuredImage: editData.featuredImage || null,
                 fileUrl: editData.fileUrl || null,
+                quantity: editData.quantity !== undefined ? String(editData.quantity) : "",
+                quantityAlert: editData.quantityAlert !== undefined ? String(editData.quantityAlert) : "",
             });
 
             setDescription(editData.description || "");
@@ -539,7 +543,9 @@ const ProductCreation = () => {
             existingProductImages: existingProductImages || [],
             fileUrl: fieldValues.fileUrl || null,
             sizes: selectedSizes,
-            sizesString: selectedSizes.join(',')
+            sizesString: selectedSizes.join(','),
+            quantity: fieldValues.quantity !== "" ? Number(fieldValues.quantity) : 0,
+            quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 0
         };
 
         const result = await handleApiMutation({
@@ -647,6 +653,14 @@ const ProductCreation = () => {
 
                                 <div>
                                     <InputField label="Final Price" type="number" name="finalPrice" value={fieldValues.finalPrice} onChange={handleFinalPriceChange} />
+                                </div>
+
+                                <div>
+                                    <InputField label="Quantity (Stock)" type="number" name="quantity" required value={fieldValues.quantity} onChange={handleChange} />
+                                </div>
+
+                                <div>
+                                    <InputField label="Quantity Alert (Low Stock warning)" type="number" name="quantityAlert" required value={fieldValues.quantityAlert} onChange={handleChange} />
                                 </div>
 
                                 <SelectInput

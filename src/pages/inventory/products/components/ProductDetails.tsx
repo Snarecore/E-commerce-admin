@@ -33,6 +33,8 @@ interface Product {
         productId: string;
     }>;
     sizes?: string[] | string;
+    quantity?: number;
+    quantityAlert?: number;
 }
 
 const ProductDetails = () => {
@@ -171,9 +173,24 @@ const ProductDetails = () => {
                     {/* Right Column: Content Section */}
                     <div className="lg:col-span-6 flex flex-col justify-between">
                         <div>
-                            {/* SKU badge */}
-                            <div className="inline-block bg-gray-100 text-gray-700 text-[11px] font-mono px-2.5 py-1 rounded-md mb-3">
-                                SKU: {product.sku}
+                            {/* SKU badge & Stock status */}
+                            <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                <div className="inline-block bg-gray-100 text-gray-700 text-[11px] font-mono px-2.5 py-1 rounded-md">
+                                    SKU: {product.sku}
+                                </div>
+                                {Number(product.quantity) === 0 ? (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                        Out of Stock
+                                    </span>
+                                ) : Number(product.quantity) <= Number(product.quantityAlert || 5) ? (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                        Low Stock ({product.quantity} left)
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                        In Stock ({product.quantity})
+                                    </span>
+                                )}
                             </div>
 
                             {/* Product Name */}

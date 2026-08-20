@@ -11,6 +11,8 @@ export interface ProductFormData {
     unit: string;
     barcodeSymbology: string;
     itemBarcode: string;
+    quantity?: number;
+    quantityAlert?: number;
 }
 
 export interface SelectOption {
