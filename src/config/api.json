@@ -54,7 +54,9 @@
         "blogUrl": "blog"
     },
     "order": {
-        "orderListUrl": "orders"
+        "orderListUrl": "orders",
+        "orderDetailUrl": "orders",
+        "orderUpdateStatusUrl": "orders/update-status"
     },
     "auth": {
         "loginUrl": "auth/login",

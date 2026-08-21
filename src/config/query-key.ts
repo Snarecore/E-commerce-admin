@@ -19,6 +19,7 @@ export const homePageCmsQueryKey = "home-page-cms";
 export const headerFooterCmsQueryKey = "home-page-cms";
 export const faqQueryKey = "faq";
 export const orderQueryKey = "orders";
+export const orderDetailQueryKey = "order-detail";
 export const loginQueryKey = "login";
 export const dashboardQueryKey = "admin-dashboard";
 export const userQueryKey = "user";

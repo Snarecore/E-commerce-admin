@@ -21,15 +21,21 @@ const requiredFields: any = [
     { key: "content", value: "content", label: "text" },
 ];
 
-const ChatWindow = ({ selectedUser }: { selectedUser: ConversationItem }) => {
+const ChatWindow = ({ selectedUser, prefillMessage }: { selectedUser: ConversationItem; prefillMessage?: string }) => {
     const { fetchData, postMutation, handleApiMutation } = useAPI();
     const [messages, setMessages] = useState<Message[]>([]);
     const [isMessageLoading, setIsMessageLoading] = useState(false);
     const [isLoadingThread, setIsLoadingLoadingThread] = useState(false);
-    const [content, setContent] = useState("");
+    const [content, setContent] = useState(prefillMessage || "");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const oldestCursor = messages.length > 0 ? messages[0].id : undefined;
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    useEffect(() => {
+        if (prefillMessage) {
+            setContent(prefillMessage);
+        }
+    }, [prefillMessage]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

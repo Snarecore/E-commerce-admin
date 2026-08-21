@@ -23,9 +23,10 @@ export interface ConversationItem {
 interface ChatSidebarProps {
     setSelectedUser: (user: ConversationItem | null) => void;
     selectedUser: ConversationItem | null;
+    autoSelectCustomerId?: string;
 }
 
-const ChatSidebar = ({ setSelectedUser, selectedUser }: ChatSidebarProps) => {
+const ChatSidebar = ({ setSelectedUser, selectedUser, autoSelectCustomerId }: ChatSidebarProps) => {
     const { fetchData } = useAPI();
     const [conversations, setConversations] = useState<ConversationItem[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -47,6 +48,15 @@ const ChatSidebar = ({ setSelectedUser, selectedUser }: ChatSidebarProps) => {
             }
 
             setConversations(items);
+
+            if (autoSelectCustomerId && items.length > 0) {
+                const target = items.find(
+                    (c) => c.customerId === autoSelectCustomerId || c.customer?.id === autoSelectCustomerId
+                );
+                if (target) {
+                    setSelectedUser(target);
+                }
+            }
         } catch (error) {
             console.error("Error fetching conversations:", error);
         }
@@ -59,7 +69,7 @@ const ChatSidebar = ({ setSelectedUser, selectedUser }: ChatSidebarProps) => {
         // Auto-refresh conversations every 4 seconds for live inbox experience
         const interval = setInterval(getConversations, 4000);
         return () => clearInterval(interval);
-    }, []);
+    }, [autoSelectCustomerId]);
 
     const filteredConversations = conversations.filter((convo) => {
         const name = convo.customer?.name?.toLowerCase() || "";

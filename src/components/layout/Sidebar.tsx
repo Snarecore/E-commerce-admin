@@ -218,18 +218,6 @@ const menu = [
 			},
 		],
 	},
-	{
-		sectionName: "Subscription",
-		items: [
-			{
-				id: 20,
-				name: "Subscription",
-				icon: <MdSubscriptions />,
-				path: "/subscription",
-				subItems: [],
-			},
-		],
-	},
 ];
 
 const Sidebar = () => {

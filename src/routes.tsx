@@ -24,6 +24,7 @@ import ContactPageCMS from "./pages/settings/contact-us/contact-page-cms";
 // import TermsConditions from "./pages/settings/policy/terms-conditions";
 import HomePageCMS from "./pages/settings/home/page-cms";
 import Orders from "./pages/orders";
+import OrderDetail from "./pages/orders/components/OrderDetail";
 // import Faq from "./pages/settings/faq";
 import Admins from "./pages/people/admin";
 import Vendors from "./pages/people/vendor";
@@ -81,32 +82,32 @@ const AppRoutes = () => {
 					} />
 				<Route path="/products"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<Products />
 						</RoleProtectedRoute>
 					} />
 				<Route path="/product-reviews"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<ProductReview />
 						</RoleProtectedRoute>
 					} />
 				<Route path="/product-details/:id"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<ProductDetails />
 						</RoleProtectedRoute>
 					} />
 
 				<Route path="/create-product"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<CreateProduct />
 						</RoleProtectedRoute>
 					} />
 				<Route path="/edit-product"
 					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN, Role.VENDOR]}>
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<CreateProduct />
 						</RoleProtectedRoute>
 					} />
@@ -205,6 +206,11 @@ const AppRoutes = () => {
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<Orders />
+						</RoleProtectedRoute>} />
+				<Route path="/order-detail/:id"
+					element={
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+							<OrderDetail />
 						</RoleProtectedRoute>} />
 				<Route path="/blogs"
 					element={
