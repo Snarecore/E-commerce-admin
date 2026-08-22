@@ -5,7 +5,7 @@ import { RiArrowDropRightLine, RiArrowDropDownLine, RiExchangeBoxFill, RiSeoFill
 import { Link, useLocation, NavLink } from "react-router-dom";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
-import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdSubscriptions } from "react-icons/md";
+import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/md";
 import { FiShoppingCart } from "react-icons/fi";
 import { FaBlog, FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";

@@ -7,7 +7,7 @@ import { formatDate } from "../../../utils/date-utils";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 
-const STATUS_OPTIONS = ["Pending", "Processing", "Shipped", "Delivered", "Completed", "Failed"];
+const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Failed"];
 
 const OrderDetail = () => {
     const navigate = useNavigate();
@@ -44,8 +44,8 @@ const OrderDetail = () => {
             const result = await handleApiMutation({
                 // @ts-ignore
                 mutation: patchMutation,
-                url: `${apiConfig.order.orderUpdateStatusUrl}/${order.id}`,
-                body: { status: selectedStatus },
+                url: `${apiConfig.order.orderDetailUrl}/${order.id}/status`,
+                body: { newStatus: selectedStatus, status: selectedStatus },
                 showSuccessMessage: true,
                 showErrorMessage: true,
                 requiredFields: [],

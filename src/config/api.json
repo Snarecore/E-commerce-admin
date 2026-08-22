@@ -56,7 +56,7 @@
     "order": {
         "orderListUrl": "orders",
         "orderDetailUrl": "orders",
-        "orderUpdateStatusUrl": "orders/update-status"
+        "orderUpdateStatusUrl": "orders"
     },
     "auth": {
         "loginUrl": "auth/login",
