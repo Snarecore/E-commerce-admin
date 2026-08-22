@@ -7,7 +7,7 @@ import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
 import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/md";
 import { FiShoppingCart } from "react-icons/fi";
-import { FaBlog, FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
+import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 // import { FaQuestion, FaStore, FaUser } from "react-icons/fa";
 
@@ -39,7 +39,6 @@ const menu = [
 					{ id: 1, name: "Main Category", path: "/main-category" },
 					{ id: 2, name: "First Category", path: "/first-category" },
 					{ id: 3, name: "Second Category", path: "/second-category" },
-					{ id: 4, name: "Third Category", path: "/third-category" },
 				],
 			},
 			{
@@ -174,13 +173,6 @@ const menu = [
 				name: "Social Links",
 				icon: <IoShareSocialOutline />,
 				path: "/social-link",
-				subItems: [],
-			},
-			{
-				id: 17,
-				name: "Blogs",
-				icon: <FaBlog />,
-				path: "/blogs",
 				subItems: [],
 			},
 			// {

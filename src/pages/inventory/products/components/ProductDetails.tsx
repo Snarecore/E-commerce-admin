@@ -11,7 +11,6 @@ interface Product {
     mainCategoryName: string;
     firstCategoryName: string;
     secondCategoryName: string;
-    thirdCategoryName: string;
     price: number;
     cost: number;
     discountAmount: number;
@@ -120,12 +119,6 @@ const ProductDetails = () => {
                     <>
                         <span>&gt;</span>
                         <span>{product.secondCategoryName}</span>
-                    </>
-                )}
-                {product.thirdCategoryName && (
-                    <>
-                        <span>&gt;</span>
-                        <span>{product.thirdCategoryName}</span>
                     </>
                 )}
             </div>

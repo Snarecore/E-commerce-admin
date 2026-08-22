@@ -6,7 +6,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { TbLayoutGrid, TbListDetails, TbTablePlus } from "react-icons/tb";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaBlog, FaFacebookMessenger, FaStore, FaUser } from "react-icons/fa";
+import { FaFacebookMessenger, FaStore, FaUser } from "react-icons/fa";
 import userAvatar from "/images/avatar.png";
 import companyLogo from "/images/BazaarBound_Landscap_Logo.svg";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -65,7 +65,6 @@ const menu = [
 					{ id: 1, name: "Main Category", path: "/main-category" },
 					{ id: 2, name: "First Category", path: "/first-category" },
 					{ id: 3, name: "Second Category", path: "/second-category" },
-					{ id: 4, name: "Third Category", path: "/third-category" },
 				],
 			},
 			{
@@ -188,13 +187,6 @@ const menu = [
 				name: "Social Links",
 				icon: <IoShareSocialOutline />,
 				path: "/social-link",
-				subItems: [],
-			},
-			{
-				id: 15,
-				name: "Blogs",
-				icon: <FaBlog />,
-				path: "/blogs",
 				subItems: [],
 			},
 		],

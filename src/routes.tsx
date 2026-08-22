@@ -9,7 +9,6 @@ import Promotions from "./pages/settings/home/promotions";
 import MainCategory from "./pages/inventory/category/main-category";
 import FirstCategory from "./pages/inventory/category/first-category";
 import SecondCategory from "./pages/inventory/category/second-category";
-import ThirdCategory from "./pages/inventory/category/third-category";
 import HeaderFooterCMS from "./pages/settings/header-footer-cms";
 import Review from "./pages/inventory/reviews";
 import Signup from "./pages/authentications/signup";
@@ -34,8 +33,6 @@ import RoleProtectedRoute from "./providers/RoleProtectedRoute";
 import { Role } from "./enum/role.enum";
 import SocialLinks from "./pages/settings/social-links";
 import ShopPageCMS from "./pages/settings/shop-page-cms";
-import Blogs from "./pages/blogs";
-import BlogCreation from "./pages/blog-create";
 import Chat from "./pages/chat";
 import Subscription from "./pages/subscriptions/subscription";
 import CommissionRate from "./pages/commission-rate";
@@ -136,14 +133,6 @@ const AppRoutes = () => {
 					}
 				/>
 				<Route
-					path="/third-category"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ThirdCategory />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
 					path="/hero-slider"
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
@@ -211,21 +200,6 @@ const AppRoutes = () => {
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<OrderDetail />
-						</RoleProtectedRoute>} />
-				<Route path="/blogs"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Blogs />
-						</RoleProtectedRoute>} />
-				<Route path="/create-blog"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<BlogCreation />
-						</RoleProtectedRoute>} />
-				<Route path="/edit-blog"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<BlogCreation />
 						</RoleProtectedRoute>} />
 				{/* <Route path="/faqs"
 					element={

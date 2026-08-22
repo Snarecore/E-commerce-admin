@@ -33,11 +33,9 @@ const initialFieldValues = {
     mainCategoryId: "",
     firstCategoryId: "",
     secondCategoryId: "",
-    thirdCategoryId: "",
     mainCategoryName: "",
     firstCategoryName: "",
     secondCategoryName: "",
-    thirdCategoryName: "",
     productImages: [],
     featuredImage: null as string | null,
     fileUrl: "",
@@ -78,25 +76,21 @@ const ProductCreation = () => {
     const [selectedMainCategory, setSelectedMainCategory] = useState<Option | null>(null);
     const [selectedFirstCategory, setSelectedFirstCategory] = useState<Option | null>(null);
     const [selectedSecondCategory, setSelectedSecondCategory] = useState<Option | null>(null);
-    const [selectedThirdCategory, setSelectedThirdCategory] = useState<Option | null>(null);
     const [selectedSizes, setSelectedSizes] = useState<string[]>(["S", "M", "L", "XL", "XXL"]);
     const [isOpen, setIsOpen] = useState(true);
     const [fields, setFields] = useState<string[]>([""]);
     const [isFirstCategoryDisabled, setIsFirstCategoryDisabled] = useState(true);
     const [isSecondCategoryDisabled, setIsSecondCategoryDisabled] = useState(true);
-    const [isThirdCategoryDisabled, setIsThirdCategoryDisabled] = useState(true);
     const { postFormMutation, handleApiMutation, usePaginatedQuery, patchFormMutation, fetchData } = useAPI();
     const [fieldValues, setFieldValues] = useState(initialFieldValues);
     const mainCategoryUrl = apiConfig.site.mainCategoryUrl;
     const firstCategoryUrl = apiConfig.site.firstCategoryUrl;
     const secondCategoryUrl = apiConfig.site.secondCategoryUrl;
-    const thirdCategoryUrl = apiConfig.site.thirdCategoryUrl;
     const productUniqueCodeUrl = apiConfig.site.productUniqueCodeUrl;
     const productUrl = apiConfig.inventory.productUrl;
     const [mainCategories, setMainCategories] = useState<any>([]);
     const [firstCategories, setFirstCategories] = useState<any[]>([]);
     const [secondCategories, setSecondCategories] = useState<any[]>([]);
-    const [thirdCategories, setThirdCategories] = useState<any[]>([]);
 
     const fetchMainCategoryData = async () => {
         try {
@@ -139,17 +133,6 @@ const ProductCreation = () => {
         }
     };
 
-    const fetchThirdCategoryData = async (secondCategoryId: string) => {
-        try {
-            const response = await fetchData({
-                apiUrl: `${thirdCategoryUrl}?secondCategoryId=${secondCategoryId}`
-            });
-            setThirdCategories(response.thirdCategories || []);
-        } catch (err) {
-            console.error("Failed to fetch third categories", err);
-        }
-    };
-
     useEffect(() => {
         if (editData) {
             const priceVal = Number(editData.price) || 0;
@@ -178,11 +161,9 @@ const ProductCreation = () => {
                 mainCategoryId: editData.mainCategoryId || "",
                 firstCategoryId: editData.firstCategoryId || "",
                 secondCategoryId: editData.secondCategoryId || "",
-                thirdCategoryId: editData.thirdCategoryId || "",
                 mainCategoryName: editData.mainCategoryName || "",
                 firstCategoryName: editData.firstCategoryName || "",
                 secondCategoryName: editData.secondCategoryName || "",
-                thirdCategoryName: editData.thirdCategoryName || "",
                 productImages: editData.productImages || [],
                 featuredImage: editData.featuredImage || null,
                 fileUrl: editData.fileUrl || null,
@@ -253,21 +234,7 @@ const ProductCreation = () => {
                     label: editData.secondCategoryName,
                     value: editData.secondCategoryId || editData.secondCategoryName
                 });
-                setIsThirdCategoryDisabled(false);
-
-                setTimeout(() => {
-                    //@ts-ignore
-                    fetchThirdCategories();
-                }, 0);
             }
-
-            if (editData.thirdCategoryName) {
-                setSelectedThirdCategory({
-                    label: editData.thirdCategoryName,
-                    value: editData.thirdCategoryId || editData.thirdCategoryName
-                });
-            }
-
             if (editData.summary) {
                 if (Array.isArray(editData.summary)) {
                     setFields(editData.summary);
@@ -292,13 +259,10 @@ const ProductCreation = () => {
         setSelectedMainCategory(category);
         setIsFirstCategoryDisabled(false);
         setIsSecondCategoryDisabled(true);
-        setIsThirdCategoryDisabled(true);
         setSelectedFirstCategory(null);
         setSelectedSecondCategory(null);
-        setSelectedThirdCategory(null);
         setFirstCategories([]);
         setSecondCategories([]);
-        setThirdCategories([]);
 
         setFieldValues((prevState) => ({
             ...prevState,
@@ -307,9 +271,7 @@ const ProductCreation = () => {
             firstCategoryId: "",
             firstCategoryName: "",
             secondCategoryId: "",
-            secondCategoryName: "",
-            thirdCategoryId: "",
-            thirdCategoryName: ""
+            secondCategoryName: ""
         }));
 
         fetchFirstCategoryData(category.value);
@@ -318,20 +280,14 @@ const ProductCreation = () => {
     const handleFirstCategoryChange = (category: Option) => {
         setSelectedFirstCategory(category);
         setIsSecondCategoryDisabled(false);
-        setIsThirdCategoryDisabled(true);
         setSelectedSecondCategory(null);
-        setSelectedThirdCategory(null);
         setSecondCategories([]);
-        setThirdCategories([]);
 
         setFieldValues((prevState) => ({
             ...prevState,
             firstCategoryId: category.value,
-            firstCategoryName: category.label,
             secondCategoryId: "",
-            secondCategoryName: "",
-            thirdCategoryId: "",
-            thirdCategoryName: ""
+            secondCategoryName: ""
         }));
 
         fetchSecondCategoryData(category.value);
@@ -339,28 +295,10 @@ const ProductCreation = () => {
 
     const handleSecondCategoryChange = (category: Option) => {
         setSelectedSecondCategory(category);
-        setIsThirdCategoryDisabled(false);
-        setSelectedThirdCategory(null);
-        setThirdCategories([]);
-
         setFieldValues((prevState) => ({
             ...prevState,
             secondCategoryId: category.value,
-            secondCategoryName: category.label,
-            thirdCategoryId: "",
-            thirdCategoryName: ""
-        }));
-
-        fetchThirdCategoryData(category.value);
-    };
-
-    const handleThirdCategoryChange = (category: Option) => {
-        setSelectedThirdCategory(category);
-
-        setFieldValues((prevState) => ({
-            ...prevState,
-            thirdCategoryId: category.value,
-            thirdCategoryName: category.label
+            secondCategoryName: category.label
         }));
     };
 
@@ -370,11 +308,6 @@ const ProductCreation = () => {
     }));
 
     const formattedSecondCategories = secondCategories.map((item: any) => ({
-        label: item.name,
-        value: item.id
-    }));
-
-    const formattedThirdCategories = thirdCategories.map((item: any) => ({
         label: item.name,
         value: item.id
     }));
@@ -536,8 +469,6 @@ const ProductCreation = () => {
             firstCategoryName: selectedFirstCategory?.label || "",
             secondCategoryId: selectedSecondCategory?.value || "",
             secondCategoryName: selectedSecondCategory?.label || "",
-            thirdCategoryId: selectedThirdCategory?.value || "",
-            thirdCategoryName: selectedThirdCategory?.label || "",
             featuredImage: fieldValues.featuredImage,
             productImages: productImages,
             existingProductImages: existingProductImages || [],
@@ -689,15 +620,6 @@ const ProductCreation = () => {
                                     onChange={handleSecondCategoryChange}
                                     placeholder="Select Second Category"
                                     disabled={isSecondCategoryDisabled || !secondCategories.length}
-                                />
-
-                                <SelectInput
-                                    label="Third Category"
-                                    value={selectedThirdCategory}
-                                    options={formattedThirdCategories}
-                                    onChange={handleThirdCategoryChange}
-                                    placeholder="Select Third Category"
-                                    disabled={isThirdCategoryDisabled || !thirdCategories.length}
                                 />
 
                                 <div>
