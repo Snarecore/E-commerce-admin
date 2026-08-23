@@ -18,15 +18,10 @@ import ProductDetails from "./pages/inventory/products/components/ProductDetails
 import MainLayout from "./layout/MainLayout";
 import ContactMessage from "./pages/settings/contact-us/contact-message";
 import ContactPageCMS from "./pages/settings/contact-us/contact-page-cms";
-// import ExchangeReturn from "./pages/settings/policy/exchange-return";
-// import PrivacyPolicy from "./pages/settings/policy/privacy";
-// import TermsConditions from "./pages/settings/policy/terms-conditions";
 import HomePageCMS from "./pages/settings/home/page-cms";
 import Orders from "./pages/orders";
 import OrderDetail from "./pages/orders/components/OrderDetail";
-// import Faq from "./pages/settings/faq";
 import Admins from "./pages/people/admin";
-import Vendors from "./pages/people/vendor";
 import Users from "./pages/people/user";
 import InvoiceView from "./pages/invoice";
 import RoleProtectedRoute from "./providers/RoleProtectedRoute";
@@ -34,11 +29,6 @@ import { Role } from "./enum/role.enum";
 import SocialLinks from "./pages/settings/social-links";
 import ShopPageCMS from "./pages/settings/shop-page-cms";
 import Chat from "./pages/chat";
-import Subscription from "./pages/subscriptions/subscription";
-import CommissionRate from "./pages/commission-rate";
-import VendorSubscription from "./pages/subscriptions/vendor-subscription";
-import VendorInvoiceView from "./pages/subscriptions/vendor-subscription/component/VendorSubscriptionInvoice";
-import VendorPayouts from "./pages/vendor-payouts";
 import ProductMeta from "./pages/seo/product-meta";
 import PageMeta from "./pages/seo/page-meta";
 import PolicyOne from "./pages/settings/policy/policy-one";
@@ -176,21 +166,6 @@ const AppRoutes = () => {
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<ContactPageCMS />
 						</RoleProtectedRoute>} />
-				{/* <Route path="/exchange-policy"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ExchangeReturn />
-						</RoleProtectedRoute>} /> */}
-				{/* <Route path="/privacy-policy"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PrivacyPolicy />
-						</RoleProtectedRoute>} /> */}
-				{/* <Route path="/terms-conditions"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<TermsConditions />
-						</RoleProtectedRoute>} /> */}
 				<Route path="/orders"
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
@@ -201,20 +176,10 @@ const AppRoutes = () => {
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<OrderDetail />
 						</RoleProtectedRoute>} />
-				{/* <Route path="/faqs"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Faq />
-						</RoleProtectedRoute>} /> */}
 				<Route path="/admins"
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<Admins />
-						</RoleProtectedRoute>} />
-				<Route path="/vendors"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Vendors />
 						</RoleProtectedRoute>} />
 				<Route path="/users"
 					element={
@@ -252,31 +217,6 @@ const AppRoutes = () => {
 							<ProductMeta />
 						</RoleProtectedRoute>} />
 
-				<Route path="/subscription"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Subscription />
-						</RoleProtectedRoute>} />
-				<Route path="/vendor-subscription"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<VendorSubscription />
-						</RoleProtectedRoute>} />
-				<Route path="/vendor-invoice/:id"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<VendorInvoiceView />
-						</RoleProtectedRoute>} />
-				<Route path="/commission-rate"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<CommissionRate />
-						</RoleProtectedRoute>} />
-				<Route path="/vendor-payouts"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<VendorPayouts />
-						</RoleProtectedRoute>} />
 				<Route path="/policy-one"
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>

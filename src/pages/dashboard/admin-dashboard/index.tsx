@@ -96,12 +96,12 @@ const Dashboard = () => {
 				<ProductListTable
 					title="Recent Products"
 					headers={ProductListHeaders}
-					data={dashboardData?.recentProducts?.data || []}
+					data={Array.isArray(dashboardData?.recentProducts?.data) ? dashboardData.recentProducts.data : (Array.isArray(dashboardData?.recentProducts) ? dashboardData.recentProducts : [])}
 				/>
 				<OrderListTable
 					title="Recent Orders"
 					headers={OrderListHeaders}
-					data={dashboardData?.recentOrders || []}
+					data={Array.isArray(dashboardData?.recentOrders?.data) ? dashboardData.recentOrders.data : (Array.isArray(dashboardData?.recentOrders) ? dashboardData.recentOrders : [])}
 				/>
 			</div>
 		</div>

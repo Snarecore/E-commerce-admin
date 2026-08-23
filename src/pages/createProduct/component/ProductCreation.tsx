@@ -77,6 +77,7 @@ const ProductCreation = () => {
     const [selectedFirstCategory, setSelectedFirstCategory] = useState<Option | null>(null);
     const [selectedSecondCategory, setSelectedSecondCategory] = useState<Option | null>(null);
     const [selectedSizes, setSelectedSizes] = useState<string[]>(["S", "M", "L", "XL", "XXL"]);
+    const [sizeStockState, setSizeStockState] = useState<Record<string, number>>({ S: 10, M: 10, L: 10, XL: 10, XXL: 10 });
     const [isOpen, setIsOpen] = useState(true);
     const [fields, setFields] = useState<string[]>([""]);
     const [isFirstCategoryDisabled, setIsFirstCategoryDisabled] = useState(true);
@@ -177,7 +178,13 @@ const ProductCreation = () => {
                 setProductImages(editData.productImages.map((img: any) => img.imageUrl));
             }
 
-            if (editData.sizes) {
+            if (editData.sizeStock && typeof editData.sizeStock === 'object') {
+                setSizeStockState(editData.sizeStock);
+                const activeSizes = Object.keys(editData.sizeStock);
+                if (activeSizes.length > 0) {
+                    setSelectedSizes(activeSizes);
+                }
+            } else if (editData.sizes) {
                 if (Array.isArray(editData.sizes)) {
                     setSelectedSizes(editData.sizes);
                 } else if (typeof editData.sizes === 'string') {
@@ -455,8 +462,14 @@ const ProductCreation = () => {
 
         const existingProductImages = productImages.filter((item) => typeof item === "string" && item.startsWith("http"));
 
-        const payload = {
-            name: fieldValues.name,
+        const sizeStockObj: Record<string, number> = {};
+        selectedSizes.forEach((s) => {
+            sizeStockObj[s] = sizeStockState[s] !== undefined ? Number(sizeStockState[s]) : 0;
+        });
+        const calculatedTotalQty = Object.values(sizeStockObj).reduce((sum, val) => sum + (Number(val) || 0), 0);
+
+        const payload: Record<string, any> = {
+            ...fieldValues,
             price: Number(fieldValues.price) || 0,
             sku: uniqueCode,
             discountType: selectedDiscountType?.value || "NONE",
@@ -475,9 +488,16 @@ const ProductCreation = () => {
             fileUrl: fieldValues.fileUrl || null,
             sizes: selectedSizes,
             sizesString: selectedSizes.join(','),
-            quantity: fieldValues.quantity !== "" ? Number(fieldValues.quantity) : 0,
+            sizeStock: sizeStockObj,
+            quantity: calculatedTotalQty > 0 ? calculatedTotalQty : (fieldValues.quantity !== "" ? Number(fieldValues.quantity) : 0),
             quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 0
         };
+
+        if (fieldValues.cost !== "" && fieldValues.cost !== null && fieldValues.cost !== undefined) {
+            payload.cost = Number(fieldValues.cost);
+        } else {
+            delete payload.cost;
+        }
 
         const result = await handleApiMutation({
             // @ts-ignore
@@ -623,26 +643,46 @@ const ProductCreation = () => {
                                 />
 
                                 <div>
-                                     <p className="text-sm font-medium text-gray-700 w-full mb-1">Available Sizes</p>
-                                     <div className="flex flex-wrap items-center gap-2 mt-1 min-h-10">
+                                     <p className="text-sm font-medium text-gray-700 w-full mb-1">Available Sizes & Stock Quantities</p>
+                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-2">
                                          {["S", "M", "L", "XL", "XXL"].map((size) => {
                                              const isChecked = selectedSizes.includes(size);
+                                             const qty = sizeStockState[size] ?? 0;
                                              return (
-                                                 <label key={size} className="flex items-center gap-2 cursor-pointer select-none border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50 transition duration-150">
-                                                     <input
-                                                         type="checkbox"
-                                                         checked={isChecked}
-                                                         onChange={() => {
-                                                             if (isChecked) {
-                                                                 setSelectedSizes(selectedSizes.filter((s) => s !== size));
-                                                             } else {
-                                                                 setSelectedSizes([...selectedSizes, size]);
-                                                             }
-                                                         }}
-                                                         className="w-4 h-4 accent-[var(--color-primary)] border-gray-300 rounded focus:ring-[var(--color-primary)] cursor-pointer"
-                                                     />
-                                                     <span className="text-sm font-bold text-gray-800">{size}</span>
-                                                 </label>
+                                                 <div key={size} className={`p-3 border rounded-xl flex flex-col gap-2 transition ${isChecked ? "border-emerald-500 bg-emerald-50/40 shadow-xs" : "border-gray-200 bg-gray-50 opacity-60"}`}>
+                                                     <label className="flex items-center gap-2 cursor-pointer select-none font-bold text-sm text-gray-800">
+                                                         <input
+                                                             type="checkbox"
+                                                             checked={isChecked}
+                                                             onChange={() => {
+                                                                 if (isChecked) {
+                                                                     setSelectedSizes(selectedSizes.filter((s) => s !== size));
+                                                                 } else {
+                                                                     setSelectedSizes([...selectedSizes, size]);
+                                                                 }
+                                                             }}
+                                                             className="w-4 h-4 accent-emerald-600 border-gray-300 rounded cursor-pointer"
+                                                         />
+                                                         Size {size}
+                                                     </label>
+                                                     {isChecked && (
+                                                         <div className="flex flex-col">
+                                                             <span className="text-[11px] text-gray-500 font-medium mb-1">Quantity:</span>
+                                                             <input
+                                                                 type="number"
+                                                                 min="0"
+                                                                 value={qty === 0 ? '' : qty}
+                                                                 onChange={(e) => {
+                                                                     const raw = e.target.value;
+                                                                     const val = raw === '' ? '' : (parseInt(raw, 10) >= 0 ? parseInt(raw, 10) : 0);
+                                                                     setSizeStockState(prev => ({ ...prev, [size]: val as any }));
+                                                                 }}
+                                                                 className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-emerald-500"
+                                                                 placeholder="0"
+                                                             />
+                                                         </div>
+                                                     )}
+                                                 </div>
                                              );
                                          })}
                                      </div>

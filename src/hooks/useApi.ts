@@ -149,10 +149,22 @@ export const useAPI = () => {
             }
             const formData = new FormData();
             for (const [key, value] of Object.entries(body)) {
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        formData.append(key, item);
-                    });
+                if (value === undefined || value === null) {
+                    continue;
+                }
+                if (value instanceof File) {
+                    formData.append(key, value);
+                } else if (Array.isArray(value)) {
+                    const isObjectArray = value.every(item => typeof item === 'object' && !(item instanceof File));
+                    if (isObjectArray) {
+                        formData.append(key, JSON.stringify(value));
+                    } else {
+                        value.forEach((item) => {
+                            formData.append(key, item);
+                        });
+                    }
+                } else if (typeof value === 'object' && !(value instanceof File)) {
+                    formData.append(key, JSON.stringify(value));
                 } else {
                     formData.append(key, value as any);
                 }

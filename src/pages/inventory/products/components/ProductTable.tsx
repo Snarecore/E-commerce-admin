@@ -315,10 +315,10 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 
 
 					<tbody className="bg-white divide-y divide-gray-200 rounded-lg">
-						{/* @ts-ignore */}
-						{dataList?.length > 0 ? (
-							// @ts-ignore
-							dataList.map((data, index) => (
+						{(() => {
+							const productsList = Array.isArray(dataList) ? dataList : (dataList?.data || []);
+							return productsList.length > 0 ? (
+								productsList.map((data, index) => (
 								<tr
 									key={data.id}
 									className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
@@ -408,7 +408,8 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 									<EmptyState title="No matching products. Try adjusting your filters." />
 								</td>
 							</tr>
-						)}
+						);
+						})()}
 					</tbody>
 				</table>
 			</div>
