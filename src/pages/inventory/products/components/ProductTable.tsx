@@ -342,19 +342,27 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 									<td className="px-6 py-4">{data.price}</td>
 
 									<td className="px-6 py-4">
-										{Number(data.quantity) === 0 ? (
-											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-												Out of Stock
-											</span>
-										) : Number(data.quantity) <= Number(data.quantityAlert || 5) ? (
-											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-												Low Stock ({data.quantity})
-											</span>
-										) : (
-											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-												In Stock ({data.quantity})
-											</span>
-										)}
+										{(() => {
+											let totalQty = Number(data.quantity) || 0;
+											// @ts-ignore
+											if (data.sizeStock && typeof data.sizeStock === 'object') {
+												// @ts-ignore
+												totalQty = Object.values(data.sizeStock).reduce((sum, q) => sum + (Number(q) || 0), 0);
+											}
+											return totalQty === 0 ? (
+												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+													Out of Stock
+												</span>
+											) : totalQty <= Number(data.quantityAlert || 5) ? (
+												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+													Low Stock ({totalQty})
+												</span>
+											) : (
+												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+													In Stock ({totalQty})
+												</span>
+											);
+										})()}
 									</td>
 
 									<td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
