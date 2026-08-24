@@ -75,7 +75,7 @@ const ReviewTable = ({
     //     }
     // };
 
-    if (isFetching || isLoading) return <TableSkeleton />;
+    if (isLoading) return <TableSkeleton />;
 
     return (
         <div className="p-6 bg-white rounded-lg border border-gray-200">

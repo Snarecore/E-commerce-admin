@@ -7,7 +7,14 @@ import { BrowserRouter } from "react-router-dom";
 import './App.css';
 import AppInitializer from "./providers/AppInitializer";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			staleTime: 1000 * 60 * 5,
+		},
+	},
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	// <React.StrictMode>

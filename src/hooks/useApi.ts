@@ -193,7 +193,7 @@ export const useAPI = () => {
         queryKey,
         url,
         enabled = true,
-        refetchOnWindowFocus = true,
+        refetchOnWindowFocus = false,
         refetchOnMount = true,
         refetchInterval,
         showToast = true,
