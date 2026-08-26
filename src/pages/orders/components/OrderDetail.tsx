@@ -7,7 +7,7 @@ import { formatDate } from "../../../utils/date-utils";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 
-const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Failed"];
+const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Rejected", "Failed"];
 
 const OrderDetail = () => {
     const navigate = useNavigate();
@@ -37,21 +37,59 @@ const OrderDetail = () => {
         }
     }, [id]);
 
+    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [rejectionReason, setRejectionReason] = useState("");
+    const [rejectionMessage, setRejectionMessage] = useState("");
+
+    const REJECTION_REASONS = [
+        "Product unavailable",
+        "Out of stock",
+        "Delivery unavailable",
+        "Customer information issue",
+        "Payment issue",
+        "Other"
+    ];
+
     const handleStatusUpdate = async () => {
         if (!selectedStatus || selectedStatus === order?.status) return;
+
+        if (selectedStatus === "Rejected" && !isRejectModalOpen) {
+            setIsRejectModalOpen(true);
+            return;
+        }
+
         setIsUpdatingStatus(true);
         try {
+            const bodyPayload: any = { newStatus: selectedStatus, status: selectedStatus };
+            if (selectedStatus === "Rejected") {
+                const effectiveReason = rejectionReason || (rejectionMessage.trim() ? "Other" : "");
+                if (!effectiveReason) {
+                    alert("Please select a reason or write a message for rejecting this order.");
+                    setIsUpdatingStatus(false);
+                    return;
+                }
+                bodyPayload.rejectionReason = effectiveReason;
+                bodyPayload.rejectionMessage = rejectionMessage.trim();
+                bodyPayload.note = `Reason: ${effectiveReason}${rejectionMessage.trim() ? ` - ${rejectionMessage.trim()}` : ""}`;
+            }
+
             const result = await handleApiMutation({
                 // @ts-ignore
                 mutation: patchMutation,
                 url: `${apiConfig.order.orderDetailUrl}/${order.id}/status`,
-                body: { newStatus: selectedStatus, status: selectedStatus },
+                body: bodyPayload,
                 showSuccessMessage: true,
                 showErrorMessage: true,
                 requiredFields: [],
             });
             if (result?.success || result?.data) {
-                setOrder((prev: any) => ({ ...prev, status: selectedStatus }));
+                setOrder((prev: any) => ({
+                    ...prev,
+                    status: selectedStatus,
+                    rejectionReason: bodyPayload.rejectionReason,
+                    rejectionMessage: bodyPayload.rejectionMessage
+                }));
+                setIsRejectModalOpen(false);
             }
         } catch (err) {
             console.error("Status update failed:", err);
@@ -95,11 +133,13 @@ const OrderDetail = () => {
             ? "bg-green-100 text-green-800"
             : "bg-red-100 text-red-800";
     const orderStatusColor =
-        order.status === "Completed"
+        order.status === "Completed" || order.status === "Order Placed"
             ? "bg-green-100 text-green-800"
-            : order.status === "Failed"
+            : order.status === "Pending"
+            ? "bg-yellow-100 text-yellow-800"
+            : order.status === "Failed" || order.status === "Rejected"
             ? "bg-red-100 text-red-800"
-            : "bg-yellow-100 text-yellow-800";
+            : "bg-blue-100 text-blue-800";
 
     return (
         <div className="flex flex-col gap-6">
@@ -297,6 +337,66 @@ const OrderDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Rejection Modal */}
+            {isRejectModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+                        <h3 className="text-lg font-bold text-red-600">Reject Order #{order.orderId}</h3>
+                        <div className="space-y-3 text-left">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Rejection Reason <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={rejectionReason}
+                                    onChange={(e) => setRejectionReason(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-red-400 outline-none"
+                                >
+                                    <option value="">Select reason...</option>
+                                    {REJECTION_REASONS.map((r) => (
+                                        <option key={r} value={r}>
+                                            {r}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Additional Comment / Message for Customer
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={rejectionMessage}
+                                    onChange={(e) => setRejectionMessage(e.target.value)}
+                                    placeholder="Explain why this order is being rejected..."
+                                    className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-red-400 outline-none resize-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-2">
+                            <button
+                                disabled={isUpdatingStatus}
+                                onClick={() => {
+                                    setIsRejectModalOpen(false);
+                                    setSelectedStatus(order.status);
+                                }}
+                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={isUpdatingStatus || (!rejectionReason && !rejectionMessage.trim())}
+                                onClick={handleStatusUpdate}
+                                className="px-5 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg cursor-pointer transition"
+                            >
+                                {isUpdatingStatus ? "Rejecting..." : "Confirm Rejection"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

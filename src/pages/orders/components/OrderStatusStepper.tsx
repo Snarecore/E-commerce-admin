@@ -6,7 +6,8 @@ interface StepConfig {
 }
 
 const ORDER_STEPS: StepConfig[] = [
-    { key: "Pending", aliases: ["pending", "order placed", "order_placed", "placed"], label: "Order Placed", icon: "📋" },
+    { key: "Pending", aliases: ["pending", "pending approval"], label: "Pending Approval", icon: "⏳" },
+    { key: "Order Placed", aliases: ["order placed", "order_placed", "placed", "accepted"], label: "Order Placed", icon: "📋" },
     { key: "Processing", aliases: ["processing", "in progress"], label: "Processing", icon: "⚙️" },
     { key: "Shipped", aliases: ["shipped", "on the way", "in transit"], label: "Shipped", icon: "🚚" },
     { key: "Delivered", aliases: ["delivered"], label: "Delivered", icon: "📦" },
@@ -29,19 +30,25 @@ const getStepIndex = (status: string) => {
 };
 
 const OrderStatusStepper = ({ currentStatus }: OrderStatusStepperProps) => {
-    const isFailed = currentStatus?.trim().toLowerCase() === "failed";
-    const isCompletedAll = currentStatus?.trim().toLowerCase() === "completed";
+    const norm = currentStatus?.trim().toLowerCase();
+    const isFailed = norm === "failed";
+    const isRejected = norm === "rejected";
+    const isCompletedAll = norm === "completed";
     const activeIndex = getStepIndex(currentStatus);
 
     return (
         <div className="w-full py-4">
-            {isFailed ? (
+            {isFailed || isRejected ? (
                 <div className="flex items-center justify-center gap-3 bg-red-50 border border-red-200 rounded-lg px-6 py-4">
                     <span className="text-2xl">❌</span>
                     <div>
-                        <p className="font-semibold text-red-700 text-base">Order Failed</p>
+                        <p className="font-semibold text-red-700 text-base">
+                            {isRejected ? "Order Rejected" : "Order Failed"}
+                        </p>
                         <p className="text-sm text-red-500 mt-0.5">
-                            This order was not completed due to a payment or processing issue.
+                            {isRejected
+                                ? "This order was rejected during admin review."
+                                : "This order was not completed due to a payment or processing issue."}
                         </p>
                     </div>
                 </div>
