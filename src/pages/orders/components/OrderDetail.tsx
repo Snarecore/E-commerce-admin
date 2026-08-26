@@ -290,9 +290,15 @@ const OrderDetail = () => {
                                     {order.status}
                                 </span>
                             </div>
+                            {(order.couponCode || Number(order.discountAmount) > 0) && (
+                                <div className="flex justify-between items-center bg-orange-50 p-2 rounded-lg border border-orange-200">
+                                    <span className="text-xs font-semibold text-orange-800">Coupon ({order.couponCode || "Applied"})</span>
+                                    <span className="font-bold text-xs text-orange-700">-৳{Number(order.discountAmount || 0).toFixed(2)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-500">Total</span>
-                                <span className="font-bold text-gray-900">${order.totalAmount ?? "0.00"}</span>
+                                <span className="font-bold text-gray-900">৳{order.totalAmount ?? "0.00"}</span>
                             </div>
                         </div>
                     </div>
