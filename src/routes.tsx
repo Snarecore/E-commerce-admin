@@ -43,6 +43,7 @@ import PolicyEight from "./pages/settings/policy/policy-eight";
 import PolicySeven from "./pages/settings/policy/policy-seven";
 import PolicyTen from "./pages/settings/policy/policy-ten";
 import PolicyTwelve from "./pages/settings/policy/policy-twelve";
+import ProductReview from "./pages/inventory/product-reviews";
 import CouponsPage from "./pages/coupons";
 
 const AppRoutes = () => {
