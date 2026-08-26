@@ -25,7 +25,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [usageLimit, setUsageLimit] = useState<number | string>("");
-    const [userUsageLimit, setUserUsageLimit] = useState<number | string>(1);
+    const [userUsageLimit, setUserUsageLimit] = useState<number | string>("");
     const [isActive, setIsActive] = useState(true);
 
     useEffect(() => {
@@ -39,7 +39,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
             setStartDate(initialData.startDate ? new Date(initialData.startDate).toISOString().slice(0, 16) : "");
             setEndDate(initialData.endDate ? new Date(initialData.endDate).toISOString().slice(0, 16) : "");
             setUsageLimit(initialData.usageLimit ?? "");
-            setUserUsageLimit(initialData.userUsageLimit ?? 1);
+            setUserUsageLimit(initialData.userUsageLimit ?? "");
             setIsActive(initialData.isActive !== undefined ? initialData.isActive : true);
         } else {
             setCode("");
@@ -51,7 +51,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
             setStartDate("");
             setEndDate("");
             setUsageLimit("");
-            setUserUsageLimit(1);
+            setUserUsageLimit("");
             setIsActive(true);
         }
     }, [initialData, isOpen]);
@@ -74,8 +74,8 @@ const CouponModal: React.FC<CouponModalProps> = ({
             maxDiscountAmount: maxDiscountAmount !== "" ? Number(maxDiscountAmount) : undefined,
             startDate: startDate ? new Date(startDate).toISOString() : undefined,
             endDate: endDate ? new Date(endDate).toISOString() : undefined,
-            usageLimit: usageLimit !== "" ? Number(usageLimit) : undefined,
-            userUsageLimit: Number(userUsageLimit) || 1,
+            usageLimit: usageLimit !== "" && usageLimit !== null ? Number(usageLimit) : undefined,
+            userUsageLimit: userUsageLimit !== "" && userUsageLimit !== null ? Number(userUsageLimit) : undefined,
             isActive,
         };
 
@@ -216,7 +216,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
                                 type="number"
                                 value={userUsageLimit}
                                 onChange={(e) => setUserUsageLimit(e.target.value)}
-                                placeholder="1"
+                                placeholder="Unlimited if empty"
                                 className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-400 outline-none"
                             />
                         </div>
