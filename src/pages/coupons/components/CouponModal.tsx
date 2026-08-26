@@ -74,8 +74,8 @@ const CouponModal: React.FC<CouponModalProps> = ({
             maxDiscountAmount: maxDiscountAmount !== "" ? Number(maxDiscountAmount) : undefined,
             startDate: startDate ? new Date(startDate).toISOString() : undefined,
             endDate: endDate ? new Date(endDate).toISOString() : undefined,
-            usageLimit: usageLimit !== "" && usageLimit !== null ? Number(usageLimit) : undefined,
-            userUsageLimit: userUsageLimit !== "" && userUsageLimit !== null ? Number(userUsageLimit) : undefined,
+            usageLimit: usageLimit !== "" && usageLimit !== null && usageLimit !== undefined ? Number(usageLimit) : null,
+            userUsageLimit: userUsageLimit !== "" && userUsageLimit !== null && userUsageLimit !== undefined ? Number(userUsageLimit) : null,
             isActive,
         };
 
