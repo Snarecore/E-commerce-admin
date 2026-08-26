@@ -43,7 +43,7 @@ import PolicyEight from "./pages/settings/policy/policy-eight";
 import PolicySeven from "./pages/settings/policy/policy-seven";
 import PolicyTen from "./pages/settings/policy/policy-ten";
 import PolicyTwelve from "./pages/settings/policy/policy-twelve";
-import ProductReview from "./pages/inventory/product-reviews";
+import CouponsPage from "./pages/coupons";
 
 const AppRoutes = () => {
 	return (
@@ -170,6 +170,11 @@ const AppRoutes = () => {
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<Orders />
+						</RoleProtectedRoute>} />
+				<Route path="/coupons"
+					element={
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+							<CouponsPage />
 						</RoleProtectedRoute>} />
 				<Route path="/order-detail/:id"
 					element={

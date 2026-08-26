@@ -74,6 +74,13 @@ const menu = [
 				path: "/orders",
 				subItems: [],
 			},
+			{
+				id: 66,
+				name: "Coupons",
+				icon: <FaTags />,
+				path: "/coupons",
+				subItems: [],
+			},
 		],
 	},
 	{
