@@ -29,3 +29,4 @@ export const pageMetaQueryKey = "page-meta";
 export const subscriptionQueryKey = "subscription-tier";
 export const vendorsubscriptionQueryKey = "vendor/subscription/all";
 export const commissionRateQueryKey = "commission-rate-cms";
+export const megaDiscountQueryKey = "setting/mega-discount";

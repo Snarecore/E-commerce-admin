@@ -28,7 +28,8 @@
         },
         "headerFooterCms": "header-footer-cms",
         "shopPageCms": "shop-page-cms",
-        "faqUrl": "faq"
+        "faqUrl": "faq",
+        "megaDiscountUrl": "setting/mega-discount"
     },
     "inventory": {
         "mainCategoryUrl": "main-category",

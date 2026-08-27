@@ -6,7 +6,7 @@ import { Link, useLocation, NavLink } from "react-router-dom";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
 import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/md";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiZap } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 // import { FaQuestion, FaStore, FaUser } from "react-icons/fa";
@@ -79,6 +79,13 @@ const menu = [
 				name: "Coupons",
 				icon: <FaTags />,
 				path: "/coupons",
+				subItems: [],
+			},
+			{
+				id: 67,
+				name: "Mega Discount",
+				icon: <FiZap />,
+				path: "/mega-discount",
 				subItems: [],
 			},
 		],

@@ -11,6 +11,8 @@ export interface PostDataProps extends ApiRequestProps {
 
 export interface PatchDataProps extends PostDataProps { }
 
+export interface PutDataProps extends PostDataProps { }
+
 export interface DeleteDataProps extends ApiRequestProps { }
 
 export interface FormDataProps extends ApiRequestProps {

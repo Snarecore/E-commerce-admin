@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deleteData, getData, patchData, postData, postFormData, patchFormData } from "../services/api-service";
+import { deleteData, getData, patchData, postData, putData, postFormData, patchFormData } from "../services/api-service";
 import { showErrorToast, showSuccessToast } from "../utils/toast-utils";
 
 interface ApiResponse<T> {
@@ -109,6 +109,10 @@ export const useAPI = () => {
 
     const patchMutation = useMutation({
         mutationFn: ({ url, body }: MutationProps) => patchData({ url, body: (body as Record<string, unknown>), token })
+    });
+
+    const putMutation = useMutation({
+        mutationFn: ({ url, body }: MutationProps) => putData({ url, body: (body as Record<string, unknown>), token })
     });
 
     const postFormMutation = useMutation({
@@ -319,6 +323,7 @@ export const useAPI = () => {
         deleteMutation,
         postMutation,
         patchMutation,
+        putMutation,
         postFormMutation,
         patchFormMutation,
         fetchData,
