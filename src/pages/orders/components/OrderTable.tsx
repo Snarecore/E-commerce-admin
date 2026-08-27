@@ -174,6 +174,16 @@ const OrderTable = ({
         setOpenDropdown(null);
     };
 
+    const sortedDataList = useMemo(() => {
+        if (!dataList || !Array.isArray(dataList)) return [];
+        return [...dataList].sort((a, b) => {
+            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            if (timeA && timeB) return timeB - timeA;
+            return (b.orderId || b.id || "").localeCompare(a.orderId || a.id || "", undefined, { numeric: true });
+        });
+    }, [dataList]);
+
     if (isLoading) return <TableSkeleton />;
 
     return (
@@ -231,8 +241,8 @@ const OrderTable = ({
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
-                        {dataList?.length > 0 ? (
-                            dataList.map((data, index) => (
+                        {sortedDataList?.length > 0 ? (
+                            sortedDataList.map((data, index) => (
                                 <tr
                                     key={data.id}
                                     className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
@@ -274,8 +284,9 @@ const OrderTable = ({
                                     </td>
                                     {/* Date */}
                                     <td className="px-6 py-4 font-medium text-gray-500 text-sm">
-                                        {/*@ts-ignore */}
-                                        {formatPrettyDateWithTime(data?.createdAt)}
+                                        {formatPrettyDateWithTime(
+                                            data?.createdAt || (data as any)?.created_at || (data as any)?.date || (data as any)?.updatedAt
+                                        )}
                                     </td>
                                     {/* Actions */}
                                     <td className="px-6 py-4">

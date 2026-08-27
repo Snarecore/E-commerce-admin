@@ -1,7 +1,16 @@
 import moment from "moment";
 
-export const formatDate = (date: Date | string, format: string = "YYYY-MM-DD HH:mm"): string => {
-    return moment(date).format(format);
+export const formatDate = (date?: Date | string | number | null, format: string = "YYYY-MM-DD HH:mm"): string => {
+    if (!date) return moment().format(format);
+    const m = moment(date);
+    if (!m.isValid()) {
+        if (typeof date === "string" && !isNaN(Number(date))) {
+            const mNum = moment(Number(date));
+            if (mNum.isValid()) return mNum.format(format);
+        }
+        return moment().format(format);
+    }
+    return m.format(format);
 };
 
 export const getCurrentDate = (format: string = "YYYY-MM-DD HH:mm"): string => {
@@ -24,10 +33,29 @@ export const getEndOf = (unit: moment.unitOfTime.StartOf): string => {
     return moment().endOf(unit).format("YYYY-MM-DD HH:mm");
 };
 
-export const formatPrettyDate = (date: Date | string): string => {
-    return moment(date).format("LL");
+export const formatPrettyDate = (date?: Date | string | number | null): string => {
+    if (!date) return moment().format("LL");
+    const m = moment(date);
+    if (!m.isValid()) {
+        if (typeof date === "string" && !isNaN(Number(date))) {
+            const mNum = moment(Number(date));
+            if (mNum.isValid()) return mNum.format("LL");
+        }
+        return moment().format("LL");
+    }
+    return m.format("LL");
 };
 
-export const formatPrettyDateWithTime = (date: Date | string): string => {
-    return moment(date).format("LLL");
+export const formatPrettyDateWithTime = (date?: Date | string | number | null): string => {
+    if (!date) return moment().format("LLL");
+    const m = moment(date);
+    if (!m.isValid()) {
+        if (typeof date === "string" && !isNaN(Number(date))) {
+            const mNum = moment(Number(date));
+            if (mNum.isValid()) return mNum.format("LLL");
+        }
+        return moment().format("LLL");
+    }
+    return m.format("LLL");
 };
+

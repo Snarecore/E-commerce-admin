@@ -59,6 +59,9 @@ const Orders = () => {
         const params = new URLSearchParams({
             page: currentPageNumber.toString(),
             limit: dataLimit.toString(),
+            sortBy: "createdAt",
+            sortOrder: "DESC",
+            sort: "desc",
         });
 
         if (selectedFilters.userId?.value) params.append("userId", selectedFilters.userId.value);
