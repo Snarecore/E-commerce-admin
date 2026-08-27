@@ -20,22 +20,29 @@ body {
 @theme {
 	--color-primary: #fe9f43;
 	--color-primary-hover: #e68a2c;
+	--color-primary-light: #fff3e8;
+	--color-orange-500: #fe9f43;
+	--color-orange-600: #fe9f43;
+	--color-orange-400: #ffb570;
+	--color-orange-300: #ffc996;
+	--color-orange-200: #ffe3ca;
+	--color-orange-100: #fff3e8;
+	--color-orange-50: #fff8f2;
 	--color-secondary: #6a7282;
 	--color-secondary-hover: #364153;
 	--color-active-green: #DBFCE7;
 	--color-inactive-red: #FFE2E2;
-	--color-primary-light: #6366F1;
 	--color-accent: #F59E0B;
-  }
+}
 
-/* :root {
-	--primary-color: #ff9f43;
+:root {
+	--primary-color: #fe9f43;
 	--primary-hover-color: #e68a2c;
 	--primary-black-color: #1b2850;
 	--primary-blue-color: #1b2850;
 	--secondary-black-color: #67748e;
 	--primary-green-color: #00733b;
-} */
+}
 
 input {
 	height: 34px;

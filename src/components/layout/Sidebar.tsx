@@ -255,15 +255,15 @@ const Sidebar = () => {
 
 	return (
 		<div className="hidden lg:block w-63 min-h-screen bg-white shadow-md p-2 transition-all ease-in duration-300 border-r border-gray-200">
-			<Link to={"/"}>
+			<Link to={"/"} className="fixed top-0 left-0 w-63 h-16 z-20 flex items-center justify-center bg-white border-b border-gray-200 px-2 py-1">
 				<img
-					src="/images/BazaarBound_Landscap_Logo.svg"
-					alt="company logo"
-					className="w-58 fixed"
+					src="/images/Admin-logo.png"
+					alt="Admin logo"
+					className="w-full h-14 object-contain"
 				/>
 			</Link>
 
-			<div className="p-2 mt-14 max-h-[90vh] fixed w-61 overflow-hidden border-t border-gray-200 hover:overflow-y-auto custom-scrollbar">
+			<div className="p-2 mt-16 max-h-[90vh] fixed w-61 overflow-hidden hover:overflow-y-auto custom-scrollbar">
 				{menu.map((section) => (
 					<div key={section.sectionName} className="p-2 mb-2">
 						<p className="text-[12px] text-[#092c4c] font-bold mb-2">

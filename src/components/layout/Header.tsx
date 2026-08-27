@@ -8,7 +8,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaFacebookMessenger, FaStore, FaUser } from "react-icons/fa";
 import userAvatar from "/images/avatar.png";
-import companyLogo from "/images/BazaarBound_Landscap_Logo.svg";
+import companyLogo from "/images/Admin-logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import { BiCube } from "react-icons/bi";
 import { GoDotFill, GoHome } from "react-icons/go";
@@ -259,7 +259,7 @@ const Header = () => {
 					onClick={() => setShowSidebarMenu(!showSidebarMenu)}
 				/>
 
-				<img src={companyLogo} alt="company logo" className="mx-auto" />
+				<img src={companyLogo} alt="admin logo" className="h-10 w-auto max-w-[180px] object-contain mx-auto" />
 
 				<BsThreeDotsVertical
 					size={20}
