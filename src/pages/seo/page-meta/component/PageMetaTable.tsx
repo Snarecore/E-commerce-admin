@@ -31,7 +31,7 @@ const PageMetaTable = ({
     dataList,
     fetchData,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
     pageCount, currentPageNumber, handlePagination,
     onEdit
 }: PageMetaTableProps) => {

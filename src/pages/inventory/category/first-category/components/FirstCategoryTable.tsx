@@ -36,7 +36,7 @@ const FirstCategoryTable = ({
 	fetchData,
 	isLoading,
 	pageCount, currentPageNumber, handlePagination,
-	isFetching,
+	isFetching: _isFetching,
 	onEdit
 }: FirstCategoryTableProps) => {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

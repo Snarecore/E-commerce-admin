@@ -36,7 +36,7 @@ const SecondCategoryTable = ({
 	fetchData,
 	isLoading,
 	pageCount, currentPageNumber, handlePagination,
-	isFetching,
+	isFetching: _isFetching,
 	onEdit
 }: SecondCategoryTableProps) => {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

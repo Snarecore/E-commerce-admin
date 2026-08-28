@@ -32,7 +32,7 @@ const AdminTable = ({
     currentPageNumber,
     handlePagination,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
 }: AdminTableProps) => {
     const { handleDeleteAPI } = useAPI();
     const apiUrl = apiConfig.people.user;

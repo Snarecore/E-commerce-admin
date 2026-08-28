@@ -30,7 +30,7 @@ const HeroSliderTable = ({
 	dataList,
 	fetchData,
 	isLoading,
-	isFetching,
+	isFetching: _isFetching,
 	pageCount, currentPageNumber, handlePagination,
 	onEdit
 }: HeroSliderTableProps) => {

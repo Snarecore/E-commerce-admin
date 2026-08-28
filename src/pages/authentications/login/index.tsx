@@ -51,9 +51,10 @@ const Login = () => {
 			requiredFields
 		});
 
-		if (result?.success && (result.data?.data?.user || result.data?.user)) {
+		// @ts-ignore
+		if (result?.success && ((result.data as any)?.data?.user || (result.data as any)?.user)) {
 			// @ts-ignore
-			const user = result.data?.data?.user || result.data?.user;
+			const user = (result.data as any)?.data?.user || (result.data as any)?.user;
 			setUser(user);
 			navigate("/");
 		}

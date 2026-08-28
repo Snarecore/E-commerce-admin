@@ -32,7 +32,7 @@ const ProductMetaTable = ({
     dataList,
     fetchData,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
     pageCount, currentPageNumber, handlePagination,
     onEdit
 }: PageMetaTableProps) => {

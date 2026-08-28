@@ -29,7 +29,7 @@ interface CategoryTableProps {
 	onEdit: (data?: CategoryDataProps) => void;
 }
 
-const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, handlePagination, isLoading, isFetching, onEdit }: CategoryTableProps) => {
+const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, handlePagination, isLoading, isFetching: _isFetching, onEdit }: CategoryTableProps) => {
 	const { handleDeleteAPI } = useAPI();
 	const apiUrl = apiConfig.inventory.mainCategoryUrl;
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

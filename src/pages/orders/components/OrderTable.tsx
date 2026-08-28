@@ -76,7 +76,7 @@ const OrderTable = ({
     setCurrentPageNumber,
     handlePagination,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
     selectedFilters,
     setSelectedFilters,
 }: OrderTableProps) => {

@@ -21,7 +21,7 @@ interface ContactMessageTableProps {
     isFetching?: boolean;
 }
 
-const ContactMessageTable = ({ dataList, fetchData, isLoading, isFetching }: ContactMessageTableProps) => {
+const ContactMessageTable = ({ dataList, fetchData, isLoading, isFetching: _isFetching }: ContactMessageTableProps) => {
     const { handleDeleteAPI } = useAPI();
     const apiUrl = apiConfig.setting.contactUs.contactMessageUrl;
 

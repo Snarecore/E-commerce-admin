@@ -35,7 +35,7 @@ const ReviewTable = ({
     currentPageNumber,
     handlePagination,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
     onEdit
 }: ReviewTableProps) => {
     //@ts-ignore

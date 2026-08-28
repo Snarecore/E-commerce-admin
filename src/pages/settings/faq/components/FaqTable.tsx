@@ -34,7 +34,7 @@ const FaqTable = ({
 	currentPageNumber,
 	handlePagination,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
     onEdit
 }: FaqTableProps) => {
     const { handleDeleteAPI } = useAPI();

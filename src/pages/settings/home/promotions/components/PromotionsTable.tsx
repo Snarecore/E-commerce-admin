@@ -26,7 +26,7 @@ interface PromotionsTableProps {
     onEdit: (data?: PromotionsDataProps) => void;
 }
 
-const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPageNumber, handlePagination, isFetching, onEdit }: PromotionsTableProps) => {
+const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPageNumber, handlePagination, isFetching: _isFetching, onEdit }: PromotionsTableProps) => {
     const { handleDeleteAPI } = useAPI();
     const apiUrl = apiConfig.setting.promotionsUrl;
 

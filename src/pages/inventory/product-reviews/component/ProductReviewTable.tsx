@@ -47,7 +47,7 @@ const ProductReviewTable = ({
     currentPageNumber,
     handlePagination,
     isLoading,
-    isFetching,
+    isFetching: _isFetching,
 }: ReviewTableProps) => {
     const { handleDeleteAPI } = useAPI() as any;
     const apiUrl = apiConfig.inventory.productCommentUrl;

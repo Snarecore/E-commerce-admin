@@ -32,7 +32,7 @@ const UserTable = ({
 	currentPageNumber,
 	handlePagination,
 	isLoading,
-	isFetching
+	isFetching: _isFetching
 }: UserTableProps) => {
     const { handleDeleteAPI } = useAPI();
     const apiUrl = apiConfig.people.user;

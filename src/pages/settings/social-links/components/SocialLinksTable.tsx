@@ -29,7 +29,7 @@ const SocialLinksTable = ({
 	dataList,
 	fetchData,
 	isLoading,
-	isFetching,
+	isFetching: _isFetching,
 	pageCount, currentPageNumber, handlePagination,
 	onEdit
 }: SocialLinksTableProps) => {

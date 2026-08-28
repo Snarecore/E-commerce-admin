@@ -87,7 +87,7 @@ const initialFieldValues = {
 	quantityAlert: 0
 };
 
-const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumber, setCurrentPageNumber, handlePagination, isLoading, isFetching, searchQuery, setSearchQuery, selectedFilters, setSelectedFilters }: ProductTableProps) => {
+const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumber, setCurrentPageNumber, handlePagination, isLoading, isFetching: _isFetching, searchQuery, setSearchQuery, selectedFilters, setSelectedFilters }: ProductTableProps) => {
 	const [fieldValues, setFieldValues] = useState(initialFieldValues);
 	const { handleDeleteAPI, handleApiMutation, patchMutation, fetchData } = useAPI();
 	const apiUrl = apiConfig.inventory.productUrl;
