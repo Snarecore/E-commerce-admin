@@ -19,24 +19,14 @@ async function refreshAccessToken(): Promise<string | null> {
             });
             if (response.ok) {
                 const resData = await response.json();
-                const newToken = resData?.accessToken || resData?.data?.accessToken;
-                if (newToken) {
-                    const rawUser = sessionStorage.getItem("user");
-                    if (rawUser) {
-                        const parsedUser = JSON.parse(rawUser);
-                        parsedUser.token = newToken;
-                        sessionStorage.setItem("user", JSON.stringify(parsedUser));
-                    }
-                    return newToken;
-                }
+                const newToken = resData?.accessToken || resData?.data?.accessToken || "refreshed";
+                return newToken;
             }
-            sessionStorage.removeItem("user");
             if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
                 window.location.href = "/login";
             }
             return null;
         } catch {
-            sessionStorage.removeItem("user");
             return null;
         } finally {
             isRefreshing = false;

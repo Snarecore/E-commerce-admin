@@ -51,11 +51,9 @@ const Login = () => {
 			requiredFields
 		});
 
-		// @ts-ignore
-		if (result?.success && result.data?.data?.user) {
+		if (result?.success && (result.data?.data?.user || result.data?.user)) {
 			// @ts-ignore
-			const { user } = result.data.data;
-			sessionStorage.setItem("user", JSON.stringify(user));
+			const user = result.data?.data?.user || result.data?.user;
 			setUser(user);
 			navigate("/");
 		}

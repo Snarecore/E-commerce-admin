@@ -4,19 +4,35 @@ import { userAtom, User, userLoadedAtom } from "../store/user-store";
 
 const AppInitializer = () => {
     const setUser = useSetAtom(userAtom);
-     const setUserLoaded = useSetAtom(userLoadedAtom);
+    const setUserLoaded = useSetAtom(userLoadedAtom);
 
     useEffect(() => {
-        const storedUser = sessionStorage.getItem("user");
-        if (storedUser) {
+        const fetchSession = async () => {
             try {
-                const parsed = JSON.parse(storedUser) as User;
-                setUser(parsed);
+                const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
+                const res = await fetch(`${apiUrl.replace(/\/$/, "")}/auth/admin/me`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const userData = data?.data || data?.user;
+                    if (userData) {
+                        setUser(userData as User);
+                    } else {
+                        setUser(null);
+                    }
+                } else {
+                    setUser(null);
+                }
             } catch {
-                sessionStorage.removeItem("user");
+                setUser(null);
+            } finally {
+                setUserLoaded(true);
             }
-        }
-        setUserLoaded(true);
+        };
+
+        fetchSession();
     }, [setUser, setUserLoaded]);
 
     return null;
