@@ -13,7 +13,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { BiCube } from "react-icons/bi";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
-import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdSubscriptions } from "react-icons/md";
+import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/md";
 import { useSetAtom } from "jotai";
 import { logoutUserAtom } from "../../store/user-store";
 import { useAtomValue } from "jotai";
@@ -199,18 +199,6 @@ const menu = [
 				name: "Page Meta",
 				icon: <RiSeoFill />,
 				path: "/page-meta",
-				subItems: [],
-			},
-		],
-	},
-	{
-		sectionName: "Subscription",
-		items: [
-			{
-				id: 1,
-				name: "Subscription",
-				icon: <MdSubscriptions />,
-				path: "/subscription",
 				subItems: [],
 			},
 		],

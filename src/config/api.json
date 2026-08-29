@@ -85,13 +85,6 @@
         "productMetaUrl": "product-seo/find-all",
         "productMetaSeoUrl": "product-seo"
     },
-    "subscription": {
-        "subscriptionUrl": "subscription-tier",
-        "vendorSubscriptionUrl": "vendor/subscription/all",
-        "activeSingleSubcriptionUrl": "vendor/subscription/single",
-        "vendorPayoutSubscriptionUrl": "vendor-payment-request/payment-history",
-        "vendorPayoutUpdateUrl": "vendor-payment-request"
-    },
     "commission": {
         "commissionRateUrl": "commission-rate-cms"
     }
