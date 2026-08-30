@@ -77,7 +77,7 @@ const ProductCreation = () => {
     const [selectedFirstCategory, setSelectedFirstCategory] = useState<Option | null>(null);
     const [selectedSecondCategory, setSelectedSecondCategory] = useState<Option | null>(null);
     const [selectedSizes, setSelectedSizes] = useState<string[]>(["S", "M", "L", "XL", "XXL"]);
-    const [sizeStockState, setSizeStockState] = useState<Record<string, number>>({ S: 10, M: 10, L: 10, XL: 10, XXL: 10 });
+    const [sizeStockState, setSizeStockState] = useState<Record<string, number>>({ S: 0, M: 0, L: 0, XL: 0, XXL: 0 });
     const [isOpen, setIsOpen] = useState(true);
     const [fields, setFields] = useState<string[]>([""]);
     const [isFirstCategoryDisabled, setIsFirstCategoryDisabled] = useState(true);
@@ -262,6 +262,24 @@ const ProductCreation = () => {
         }
     }, [editData]);
 
+    useEffect(() => {
+        if (selectedSizes && selectedSizes.length > 0 && sizeStockState) {
+            const total = selectedSizes.reduce((sum, size) => {
+                const qty = Number(sizeStockState[size]) || 0;
+                return sum + qty;
+            }, 0);
+            setFieldValues((prev) => ({
+                ...prev,
+                quantity: String(total)
+            }));
+        } else if (selectedSizes && selectedSizes.length === 0) {
+            setFieldValues((prev) => ({
+                ...prev,
+                quantity: "0"
+            }));
+        }
+    }, [selectedSizes, sizeStockState]);
+
     const handleMainCategoryChange = (category: Option) => {
         setSelectedMainCategory(category);
         setIsFirstCategoryDisabled(false);
@@ -441,6 +459,7 @@ const ProductCreation = () => {
         setSelectedFirstCategory(null);
         setSelectedSecondCategory(null);
         setSelectedSizes(["S", "M", "L", "XL", "XXL"]);
+        setSizeStockState({ S: 0, M: 0, L: 0, XL: 0, XXL: 0 });
     };
 
     const handleFeaturedImageUpload = (file: File | null) => {

@@ -12,6 +12,12 @@ const AppInitializer = () => {
                 const storedUser = JSON.parse(sessionStorage.getItem("user") || "{}");
                 const token = storedUser?.token || "";
 
+                if (!token) {
+                    setUser(null);
+                    setUserLoaded(true);
+                    return;
+                }
+
                 const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
                 const headers: Record<string, string> = {};
                 if (token) {

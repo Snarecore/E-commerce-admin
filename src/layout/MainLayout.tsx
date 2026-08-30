@@ -1,4 +1,3 @@
-import { Toaster } from "react-hot-toast";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
 
@@ -11,7 +10,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 		<div className="flex">
 			<Sidebar />
 			<div className="flex flex-col flex-1 transition-all duration-300 ease-in-out">
-				<Toaster position="top-right" reverseOrder={false} />
 				<Header />
 				<main className="p-6 flex-1 mt-17 bg-[#F6F6F6] h-screen">
 					{children}
