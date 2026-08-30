@@ -9,24 +9,42 @@ const AppInitializer = () => {
     useEffect(() => {
         const fetchSession = async () => {
             try {
+                const storedUser = JSON.parse(sessionStorage.getItem("user") || "{}");
+                const token = storedUser?.token || "";
+
                 const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
+                const headers: Record<string, string> = {};
+                if (token) {
+                    headers["Authorization"] = `Bearer ${token}`;
+                }
+
                 const res = await fetch(`${apiUrl.replace(/\/$/, "")}/auth/admin/me`, {
                     method: "GET",
+                    headers,
                     credentials: "include"
                 });
                 if (res.ok) {
                     const data = await res.json();
                     const userData = data?.data || data?.user;
                     if (userData) {
-                        setUser(userData as User);
+                        setUser({ ...(userData as User), token: token || (userData as any)?.token });
+                    } else if (storedUser?.id) {
+                        setUser(storedUser as User);
                     } else {
                         setUser(null);
                     }
+                } else if (storedUser?.id && storedUser?.token) {
+                    setUser(storedUser as User);
                 } else {
                     setUser(null);
                 }
             } catch {
-                setUser(null);
+                const storedUser = JSON.parse(sessionStorage.getItem("user") || "{}");
+                if (storedUser?.id) {
+                    setUser(storedUser as User);
+                } else {
+                    setUser(null);
+                }
             } finally {
                 setUserLoaded(true);
             }

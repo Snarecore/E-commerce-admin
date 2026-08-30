@@ -55,7 +55,11 @@ const Login = () => {
 		if (result?.success && ((result.data as any)?.data?.user || (result.data as any)?.user)) {
 			// @ts-ignore
 			const user = (result.data as any)?.data?.user || (result.data as any)?.user;
-			setUser(user);
+			// @ts-ignore
+			const accessToken = (result.data as any)?.data?.accessToken || (result.data as any)?.accessToken;
+			const userWithToken = { ...user, token: accessToken };
+			sessionStorage.setItem("user", JSON.stringify(userWithToken));
+			setUser(userWithToken);
 			navigate("/");
 		}
 	};
