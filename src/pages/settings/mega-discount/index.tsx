@@ -4,7 +4,7 @@ import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import PageHeader from "../../../components/cards/PageHeader";
 import ToggleButton from "../../../components/Inputs/ToggleButton";
-import Loading from "../../../components/loading/Loading";
+import MegaDiscountSkeleton from "../../../components/skeleton/MegaDiscountSkeleton";
 import { megaDiscountQueryKey } from "../../../config/query-key";
 
 interface MegaDiscountData {
@@ -113,7 +113,7 @@ const MegaDiscountPage = () => {
             />
 
             {isLoading ? (
-                <Loading />
+                <MegaDiscountSkeleton />
             ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                     {/* Status Toggle Card */}
