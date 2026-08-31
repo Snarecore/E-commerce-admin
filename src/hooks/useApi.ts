@@ -91,9 +91,24 @@ export const useAPI = () => {
     const token = user?.token || '';
     const queryClient = useQueryClient();
 
-    const getMutation = useMutation({
-        mutationFn: ({ url }: MutationProps) => getData({ url, token })
-    });
+    // Removed getMutation (useMutation for GET) — it doesn't cache.
+    // fetchData now uses queryClient.fetchQuery which caches for 5 minutes.
+    const fetchData = async ({ apiUrl }: FetchDataProps) => {
+        try {
+            const response = await queryClient.fetchQuery({
+                queryKey: [apiUrl],
+                queryFn: () => getData({ url: apiUrl, token }),
+                staleTime: 1000 * 60 * 5,
+            }) as ApiResponse<any>;
+            if (response?.statusCode === 200) {
+                return response?.data;
+            } else {
+                showErrorToast(response?.message);
+            }
+        } catch (e: any) {
+            showErrorToast(e?.response?.data?.message || e?.data?.message || e?.message);
+        }
+    };
 
     const deleteMutation = useMutation({
         mutationFn: ({ url }: MutationProps) => deleteData({ url, token })
@@ -177,22 +192,8 @@ export const useAPI = () => {
         }
     });
 
-    const fetchData = async ({ apiUrl }: FetchDataProps) => {
-        try {
-            const response = await getMutation.mutateAsync({ url: apiUrl });
-            // @ts-ignore
-            if (response?.statusCode === 200) {
-                // @ts-ignore
-                return response?.data; 
-            } else {
-                // @ts-ignore
-                showErrorToast(response?.message);
-            }
-        } catch (e: any) {
-            showErrorToast(e?.response?.data?.message || e?.data?.message || e?.message);
-        }
-    };
-    
+
+
     const usePaginatedQuery = <T>({
         queryKey,
         url,
@@ -319,7 +320,6 @@ export const useAPI = () => {
     };    
 
     return {
-        getMutation,
         deleteMutation,
         postMutation,
         patchMutation,

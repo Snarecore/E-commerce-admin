@@ -7,7 +7,7 @@ import { IoCubeOutline } from "react-icons/io5";
 import { FiShoppingCart } from "react-icons/fi";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardSkeleton from "../../../components/skeleton/AdminDashboard";
 import SalesPurchaseChart from "../../../components/charts/BarChart";
 import DoughnutChart from "../../../components/charts/DoughnutChart";
@@ -27,6 +27,33 @@ interface DashboardData {
 	recentProducts: any;
 	recentOrders: any;
 }
+
+// Constants outside component — defined once, never recreated on re-render
+const PRODUCT_LIST_HEADERS = [
+	"Name",
+	"Main Category",
+	"Price",
+	"Created At",
+	"Action"
+];
+
+const ORDER_LIST_HEADERS = [
+	"Order ID",
+	"Customer",
+	"Amount",
+	"Status",
+	"Created At",
+	"Action"
+];
+
+const DEFAULT_MONTHLY_DATA = [
+	{ month: "2025-01", totalSales: "130.00", totalCommission: "100.00" },
+	{ month: "2025-02", totalSales: "70.00", totalCommission: "40.00" },
+	{ month: "2025-03", totalSales: "100.00", totalCommission: "90.00" },
+	{ month: "2025-04", totalSales: "430.00", totalCommission: "100.00" },
+	{ month: "2025-05", totalSales: "70.00", totalCommission: "40.00" },
+	{ month: "2025-06", totalSales: "100.00", totalCommission: "90.00" },
+];
 
 const Dashboard = () => {
 	const { fetchData } = useAPI();
@@ -53,25 +80,8 @@ const Dashboard = () => {
 
 	if (isLoading) return <DashboardSkeleton />;
 
-	const ProductListHeaders = [
-		"Name",
-		"Main Category",
-		"Price",
-		"Created At",
-		"Action"
-	];
-
-	const OrderListHeaders = [
-		"Order ID",
-		"Customer",
-		"Amount",
-		"Status",
-		"Created At",
-		"Action"
-	];
-
-	// Derive monthly sales & commissions data
-	const monthlySalesCommissionData = (() => {
+	// useMemo: only recalculates when recentOrders/monthlySalesCommissionData changes
+	const monthlySalesCommissionData = useMemo(() => {
 		if (dashboardData?.monthlySalesCommissionData && dashboardData.monthlySalesCommissionData.length > 0) {
 			return dashboardData.monthlySalesCommissionData;
 		}
@@ -98,18 +108,8 @@ const Dashboard = () => {
 			totalCommission: monthlyMap[m].totalCommission,
 		}));
 
-		if (result.length === 0) {
-			return [
-				{ month: "2025-01", totalSales: "130.00", totalCommission: "100.00" },
-				{ month: "2025-02", totalSales: "70.00", totalCommission: "40.00" },
-				{ month: "2025-03", totalSales: "100.00", totalCommission: "90.00" },
-				{ month: "2025-04", totalSales: "430.00", totalCommission: "100.00" },
-				{ month: "2025-05", totalSales: "70.00", totalCommission: "40.00" },
-				{ month: "2025-06", totalSales: "100.00", totalCommission: "90.00" },
-			];
-		}
-		return result;
-	})();
+		return result.length === 0 ? DEFAULT_MONTHLY_DATA : result;
+	}, [dashboardData?.recentOrders, dashboardData?.monthlySalesCommissionData]);
 
 	return (
 		<div>
@@ -181,14 +181,14 @@ const Dashboard = () => {
 				{/* Recent Products Table */}
 				<ProductListTable
 					title="Recent Products"
-					headers={ProductListHeaders}
+					headers={PRODUCT_LIST_HEADERS}
 					data={Array.isArray(dashboardData?.recentProducts?.data) ? dashboardData.recentProducts.data : (Array.isArray(dashboardData?.recentProducts) ? dashboardData.recentProducts : [])}
 				/>
 
 				{/* Recent Orders Table */}
 				<OrderListTable
 					title="Recent Orders"
-					headers={OrderListHeaders}
+					headers={ORDER_LIST_HEADERS}
 					data={Array.isArray(dashboardData?.recentOrders?.data) ? dashboardData.recentOrders.data : (Array.isArray(dashboardData?.recentOrders) ? dashboardData.recentOrders : [])}
 				/>
 			</div>

@@ -61,9 +61,6 @@ const Products = () => {
 		url: getProductListApiUrl()
 	});
 
-	useEffect(() => {
-		fetchProductList();
-	}, [currentPageNumber, searchQuery, selectedFilters]);
 
 	return (
 		<>

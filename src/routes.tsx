@@ -1,302 +1,315 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-//@ts-ignore
-import SalesDashboard from "./pages/dashboard/sales-dashboard";
-import Products from "./pages/inventory/products";
-import CreateProduct from "./pages/createProduct";
-import Dashboard from "./pages/dashboard/admin-dashboard";
-import HeroSlider from "./pages/settings/home/hero-slider";
-import Promotions from "./pages/settings/home/promotions";
-import MainCategory from "./pages/inventory/category/main-category";
-import FirstCategory from "./pages/inventory/category/first-category";
-import SecondCategory from "./pages/inventory/category/second-category";
-import HeaderFooterCMS from "./pages/settings/header-footer-cms";
-import Review from "./pages/inventory/reviews";
+import { Role } from "./enum/role.enum";
+import RoleProtectedRoute from "./providers/RoleProtectedRoute";
+import MainLayout from "./layout/MainLayout";
+
+// Auth pages — small, load eagerly
 import Signup from "./pages/authentications/signup";
 import Login from "./pages/authentications/login";
 import ForgotPassword from "./pages/authentications/forgot-password";
-import ProductDetails from "./pages/inventory/products/components/ProductDetails";
-import MainLayout from "./layout/MainLayout";
-import ContactMessage from "./pages/settings/contact-us/contact-message";
-import ContactPageCMS from "./pages/settings/contact-us/contact-page-cms";
-import HomePageCMS from "./pages/settings/home/page-cms";
-import Orders from "./pages/orders";
-import OrderDetail from "./pages/orders/components/OrderDetail";
-import Admins from "./pages/people/admin";
-import Users from "./pages/people/user";
-import InvoiceView from "./pages/invoice";
-import RoleProtectedRoute from "./providers/RoleProtectedRoute";
-import { Role } from "./enum/role.enum";
-import SocialLinks from "./pages/settings/social-links";
-import ShopPageCMS from "./pages/settings/shop-page-cms";
-import Chat from "./pages/chat";
-import ProductMeta from "./pages/seo/product-meta";
-import PageMeta from "./pages/seo/page-meta";
-import PolicyOne from "./pages/settings/policy/policy-one";
-import PolicyTwo from "./pages/settings/policy/policy-two";
-import PolicyThree from "./pages/settings/policy/policy-three";
-import PolicySix from "./pages/settings/policy/policy-six";
-import PolicyFour from "./pages/settings/policy/policy-four";
-import PolicyFive from "./pages/settings/policy/policy-five";
-import PolicyEleven from "./pages/settings/policy/policy-eleven";
-import PolicyNine from "./pages/settings/policy/policy-nine";
-import PolicyEight from "./pages/settings/policy/policy-eight";
-import PolicySeven from "./pages/settings/policy/policy-seven";
-import PolicyTen from "./pages/settings/policy/policy-ten";
-import PolicyTwelve from "./pages/settings/policy/policy-twelve";
-import ProductReview from "./pages/inventory/product-reviews";
-import CouponsPage from "./pages/coupons";
-import MegaDiscountPage from "./pages/settings/mega-discount";
-import AuditLogs from "./pages/audit-logs";
+
+// All other pages — lazy loaded for code splitting
+//@ts-ignore
+const SalesDashboard    = lazy(() => import("./pages/dashboard/sales-dashboard"));
+const Products          = lazy(() => import("./pages/inventory/products"));
+const CreateProduct     = lazy(() => import("./pages/createProduct"));
+const Dashboard         = lazy(() => import("./pages/dashboard/admin-dashboard"));
+const HeroSlider        = lazy(() => import("./pages/settings/home/hero-slider"));
+const Promotions        = lazy(() => import("./pages/settings/home/promotions"));
+const MainCategory      = lazy(() => import("./pages/inventory/category/main-category"));
+const FirstCategory     = lazy(() => import("./pages/inventory/category/first-category"));
+const SecondCategory    = lazy(() => import("./pages/inventory/category/second-category"));
+const HeaderFooterCMS   = lazy(() => import("./pages/settings/header-footer-cms"));
+const Review            = lazy(() => import("./pages/inventory/reviews"));
+const ProductDetails    = lazy(() => import("./pages/inventory/products/components/ProductDetails"));
+const ContactMessage    = lazy(() => import("./pages/settings/contact-us/contact-message"));
+const ContactPageCMS    = lazy(() => import("./pages/settings/contact-us/contact-page-cms"));
+const HomePageCMS       = lazy(() => import("./pages/settings/home/page-cms"));
+const Orders            = lazy(() => import("./pages/orders"));
+const OrderDetail       = lazy(() => import("./pages/orders/components/OrderDetail"));
+const Admins            = lazy(() => import("./pages/people/admin"));
+const Users             = lazy(() => import("./pages/people/user"));
+const InvoiceView       = lazy(() => import("./pages/invoice"));
+const SocialLinks       = lazy(() => import("./pages/settings/social-links"));
+const ShopPageCMS       = lazy(() => import("./pages/settings/shop-page-cms"));
+const Chat              = lazy(() => import("./pages/chat"));
+const ProductMeta       = lazy(() => import("./pages/seo/product-meta"));
+const PageMeta          = lazy(() => import("./pages/seo/page-meta"));
+const PolicyOne         = lazy(() => import("./pages/settings/policy/policy-one"));
+const PolicyTwo         = lazy(() => import("./pages/settings/policy/policy-two"));
+const PolicyThree       = lazy(() => import("./pages/settings/policy/policy-three"));
+const PolicyFour        = lazy(() => import("./pages/settings/policy/policy-four"));
+const PolicyFive        = lazy(() => import("./pages/settings/policy/policy-five"));
+const PolicySix         = lazy(() => import("./pages/settings/policy/policy-six"));
+const PolicySeven       = lazy(() => import("./pages/settings/policy/policy-seven"));
+const PolicyEight       = lazy(() => import("./pages/settings/policy/policy-eight"));
+const PolicyNine        = lazy(() => import("./pages/settings/policy/policy-nine"));
+const PolicyTen         = lazy(() => import("./pages/settings/policy/policy-ten"));
+const PolicyEleven      = lazy(() => import("./pages/settings/policy/policy-eleven"));
+const PolicyTwelve      = lazy(() => import("./pages/settings/policy/policy-twelve"));
+const ProductReview     = lazy(() => import("./pages/inventory/product-reviews"));
+const CouponsPage       = lazy(() => import("./pages/coupons"));
+const MegaDiscountPage  = lazy(() => import("./pages/settings/mega-discount"));
+const AuditLogs         = lazy(() => import("./pages/audit-logs"));
+
+const PageLoader = () => (
+	<div className="flex items-center justify-center min-h-screen">
+		<div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900" />
+	</div>
+);
 
 const AppRoutes = () => {
 	return (
-		<Routes>
-			<Route path="/signup" element={<Signup />} />
-			<Route path="/login" element={<Login />} />
-			<Route path="/forgot-password" element={<ForgotPassword />} />
+		<Suspense fallback={<PageLoader />}>
+			<Routes>
+				<Route path="/signup" element={<Signup />} />
+				<Route path="/login" element={<Login />} />
+				<Route path="/forgot-password" element={<ForgotPassword />} />
 
-			<Route element={<MainLayout><Outlet /></MainLayout>}>
-				<Route
-					path="/"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Dashboard />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route path="/sales-dashboard"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<SalesDashboard />
-						</RoleProtectedRoute>
-					} />
-				<Route path="/products"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Products />
-						</RoleProtectedRoute>
-					} />
-				<Route path="/product-reviews"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ProductReview />
-						</RoleProtectedRoute>
-					} />
-				<Route path="/product-details/:id"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ProductDetails />
-						</RoleProtectedRoute>
-					} />
+				<Route element={<MainLayout><Outlet /></MainLayout>}>
+					<Route
+						path="/"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Dashboard />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route path="/sales-dashboard"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<SalesDashboard />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/products"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Products />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/product-reviews"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ProductReview />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/product-details/:id"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ProductDetails />
+							</RoleProtectedRoute>
+						} />
 
-				<Route path="/create-product"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<CreateProduct />
-						</RoleProtectedRoute>
-					} />
-				<Route path="/edit-product"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<CreateProduct />
-						</RoleProtectedRoute>
-					} />
-				<Route
-					path="/main-category"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<MainCategory />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
-					path="/first-category"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<FirstCategory />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
-					path="/second-category"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<SecondCategory />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
-					path="/hero-slider"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<HeroSlider />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
-					path="/promotion"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Promotions />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route
-					path="/home-page-cms"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<HomePageCMS />
-						</RoleProtectedRoute>
-					}
-				/>
-				<Route path="/header-footer-cms"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<HeaderFooterCMS />
-						</RoleProtectedRoute>} />
-				<Route path="/review"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Review />
-						</RoleProtectedRoute>} />
-				<Route path="/contact-message"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ContactMessage />
-						</RoleProtectedRoute>} />
-				<Route path="/contact-page-cms"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ContactPageCMS />
-						</RoleProtectedRoute>} />
-				<Route path="/orders"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Orders />
-						</RoleProtectedRoute>} />
-				<Route path="/coupons"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<CouponsPage />
-						</RoleProtectedRoute>} />
-				<Route path="/mega-discount"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<MegaDiscountPage />
-						</RoleProtectedRoute>} />
-				<Route path="/order-detail/:id"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<OrderDetail />
-						</RoleProtectedRoute>} />
-				<Route path="/admins"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Admins />
-						</RoleProtectedRoute>} />
-				<Route path="/users"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Users />
-						</RoleProtectedRoute>} />
-				<Route path="/invoice/:id"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<InvoiceView />
-						</RoleProtectedRoute>} />
-				<Route path="shop-page-cms"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ShopPageCMS />
-						</RoleProtectedRoute>} />
-				<Route path="social-link"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<SocialLinks />
-						</RoleProtectedRoute>} />
-				<Route path="/chat"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<Chat />
-						</RoleProtectedRoute>} />
-				<Route path="/page-meta"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PageMeta />
-						</RoleProtectedRoute>} />
-				<Route path="/product-meta"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<ProductMeta />
-						</RoleProtectedRoute>} />
-				<Route path="/audit-logs"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<AuditLogs />
-						</RoleProtectedRoute>} />
+					<Route path="/create-product"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<CreateProduct />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/edit-product"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<CreateProduct />
+							</RoleProtectedRoute>
+						} />
+					<Route
+						path="/main-category"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<MainCategory />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/first-category"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<FirstCategory />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/second-category"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<SecondCategory />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/hero-slider"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<HeroSlider />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/promotion"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Promotions />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/home-page-cms"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<HomePageCMS />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route path="/header-footer-cms"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<HeaderFooterCMS />
+							</RoleProtectedRoute>} />
+					<Route path="/review"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Review />
+							</RoleProtectedRoute>} />
+					<Route path="/contact-message"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ContactMessage />
+							</RoleProtectedRoute>} />
+					<Route path="/contact-page-cms"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ContactPageCMS />
+							</RoleProtectedRoute>} />
+					<Route path="/orders"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Orders />
+							</RoleProtectedRoute>} />
+					<Route path="/coupons"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<CouponsPage />
+							</RoleProtectedRoute>} />
+					<Route path="/mega-discount"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<MegaDiscountPage />
+							</RoleProtectedRoute>} />
+					<Route path="/order-detail/:id"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<OrderDetail />
+							</RoleProtectedRoute>} />
+					<Route path="/admins"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Admins />
+							</RoleProtectedRoute>} />
+					<Route path="/users"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Users />
+							</RoleProtectedRoute>} />
+					<Route path="/invoice/:id"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<InvoiceView />
+							</RoleProtectedRoute>} />
+					<Route path="shop-page-cms"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ShopPageCMS />
+							</RoleProtectedRoute>} />
+					<Route path="social-link"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<SocialLinks />
+							</RoleProtectedRoute>} />
+					<Route path="/chat"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Chat />
+							</RoleProtectedRoute>} />
+					<Route path="/page-meta"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PageMeta />
+							</RoleProtectedRoute>} />
+					<Route path="/product-meta"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ProductMeta />
+							</RoleProtectedRoute>} />
+					<Route path="/audit-logs"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<AuditLogs />
+							</RoleProtectedRoute>} />
 
-				<Route path="/policy-one"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyOne />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-two"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyTwo />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-three"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyThree />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-four"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyFour />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-five"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyFive />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-six"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicySix />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-seven"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicySeven />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-eight"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyEight />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-nine"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyNine />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-ten"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyTen />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-eleven"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyEleven />
-						</RoleProtectedRoute>} />
-				<Route path="/policy-twelve"
-					element={
-						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-							<PolicyTwelve />
-						</RoleProtectedRoute>} />
-			</Route>
-		</Routes>
+					<Route path="/policy-one"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyOne />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-two"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyTwo />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-three"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyThree />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-four"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyFour />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-five"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyFive />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-six"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicySix />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-seven"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicySeven />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-eight"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyEight />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-nine"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyNine />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-ten"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyTen />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-eleven"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyEleven />
+							</RoleProtectedRoute>} />
+					<Route path="/policy-twelve"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PolicyTwelve />
+							</RoleProtectedRoute>} />
+				</Route>
+			</Routes>
+		</Suspense>
 	);
 };
 
