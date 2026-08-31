@@ -25,7 +25,6 @@ async function refreshAccessToken(): Promise<string | null> {
             }
             if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
                 sessionStorage.removeItem("user");
-                window.location.href = "/login";
             }
             return null;
         } catch {

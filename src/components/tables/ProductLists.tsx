@@ -5,12 +5,13 @@ import { formatPrettyDateWithTime } from "../../utils/date-utils";
 const ProductListTable = ({
 	title,
 	headers,
-	data,
+	data = [],
 }: {
 	title: string;
 	headers: string[];
 	data: any[];
 }) => {
+	const safeData = Array.isArray(data) ? data.filter(Boolean) : [];
 
 	return (
 		<div className="bg-white p-4 rounded-lg shadow-md">
@@ -36,20 +37,20 @@ const ProductListTable = ({
 						</tr>
 					</thead>
 					<tbody>
-						{data.map((row, rowIndex) => (
-							<tr key={rowIndex} className="border-y border-gray-200">
+						{safeData.map((row, rowIndex) => (
+							<tr key={row?.id || row?._id || rowIndex} className="border-y border-gray-200">
 								<td className="p-3 text-left">
 									{rowIndex + 1}
 								</td>
 								<td className="p-3 flex items-center gap-3">
-									<img src={row.featuredImage} alt={row.name} className="w-10 h-10 rounded-md" />
-									<span>{row.name}</span>
+									<img src={row?.featuredImage || ""} alt={row?.name || "product"} className="w-10 h-10 rounded-md object-cover" />
+									<span>{row?.name || "N/A"}</span>
 								</td>
-								<td className="p-3">{row.mainCategoryName}</td>
-								<td className="p-3">{row.price}</td>
-								<td className="p-3">{formatPrettyDateWithTime(row.createdAt)}</td>
+								<td className="p-3">{row?.mainCategoryName || row?.mainCategory?.name || "N/A"}</td>
+								<td className="p-3">${row?.price || 0}</td>
+								<td className="p-3">{formatPrettyDateWithTime(row?.createdAt)}</td>
 								<td className="p-3 flex items-center gap-3">
-									<Link to={`/product-details/${row.id}`}
+									<Link to={`/product-details/${row?.id || row?._id || ""}`}
 										className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer">
 										<FiEye />
 									</Link>
@@ -60,7 +61,6 @@ const ProductListTable = ({
 				</table>
 			</div>
 		</div>
-
 	);
 };
 

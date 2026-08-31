@@ -97,22 +97,22 @@ export const useAPI = () => {
     };
     const queryClient = useQueryClient();
 
-    // Removed getMutation (useMutation for GET) — it doesn't cache.
-    // fetchData now uses queryClient.fetchQuery which caches for 5 minutes.
     const fetchData = async ({ apiUrl }: FetchDataProps) => {
         try {
-            const response = await queryClient.fetchQuery({
-                queryKey: [apiUrl],
-                queryFn: () => getData({ url: apiUrl, token: getToken() }),
-                staleTime: 1000 * 60 * 5,
-            }) as ApiResponse<any>;
-            if (response?.statusCode === 200) {
-                return response?.data;
-            } else {
-                showErrorToast(response?.message);
+            const response = await getData({ url: apiUrl, token: getToken() }) as any;
+            if (response && !response.error) {
+                if (response.statusCode === 200 || response.statusCode === 201) {
+                    return response.data !== undefined ? response.data : response;
+                } else if (response.data !== undefined) {
+                    return response.data;
+                } else if (response.message) {
+                    showErrorToast(response.message);
+                }
+            } else if (response?.message) {
+                showErrorToast(response.message);
             }
         } catch (e: any) {
-            showErrorToast(e?.response?.data?.message || e?.data?.message || e?.message);
+            showErrorToast(e?.response?.data?.message || e?.data?.message || e?.message || "Failed to fetch data");
         }
     };
 

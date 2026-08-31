@@ -71,8 +71,6 @@ const Dashboard = () => {
 		fetchDashboardData();
 	}, []);
 
-	if (isLoading) return <DashboardSkeleton />;
-
 	// useMemo: only recalculates when recentOrders/monthlySalesCommissionData changes
 	const monthlySalesCommissionData = useMemo(() => {
 		if (dashboardData?.monthlySalesCommissionData && dashboardData.monthlySalesCommissionData.length > 0) {
@@ -84,14 +82,15 @@ const Dashboard = () => {
 
 		const monthlyMap: Record<string, { totalSales: number; totalCommission: number }> = {};
 
-		ordersList.forEach((order: any) => {
-			if (order.createdAt) {
-				const month = String(order.createdAt).substring(0, 7);
+		(ordersList || []).forEach((order: any) => {
+			if (order && (order.createdAt || order.created_at || order.date)) {
+				const dateVal = order.createdAt || order.created_at || order.date;
+				const month = String(dateVal).substring(0, 7);
 				if (!monthlyMap[month]) {
 					monthlyMap[month] = { totalSales: 0, totalCommission: 0 };
 				}
-				monthlyMap[month].totalSales += Number(order.totalAmount || order.grandTotal || 0);
-				monthlyMap[month].totalCommission += Number(order.totalCommission || 0);
+				monthlyMap[month].totalSales += Number(order.totalAmount || order.grandTotal || 0) || 0;
+				monthlyMap[month].totalCommission += Number(order.totalCommission || 0) || 0;
 			}
 		});
 
@@ -103,6 +102,8 @@ const Dashboard = () => {
 
 		return result;
 	}, [dashboardData?.recentOrders, dashboardData?.monthlySalesCommissionData]);
+
+	if (isLoading) return <DashboardSkeleton />;
 
 	return (
 		<div>

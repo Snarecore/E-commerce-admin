@@ -78,23 +78,22 @@ const OrderListTable = ({
                     </thead>
                     <tbody>
                         {sortedData.map((row, rowIndex) => (
-                            <tr key={rowIndex} className="border-y border-gray-200">
+                            <tr key={row?.id || row?._id || rowIndex} className="border-y border-gray-200">
                                 <td className="p-3 text-left">
                                     {rowIndex + 1}
                                 </td>
                                 <td className="p-3 text-left">
-                                    {row.orderId}
+                                    {row?.orderId || row?.id || row?._id || "N/A"}
                                 </td>
 
-                                <td className="p-3">{row.user?.name || "N/A"}</td>
-                                <td className="p-3">${row.totalAmount}</td>
+                                <td className="p-3">{row?.user?.name || row?.customer?.name || "N/A"}</td>
+                                <td className="p-3">${row?.totalAmount || row?.grandTotal || 0}</td>
                                 <td className="p-3">
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row.status === "Completed" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                                        {row.status}
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row?.status === "Completed" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                                        {row?.status || "Pending"}
                                     </span>
                                 </td>
-                                <td className="p-3">{formatPrettyDateWithTime(row.createdAt)}</td>
-
+                                <td className="p-3">{formatPrettyDateWithTime(row?.createdAt)}</td>
 
                                 <td className="p-3 flex items-center gap-3">
                                     <button onClick={() => handleInvoice(row)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">

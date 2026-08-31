@@ -20,20 +20,28 @@ const DEFAULT_VALUES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const hoverLine = {
   id: "hoverLine",
   afterDatasetsDraw(chart: any) {
-    const { ctx, tooltip, chartArea } = chart;
-    const active = tooltip?.getActiveElements?.() || [];
-    if (!active.length) return;
-    const x = active[0].element.x;
-    const y = active[0].element.y;
+    try {
+      const { ctx, tooltip, chartArea } = chart;
+      if (!ctx || !chartArea || !tooltip) return;
 
-    ctx.save();
-    ctx.setLineDash([4, 6]);
-    ctx.strokeStyle = "#FE9F43";
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x, chartArea.bottom);
-    ctx.stroke();
-    ctx.restore();
+      const active = tooltip?.getActiveElements?.() || [];
+      if (!active.length || !active[0] || !active[0].element) return;
+
+      const x = active[0].element.x;
+      const y = active[0].element.y;
+      if (x == null || y == null) return;
+
+      ctx.save();
+      ctx.setLineDash([4, 6]);
+      ctx.strokeStyle = "#FE9F43";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+      ctx.restore();
+    } catch {
+      // Ignore hover line errors safely
+    }
   },
 };
 
@@ -127,7 +135,7 @@ export default function MonthlyReportsLine({
             font: { size: 12 },
             callback: (v: any) => v,
           },
-          suggestedMax: Math.max(...chartValues) * 1.15,
+          suggestedMax: Math.max(Math.max(...(chartValues?.length ? chartValues : [10]), 10) * 1.15, 10),
         },
       },
     }),

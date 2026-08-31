@@ -42,40 +42,46 @@ const Login = () => {
 		}));
 	};
 
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
 	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		if (isSubmitting || postMutation.isPending) return;
 
-		const mutation = postMutation;
-		const url = apiConfig.auth.loginUrl;
+		setIsSubmitting(true);
+		try {
+			const mutation = postMutation;
+			const url = apiConfig.auth.loginUrl;
 
-		const result = await handleApiMutation({
-			// @ts-ignore
-			mutation,
-			url,
-			body: fieldValues,
-			invalidateQueryKey: [loginQueryKey],
-			showSuccessMessage: true,
-			showErrorMessage: true,
-			requiredFields
-		});
+			const result = await handleApiMutation({
+				// @ts-ignore
+				mutation,
+				url,
+				body: fieldValues,
+				invalidateQueryKey: [loginQueryKey],
+				showSuccessMessage: true,
+				showErrorMessage: true,
+				requiredFields
+			});
 
-		// @ts-ignore
-		if (result?.success && ((result.data as any)?.data?.user || (result.data as any)?.user || (result.data as any)?.data)) {
-			// @ts-ignore
-			const rawData = result.data as any;
-			const userData = rawData?.data?.user || rawData?.user || rawData?.data;
-			const accessToken = rawData?.data?.accessToken || rawData?.accessToken || rawData?.data?.token || rawData?.token;
+			if (result?.success && result?.data) {
+				const rawData = result.data as any;
+				const userData = rawData?.data?.user || rawData?.user || rawData?.data?.admin || rawData?.admin || (typeof rawData?.data === 'object' ? rawData?.data : rawData);
+				const accessToken = rawData?.data?.accessToken || rawData?.accessToken || rawData?.data?.token || rawData?.token || rawData?.data?.access_token || rawData?.access_token;
 
-			const normalizedUser = {
-				...userData,
-				id: userData?.id || userData?._id || "",
-				role: userData?.role || "admin",
-				token: accessToken
-			};
+				const normalizedUser = {
+					...(typeof userData === 'object' ? userData : {}),
+					id: userData?.id || userData?._id || "",
+					role: userData?.role || "admin",
+					token: accessToken || ""
+				};
 
-			sessionStorage.setItem("user", JSON.stringify(normalizedUser));
-			setUser(normalizedUser);
-			navigate("/", { replace: true });
+				sessionStorage.setItem("user", JSON.stringify(normalizedUser));
+				setUser(normalizedUser);
+				navigate("/", { replace: true });
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -148,17 +154,6 @@ const Login = () => {
 
 							<div className="flex justify-between items-center cursor-pointer">
 								<div className="flex items-center space-x-2">
-									{/* <input
-										type="checkbox"
-										id="remember"
-										className="w-4 h-4 cursor-pointer focus:outline-none"
-									/>
-									<label
-										htmlFor="remember"
-										className="text-[15px] text-[#092c4c] font-normal cursor-pointer"
-									>
-										Remember me
-									</label> */}
 								</div>
 
 								<div>
@@ -174,9 +169,17 @@ const Login = () => {
 
 						<button
 							type="submit"
-							className="w-full bg-[var(--color-primary)] border border-[var(--color-primary)] text-white py-3 rounded-lg hover:bg-white hover:text-[var(--color-primary)] font-bold transform transition-all duration-200 cursor-pointer"
+							disabled={isSubmitting || postMutation.isPending}
+							className="w-full bg-[var(--color-primary)] border border-[var(--color-primary)] text-white py-3 rounded-lg hover:bg-white hover:text-[var(--color-primary)] font-bold transform transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
 						>
-							Sign In
+							{(isSubmitting || postMutation.isPending) ? (
+								<>
+									<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+									<span>Signing In...</span>
+								</>
+							) : (
+								"Sign In"
+							)}
 						</button>
 					</form>
 				</div>

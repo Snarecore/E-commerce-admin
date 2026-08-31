@@ -15,24 +15,33 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 const valueLabels = {
   id: "valueLabelsHorizontal",
   afterDatasetsDraw(chart: any, _args: any, pluginOptions: any) {
-    const dataset = chart?.data?.datasets?.[0];
-    if (!dataset) return;
+    try {
+      const dataset = chart?.data?.datasets?.[0];
+      if (!dataset || !Array.isArray(dataset.data)) return;
 
-    const { ctx, chartArea } = chart;
-    const meta = chart.getDatasetMeta(0);
-    ctx.save();
-    ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-    ctx.fillStyle = pluginOptions?.color || "#1f2544";
+      const { ctx, chartArea } = chart;
+      if (!ctx || !chartArea) return;
 
-    meta.data.forEach((bar: any, i: number) => {
-      const v = dataset.data[i];
-      if (v == null) return;
-      const x = Math.min(bar.x + 8, chartArea.right - 16);
-      const y = bar.y + 4;
-      ctx.fillText(String(v), x, y);
-    });
+      const meta = chart?.getDatasetMeta?.(0);
+      if (!meta || !Array.isArray(meta?.data)) return;
 
-    ctx.restore();
+      ctx.save();
+      ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+      ctx.fillStyle = pluginOptions?.color || "#1f2544";
+
+      meta.data.forEach((bar: any, i: number) => {
+        if (!bar) return;
+        const v = dataset.data[i];
+        if (v == null) return;
+        const x = Math.min((bar.x || 0) + 8, (chartArea.right || 0) - 16);
+        const y = (bar.y || 0) + 4;
+        ctx.fillText(String(v), x, y);
+      });
+
+      ctx.restore();
+    } catch {
+      // Ignore plugin errors safely
+    }
   },
 };
 
@@ -67,7 +76,8 @@ export default function NewAgentsBar({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const suggestedMax = Math.ceil(Math.max(...values, 10) * 1.15);
+  const safeMax = Math.max(...(values?.length ? values : [10]), 10);
+  const suggestedMax = Math.ceil((isNaN(safeMax) ? 10 : safeMax) * 1.15);
 
   const data = useMemo(
     () => ({
