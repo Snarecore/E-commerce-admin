@@ -177,9 +177,21 @@ const OrderTable = ({
     const sortedDataList = useMemo(() => {
         if (!dataList || !Array.isArray(dataList)) return [];
         return [...dataList].sort((a, b) => {
-            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-            if (timeA && timeB) return timeB - timeA;
+            const dateA = a.createdAt || (a as any).created_at || (a as any).date || (a as any).updatedAt;
+            const dateB = b.createdAt || (b as any).created_at || (b as any).date || (b as any).updatedAt;
+
+            const timeA = dateA ? new Date(dateA).getTime() : 0;
+            const timeB = dateB ? new Date(dateB).getTime() : 0;
+
+            const validA = !isNaN(timeA) ? timeA : 0;
+            const validB = !isNaN(timeB) ? timeB : 0;
+
+            if (validA && validB && validA !== validB) {
+                return validB - validA;
+            }
+            if (validA && !validB) return -1;
+            if (!validA && validB) return 1;
+
             return (b.orderId || b.id || "").localeCompare(a.orderId || a.id || "", undefined, { numeric: true });
         });
     }, [dataList]);

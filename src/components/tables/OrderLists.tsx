@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { FiEye } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../utils/date-utils";
@@ -26,7 +27,32 @@ const OrderListTable = ({
 		navigate(`/invoice/${data.id}`, { state: { orderData: data } });
 	};
 
-    
+    const sortedData = useMemo(() => {
+        if (!data || !Array.isArray(data)) return [];
+        return [...data].sort((a, b) => {
+            const dateA = a?.createdAt || a?.created_at || a?.date || a?.updatedAt;
+            const dateB = b?.createdAt || b?.created_at || b?.date || b?.updatedAt;
+
+            const timeA = dateA ? new Date(dateA).getTime() : 0;
+            const timeB = dateB ? new Date(dateB).getTime() : 0;
+
+            const validA = !isNaN(timeA) ? timeA : 0;
+            const validB = !isNaN(timeB) ? timeB : 0;
+
+            if (validA && validB && validA !== validB) {
+                return validB - validA;
+            }
+            if (validA && !validB) return -1;
+            if (!validA && validB) return 1;
+
+            return String(b?.orderId || b?.id || "").localeCompare(
+                String(a?.orderId || a?.id || ""),
+                undefined,
+                { numeric: true }
+            );
+        });
+    }, [data]);
+
     return (
         <div className="bg-white p-4 rounded-lg shadow-md">
             <div className="flex justify-between p-2">
@@ -51,7 +77,7 @@ const OrderListTable = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((row, rowIndex) => (
+                        {sortedData.map((row, rowIndex) => (
                             <tr key={rowIndex} className="border-y border-gray-200">
                                 <td className="p-3 text-left">
                                     {rowIndex + 1}

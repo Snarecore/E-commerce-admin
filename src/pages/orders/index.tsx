@@ -62,6 +62,7 @@ const Orders = () => {
             sortBy: "createdAt",
             sortOrder: "DESC",
             sort: "desc",
+            order: "DESC",
         });
 
         if (selectedFilters.userId?.value) params.append("userId", selectedFilters.userId.value);
