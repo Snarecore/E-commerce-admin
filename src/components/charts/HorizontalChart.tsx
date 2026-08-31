@@ -37,7 +37,7 @@ const valueLabels = {
 };
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const DEFAULT_DATA = [40, 20, 350, 350, 100, 150, 55, 50, 30, 330, 360, 20];
+const DEFAULT_DATA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 interface HorizontalChartProps {
   title?: string;
@@ -56,7 +56,7 @@ export default function NewAgentsBar({
     typeof window !== 'undefined' ? window.innerWidth : 1024
   );
 
-  const values = dataValues.length === 12 ? dataValues : DEFAULT_DATA;
+  const values = Array.isArray(dataValues) && dataValues.length === 12 ? dataValues : DEFAULT_DATA;
 
   useEffect(() => {
     const handleResize = () => {

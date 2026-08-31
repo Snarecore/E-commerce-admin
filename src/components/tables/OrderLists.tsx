@@ -86,7 +86,7 @@ const OrderListTable = ({
                                     {row.orderId}
                                 </td>
 
-                                <td className="p-3">{row.user.name}</td>
+                                <td className="p-3">{row.user?.name || "N/A"}</td>
                                 <td className="p-3">${row.totalAmount}</td>
                                 <td className="p-3">
                                     <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row.status === "Completed" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>

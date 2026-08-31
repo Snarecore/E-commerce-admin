@@ -21,15 +21,15 @@ interface DoughnutChartProps {
 }
 
 const defaultTopCategories: TopCategory[] = [
-  { category: "Men's Collection", sales: 1250 },
-  { category: "Girls Collection", sales: 980 },
-  { category: "Kids Collection", sales: 750 },
-  { category: "Others", sales: 440 },
+  { category: "Men's Collection", sales: 0 },
+  { category: "Girls Collection", sales: 0 },
+  { category: "Kids Collection", sales: 0 },
+  { category: "Others", sales: 0 },
 ];
 
 const DoughnutChart = ({
-  totalCategories = 12,
-  totalProducts = 1250,
+  totalCategories = 0,
+  totalProducts = 0,
   topCategories,
 }: DoughnutChartProps) => {
   // Format categories so they prioritize Men's, Girls, Kids, and Others
@@ -44,23 +44,25 @@ const DoughnutChart = ({
     let othersSales = 0;
 
     topCategories.forEach((item) => {
-      const name = item.category.toLowerCase();
+      if (!item) return;
+      const name = item.category ? String(item.category).toLowerCase() : "";
+      const sales = Number(item.sales || 0);
       if (name.includes('men') && !name.includes('women')) {
-        mensSales += item.sales;
+        mensSales += sales;
       } else if (name.includes('girl') || name.includes('women') || name.includes('lady') || name.includes('female')) {
-        girlsSales += item.sales;
+        girlsSales += sales;
       } else if (name.includes('kid') || name.includes('child') || name.includes('baby')) {
-        kidsSales += item.sales;
+        kidsSales += sales;
       } else {
-        othersSales += item.sales;
+        othersSales += sales;
       }
     });
 
     const result: TopCategory[] = [
-      { category: "Men's Collection", sales: mensSales || 1250 },
-      { category: "Girls Collection", sales: girlsSales || 980 },
-      { category: "Kids Collection", sales: kidsSales || 750 },
-      { category: "Others", sales: othersSales || 440 },
+      { category: "Men's Collection", sales: mensSales },
+      { category: "Girls Collection", sales: girlsSales },
+      { category: "Kids Collection", sales: kidsSales },
+      { category: "Others", sales: othersSales },
     ];
 
     return result;

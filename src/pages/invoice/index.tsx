@@ -47,9 +47,9 @@ const InvoiceView = () => {
 
 						<div>
 							<p className="text-xl font-semibold mb-2">Customer</p>
-							<p className="font-bold text-lg">Name: {order.user.name}</p>
-							<p className="font-medium">Email: {order.user.email}</p>
-							<p className="font-medium">Phone: {order.user.phone}</p>
+							<p className="font-bold text-lg">Name: {order.user?.name || "N/A"}</p>
+							<p className="font-medium">Email: {order.user?.email || "N/A"}</p>
+							<p className="font-medium">Phone: {order.user?.phone || "N/A"}</p>
 						</div>
 
 						<div>

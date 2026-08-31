@@ -46,14 +46,7 @@ const ORDER_LIST_HEADERS = [
 	"Action"
 ];
 
-const DEFAULT_MONTHLY_DATA = [
-	{ month: "2025-01", totalSales: "130.00", totalCommission: "100.00" },
-	{ month: "2025-02", totalSales: "70.00", totalCommission: "40.00" },
-	{ month: "2025-03", totalSales: "100.00", totalCommission: "90.00" },
-	{ month: "2025-04", totalSales: "430.00", totalCommission: "100.00" },
-	{ month: "2025-05", totalSales: "70.00", totalCommission: "40.00" },
-	{ month: "2025-06", totalSales: "100.00", totalCommission: "90.00" },
-];
+
 
 const Dashboard = () => {
 	const { fetchData } = useAPI();
@@ -108,7 +101,7 @@ const Dashboard = () => {
 			totalCommission: monthlyMap[m].totalCommission,
 		}));
 
-		return result.length === 0 ? DEFAULT_MONTHLY_DATA : result;
+		return result;
 	}, [dashboardData?.recentOrders, dashboardData?.monthlySalesCommissionData]);
 
 	return (
@@ -132,7 +125,7 @@ const Dashboard = () => {
 					</OverViewCard>
 					<OverViewCard
 						bgColor="bg-[#1b2850]"
-						title={dashboardData?.totalCategories?.toString() || "12"}
+						title={dashboardData?.totalCategories?.toString() || "0"}
 						subTitle="Total Categories"
 					>
 						<BiCategory />
@@ -155,8 +148,8 @@ const Dashboard = () => {
 					</div>
 					<div className="lg:col-span-4">
 						<DoughnutChart
-							totalProducts={dashboardData?.totalProducts || 1250}
-							totalCategories={dashboardData?.totalCategories || 12}
+							totalProducts={dashboardData?.totalProducts || 0}
+							totalCategories={dashboardData?.totalCategories || 0}
 							topCategories={dashboardData?.topCategories}
 						/>
 					</div>

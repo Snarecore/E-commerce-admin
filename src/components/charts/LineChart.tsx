@@ -15,7 +15,7 @@ import { FiGrid } from "react-icons/fi";
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend);
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const DEFAULT_VALUES = [520, 410, 630, 380, 260, 480, 120, 310, 340, 670, 590, 720];
+const DEFAULT_VALUES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const hoverLine = {
   id: "hoverLine",
@@ -54,7 +54,7 @@ export default function MonthlyReportsLine({
 }: MonthlyReportsLineProps) {
   const chartRef = useRef(null);
 
-  const chartValues = values.length === 12 ? values : DEFAULT_VALUES;
+  const chartValues = Array.isArray(values) && values.length === 12 ? values : DEFAULT_VALUES;
 
   const data = useMemo(
     () => ({
