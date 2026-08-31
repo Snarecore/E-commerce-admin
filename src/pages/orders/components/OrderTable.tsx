@@ -196,6 +196,14 @@ const OrderTable = ({
         });
     }, [dataList]);
 
+    const displayDataList = useMemo(() => {
+        if (sortedDataList.length > 10) {
+            const startIndex = (currentPageNumber - 1) * 10;
+            return sortedDataList.slice(startIndex, startIndex + 10);
+        }
+        return sortedDataList;
+    }, [sortedDataList, currentPageNumber]);
+
     if (isLoading) return <TableSkeleton />;
 
     return (
@@ -253,15 +261,15 @@ const OrderTable = ({
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
-                        {sortedDataList?.length > 0 ? (
-                            sortedDataList.map((data, index) => (
+                        {displayDataList?.length > 0 ? (
+                            displayDataList.map((data, index) => (
                                 <tr
                                     key={data.id}
                                     className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
                                 >
                                     {/* Sl */}
                                     <td className="px-6 py-4 font-medium text-gray-800">
-                                        {index + 1}
+                                        {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
                                     {/* Order ID */}
                                     <td className="px-6 py-4 font-medium text-orange-600">

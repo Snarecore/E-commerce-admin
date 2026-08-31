@@ -61,8 +61,13 @@ const Orders = () => {
             limit: dataLimit.toString(),
             sortBy: "createdAt",
             sortOrder: "DESC",
-            sort: "desc",
+            sort_by: "createdAt",
+            sort_order: "desc",
+            sort: "-createdAt",
+            orderBy: "createdAt",
             order: "DESC",
+            sortDir: "DESC",
+            direction: "desc",
         });
 
         if (selectedFilters.userId?.value) params.append("userId", selectedFilters.userId.value);
