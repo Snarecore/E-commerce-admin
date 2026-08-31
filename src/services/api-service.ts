@@ -24,6 +24,7 @@ async function refreshAccessToken(): Promise<string | null> {
                 return newToken;
             }
             if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+                sessionStorage.removeItem("user");
                 window.location.href = "/login";
             }
             return null;
@@ -58,6 +59,12 @@ async function apiRequest<T>(url: string, options: RequestInit, isRetry = false)
         if (!response.ok) {
             console.error(`Error: ${response.status} - ${response.statusText}`);
             const errData = await response.json().catch(() => null);
+            if (response.status === 429) {
+                return {
+                    error: true,
+                    message: errData?.message || "Too many requests. Please wait a minute before trying again."
+                };
+            }
             return { error: true, message: errData?.message || `Failed: ${response.statusText}` };
         }
 

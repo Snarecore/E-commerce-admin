@@ -1,10 +1,10 @@
 import { LuMail } from "react-icons/lu";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import companyLogo from "/images/BazaarBound Logo.svg";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSetAtom } from "jotai";
-import { userAtom } from "../../../store/user-store";
+import { useSetAtom, useAtomValue } from "jotai";
+import { userAtom, userLoadedAtom } from "../../../store/user-store";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { loginQueryKey } from "../../../config/query-key";
@@ -21,10 +21,18 @@ const requiredFields: any = [
 
 const Login = () => {
 	const navigate = useNavigate();
+	const user = useAtomValue(userAtom);
+	const userLoaded = useAtomValue(userLoadedAtom);
 	const setUser = useSetAtom(userAtom);
 	const { postMutation, handleApiMutation } = useAPI();
 	const [showPassword, setShowPassword] = useState(false);
 	const [fieldValues, setFieldValues] = useState(initialFieldValues);
+
+	useEffect(() => {
+		if (userLoaded && user) {
+			navigate("/", { replace: true });
+		}
+	}, [user, userLoaded, navigate]);
 
 	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
@@ -52,22 +60,28 @@ const Login = () => {
 		});
 
 		// @ts-ignore
-		if (result?.success && ((result.data as any)?.data?.user || (result.data as any)?.user)) {
+		if (result?.success && ((result.data as any)?.data?.user || (result.data as any)?.user || (result.data as any)?.data)) {
 			// @ts-ignore
-			const user = (result.data as any)?.data?.user || (result.data as any)?.user;
-			// @ts-ignore
-			const accessToken = (result.data as any)?.data?.accessToken || (result.data as any)?.accessToken;
-			const userWithToken = { ...user, token: accessToken };
-			sessionStorage.setItem("user", JSON.stringify(userWithToken));
-			setUser(userWithToken);
-			navigate("/");
+			const rawData = result.data as any;
+			const userData = rawData?.data?.user || rawData?.user || rawData?.data;
+			const accessToken = rawData?.data?.accessToken || rawData?.accessToken || rawData?.data?.token || rawData?.token;
+
+			const normalizedUser = {
+				...userData,
+				id: userData?.id || userData?._id || "",
+				role: userData?.role || "admin",
+				token: accessToken
+			};
+
+			sessionStorage.setItem("user", JSON.stringify(normalizedUser));
+			setUser(normalizedUser);
+			navigate("/", { replace: true });
 		}
 	};
 
 	return (
-		<div className="flex min-h-screen bg-white">
-			<div className="p-8 lg:p-12 flex h-screen w-screen items-center justify-center">
-				<div className="w-2xl mx-auto space-y-8">
+		<div className="flex min-h-screen w-full bg-white items-center justify-center p-4 sm:p-8">
+			<div className="w-full max-w-md mx-auto space-y-8">
 					<img
 						src={companyLogo}
 						alt="company logo"
@@ -166,7 +180,6 @@ const Login = () => {
 						</button>
 					</form>
 				</div>
-			</div>
 		</div>
 	);
 };

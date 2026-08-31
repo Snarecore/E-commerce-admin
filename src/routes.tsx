@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Role } from "./enum/role.enum";
 import RoleProtectedRoute from "./providers/RoleProtectedRoute";
 import MainLayout from "./layout/MainLayout";
@@ -308,6 +308,7 @@ const AppRoutes = () => {
 								<PolicyTwelve />
 							</RoleProtectedRoute>} />
 				</Route>
+				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>
 		</Suspense>
 	);

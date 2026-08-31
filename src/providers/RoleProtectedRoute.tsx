@@ -18,8 +18,14 @@ const RoleProtectedRoute = ({ children, allowedRoles }: RoleProtectedRouteProps)
         return <Navigate to="/login" replace />;
     }
 
-    if (!allowedRoles.includes(user.role as Role)) {
-        return <Navigate to="/404" replace />;
+    const userRole = (user.role || "").toString().toLowerCase();
+    const isAllowed = allowedRoles.some((role) => {
+        const r = role.toLowerCase();
+        return r === userRole || userRole === "admin" || userRole === "super_admin" || userRole === "superadmin";
+    });
+
+    if (!isAllowed) {
+        return <Navigate to="/login" replace />;
     }
 
     return children;

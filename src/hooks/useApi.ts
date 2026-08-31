@@ -87,8 +87,14 @@ const handleErrorMessage = (error: unknown) => {
 };
 
 export const useAPI = () => {
-    const user = JSON.parse(sessionStorage.getItem("user") || "{}");
-    const token = user?.token || '';
+    const getToken = () => {
+        try {
+            const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+            return user?.token || '';
+        } catch {
+            return '';
+        }
+    };
     const queryClient = useQueryClient();
 
     // Removed getMutation (useMutation for GET) — it doesn't cache.
@@ -97,7 +103,7 @@ export const useAPI = () => {
         try {
             const response = await queryClient.fetchQuery({
                 queryKey: [apiUrl],
-                queryFn: () => getData({ url: apiUrl, token }),
+                queryFn: () => getData({ url: apiUrl, token: getToken() }),
                 staleTime: 1000 * 60 * 5,
             }) as ApiResponse<any>;
             if (response?.statusCode === 200) {
@@ -111,23 +117,23 @@ export const useAPI = () => {
     };
 
     const deleteMutation = useMutation({
-        mutationFn: ({ url }: MutationProps) => deleteData({ url, token })
+        mutationFn: ({ url }: MutationProps) => deleteData({ url, token: getToken() })
     });
 
     // const postMutation = useMutation({
-    //     mutationFn: ({ url, body }: MutationProps) => postData({ url, body: (body as Record<string, unknown>), token })
+    //     mutationFn: ({ url, body }: MutationProps) => postData({ url, body: (body as Record<string, unknown>), token: getToken() })
     // });
 
     const postMutation = useMutation<unknown, ErrorResponse, { url: string; body: Record<string, unknown> }>({
-        mutationFn: ({ url, body }) => postData({ url, body, token })
+        mutationFn: ({ url, body }) => postData({ url, body, token: getToken() })
     });
 
     const patchMutation = useMutation({
-        mutationFn: ({ url, body }: MutationProps) => patchData({ url, body: (body as Record<string, unknown>), token })
+        mutationFn: ({ url, body }: MutationProps) => patchData({ url, body: (body as Record<string, unknown>), token: getToken() })
     });
 
     const putMutation = useMutation({
-        mutationFn: ({ url, body }: MutationProps) => putData({ url, body: (body as Record<string, unknown>), token })
+        mutationFn: ({ url, body }: MutationProps) => putData({ url, body: (body as Record<string, unknown>), token: getToken() })
     });
 
     const postFormMutation = useMutation({
@@ -157,7 +163,7 @@ export const useAPI = () => {
                 }
             }
 
-            return postFormData({ url, token, body: formData });
+            return postFormData({ url, token: getToken(), body: formData });
         }
     });
 
@@ -188,7 +194,7 @@ export const useAPI = () => {
                     formData.append(key, value as any);
                 }
             }
-            return patchFormData({ url, token, body: formData }); 
+            return patchFormData({ url, token: getToken(), body: formData }); 
         }
     });
 
@@ -212,7 +218,7 @@ export const useAPI = () => {
             ...queryProps
         } = useQuery<PaginateApiResponse<T> | ErrorResponse, Error, PaginateApiResponse<T>>({
             queryKey,
-            queryFn: () => getData({ url, token }),
+            queryFn: () => getData({ url, token: getToken() }),
             refetchOnWindowFocus,
             refetchOnMount,
             staleTime,
