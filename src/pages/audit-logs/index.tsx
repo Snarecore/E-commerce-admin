@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PageHeader from "../../components/cards/PageHeader";
 import { useAPI } from "../../hooks/useApi";
 import apiConfig from "../../config/api.json";
 import { auditLogQueryKey } from "../../config/query-key";
 import { AuditLogItem } from "../../models/audit-log-models";
-import { FiSearch, FiEye, FiActivity, FiUser, FiCalendar, FiServer, FiShieldAlert, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiSearch, FiEye, FiActivity, FiCheckCircle, FiXCircle } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 
 const MODULE_OPTIONS = [
@@ -56,7 +56,7 @@ const AuditLogs = () => {
         isLoading,
         isFetching
     } = usePaginatedQuery<AuditLogItem>({
-        queryKey: [auditLogQueryKey, page, limit, debouncedSearch, selectedModule, selectedStatus],
+        queryKey: [auditLogQueryKey, String(page), String(limit), debouncedSearch, selectedModule, selectedStatus],
         url: auditApiUrl,
         enabled: true,
         refetchOnWindowFocus: false
