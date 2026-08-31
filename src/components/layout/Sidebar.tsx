@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TbListDetails, TbLayoutGrid, TbTablePlus } from "react-icons/tb";
+import { TbListDetails, TbLayoutGrid, TbTablePlus, TbFileText } from "react-icons/tb";
 import { BiCube } from "react-icons/bi";
 import { RiArrowDropRightLine, RiArrowDropDownLine, RiExchangeBoxFill, RiSeoFill } from "react-icons/ri";
 import { Link, useLocation, NavLink } from "react-router-dom";
@@ -187,6 +187,13 @@ const menu = [
 				name: "Social Links",
 				icon: <IoShareSocialOutline />,
 				path: "/social-link",
+				subItems: [],
+			},
+			{
+				id: 17,
+				name: "Audit Logs",
+				icon: <TbFileText />,
+				path: "/audit-logs",
 				subItems: [],
 			},
 			// {

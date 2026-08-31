@@ -46,6 +46,7 @@ import PolicyTwelve from "./pages/settings/policy/policy-twelve";
 import ProductReview from "./pages/inventory/product-reviews";
 import CouponsPage from "./pages/coupons";
 import MegaDiscountPage from "./pages/settings/mega-discount";
+import AuditLogs from "./pages/audit-logs";
 
 const AppRoutes = () => {
 	return (
@@ -227,6 +228,11 @@ const AppRoutes = () => {
 					element={
 						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 							<ProductMeta />
+						</RoleProtectedRoute>} />
+				<Route path="/audit-logs"
+					element={
+						<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+							<AuditLogs />
 						</RoleProtectedRoute>} />
 
 				<Route path="/policy-one"

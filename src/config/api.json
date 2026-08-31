@@ -87,5 +87,8 @@
     },
     "commission": {
         "commissionRateUrl": "commission-rate-cms"
+    },
+    "audit": {
+        "auditLogsUrl": "audit-logs"
     }
 }
