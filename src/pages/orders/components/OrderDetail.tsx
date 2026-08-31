@@ -7,6 +7,8 @@ import { formatDate } from "../../../utils/date-utils";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 
+import { productQueryKey, auditLogQueryKey, dashboardQueryKey } from "../../../config/query-key";
+
 const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Rejected", "Failed"];
 
 const OrderDetail = () => {
@@ -83,6 +85,74 @@ const OrderDetail = () => {
                 requiredFields: [],
             });
             if (result?.success || result?.data) {
+                // Enterprise Standard Stock State Machine
+                const orderItems = order.orderSummaries || order.orderItems || order.items || [];
+                const ACTIVE_STATUSES = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed"];
+                const CANCELLED_STATUSES = ["Rejected", "Failed", "Cancelled"];
+
+                const wasActive = ACTIVE_STATUSES.includes(order.status);
+                const wasCancelled = CANCELLED_STATUSES.includes(order.status);
+
+                const isNowActive = ACTIVE_STATUSES.includes(selectedStatus);
+                const isNowCancelled = CANCELLED_STATUSES.includes(selectedStatus);
+
+                // Stock only changes when transitioning between Active and Cancelled states
+                const shouldRestoreStock = wasActive && isNowCancelled;
+                const shouldDeductStock = wasCancelled && isNowActive;
+
+                if (shouldRestoreStock || shouldDeductStock) {
+                    for (const item of orderItems) {
+                        const prodId = item.productId || item.product?.id || item.id;
+                        const qty = Number(item.quantity) || 1;
+                        if (prodId) {
+                            try {
+                                const prodRes: any = await fetchData({ apiUrl: `${apiConfig.inventory.productUrl}/${prodId}` });
+                                const prodData = prodRes?.data || prodRes;
+                                if (prodData) {
+                                    const currentQty = Number(prodData.quantity) || 0;
+                                    let newQty = currentQty;
+
+                                    if (shouldRestoreStock) {
+                                        newQty = currentQty + qty;
+                                    } else if (shouldDeductStock) {
+                                        newQty = Math.max(0, currentQty - qty);
+                                    }
+
+                                    let updatedSizeStock = prodData.sizeStock;
+                                    if (updatedSizeStock && typeof updatedSizeStock === "object" && item.size && updatedSizeStock[item.size] !== undefined) {
+                                        const curSizeQty = Number(updatedSizeStock[item.size]) || 0;
+                                        const newSizeQty = shouldRestoreStock
+                                            ? curSizeQty + qty
+                                            : Math.max(0, curSizeQty - qty);
+                                        updatedSizeStock = { ...updatedSizeStock, [item.size]: newSizeQty };
+                                    }
+
+                                    await handleApiMutation({
+                                        // @ts-ignore
+                                        mutation: patchMutation,
+                                        url: `${apiConfig.inventory.productStatusUrl}/${prodId}`,
+                                        body: {
+                                            quantity: newQty,
+                                            sizeStock: updatedSizeStock,
+                                            status: prodData.status,
+                                            isApprove: prodData.isApprove,
+                                            quantityAlert: prodData.quantityAlert,
+                                            reduceQuantity: shouldDeductStock ? qty : 0,
+                                            restoreQuantity: shouldRestoreStock ? qty : 0
+                                        },
+                                        invalidateQueryKey: [productQueryKey, auditLogQueryKey, dashboardQueryKey],
+                                        showSuccessMessage: false,
+                                        showErrorMessage: false,
+                                        requiredFields: []
+                                    });
+                                }
+                            } catch (e) {
+                                console.error("Error updating product stock for:", prodId, e);
+                            }
+                        }
+                    }
+                }
+
                 setOrder((prev: any) => ({
                     ...prev,
                     status: selectedStatus,
