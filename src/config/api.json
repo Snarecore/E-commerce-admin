@@ -5,6 +5,7 @@
         },
         "heroSliderUrl": "hero-slider",
         "promotionsUrl": "promotions",
+        "popupUrl": "popups",
         "contactUs": {
             "contactMessageUrl": "contact-us-message",
             "contactPageCmsUrl": "contact-page-cms"

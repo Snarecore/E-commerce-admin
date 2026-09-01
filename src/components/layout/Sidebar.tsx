@@ -133,6 +133,7 @@ const menu = [
 					{ id: 1, name: "Hero Slider", path: "/hero-slider" },
 					{ id: 2, name: "Promotions", path: "/promotion" },
 					{ id: 3, name: "Page CMS", path: "/home-page-cms" },
+					{ id: 4, name: "Popup Banner", path: "/popups" },
 				],
 			},
 			{

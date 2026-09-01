@@ -17,6 +17,7 @@ const CreateProduct     = lazy(() => import("./pages/createProduct"));
 const Dashboard         = lazy(() => import("./pages/dashboard/admin-dashboard"));
 const HeroSlider        = lazy(() => import("./pages/settings/home/hero-slider"));
 const Promotions        = lazy(() => import("./pages/settings/home/promotions"));
+const PopupPage         = lazy(() => import("./pages/settings/home/popup"));
 const MainCategory      = lazy(() => import("./pages/inventory/category/main-category"));
 const FirstCategory     = lazy(() => import("./pages/inventory/category/first-category"));
 const SecondCategory    = lazy(() => import("./pages/inventory/category/second-category"));
@@ -150,6 +151,14 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<Promotions />
+							</RoleProtectedRoute>
+						}
+					/>
+					<Route
+						path="/popups"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PopupPage />
 							</RoleProtectedRoute>
 						}
 					/>
