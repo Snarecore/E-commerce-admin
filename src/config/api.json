@@ -91,5 +91,13 @@
     },
     "audit": {
         "auditLogsUrl": "audit-logs"
+    },
+    "reports": {
+        "profitSummaryUrl": "reports/profit/summary",
+        "profitTrendUrl": "reports/profit/trend",
+        "profitProductsUrl": "reports/profit/products",
+        "profitCategoriesUrl": "reports/profit/categories",
+        "profitOrdersUrl": "reports/profit/orders",
+        "profitExportUrl": "reports/profit/export"
     }
 }

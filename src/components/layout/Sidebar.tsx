@@ -91,6 +91,18 @@ const menu = [
 		],
 	},
 	{
+		sectionName: "Reports",
+		items: [
+			{
+				id: 68,
+				name: "Profit Report",
+				icon: <TbFileText />,
+				path: "/reports/profit",
+				subItems: [],
+			},
+		],
+	},
+	{
 		sectionName: "People",
 		items: [
 			{

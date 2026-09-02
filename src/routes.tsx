@@ -53,6 +53,7 @@ const ProductReview     = lazy(() => import("./pages/inventory/product-reviews")
 const CouponsPage       = lazy(() => import("./pages/coupons"));
 const MegaDiscountPage  = lazy(() => import("./pages/settings/mega-discount"));
 const AuditLogs         = lazy(() => import("./pages/audit-logs"));
+const ProfitReportPage  = lazy(() => import("./pages/reports/profit"));
 
 const PageLoader = () => (
 	<div className="flex items-center justify-center min-h-screen">
@@ -254,6 +255,11 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<AuditLogs />
+							</RoleProtectedRoute>} />
+					<Route path="/reports/profit"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ProfitReportPage />
 							</RoleProtectedRoute>} />
 
 					<Route path="/policy-one"
