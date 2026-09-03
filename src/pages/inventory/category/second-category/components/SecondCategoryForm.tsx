@@ -21,7 +21,8 @@ const initialFieldValues = {
 	mainCategoryName: "",
 	firstCategoryId: "",
 	firstCategoryName: "",
-	status: true
+	status: true,
+	position: ""
 };
 
 const requiredFields = [
@@ -114,7 +115,10 @@ const SecondCategoryForm = ({ isOpen, onClose, editData }: any) => {
 
 	useEffect(() => {
 		if (editData) {
-			setFieldValues(editData);
+			setFieldValues({
+				...editData,
+				position: editData.position === 9999 ? "" : editData.position
+			});
 			if (editData.mainCategoryId && editData.mainCategoryName) {
 				setSelectedMainCategory({
 					label: editData.mainCategoryName,
@@ -225,6 +229,13 @@ const SecondCategoryForm = ({ isOpen, onClose, editData }: any) => {
 						name="name"
 						value={fieldValues.name}
 						required
+						onChange={handleChange} />
+				</div>
+
+				<div>
+					<InputField label="Position" type="number"
+						name="position"
+						value={fieldValues.position}
 						onChange={handleChange} />
 				</div>
 

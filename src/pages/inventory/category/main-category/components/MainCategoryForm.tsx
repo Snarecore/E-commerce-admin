@@ -12,7 +12,8 @@ const initialFieldValues = {
     name: "",
     image: "" as string | File,
     bannerImage: "" as string | File,
-    status: true
+    status: true,
+    position: ""
 };
 
 const requiredFields: any = [
@@ -29,7 +30,10 @@ const MainCategoryForm = ({ isOpen, onClose, editData }: any) => {
 
     useEffect(() => {
         if (editData) {
-            setFieldValues(editData);
+            setFieldValues({
+                ...editData,
+                position: editData.position === 9999 ? "" : editData.position
+            });
         } else {
             setFieldValues(initialFieldValues);
         }
@@ -152,6 +156,10 @@ const MainCategoryForm = ({ isOpen, onClose, editData }: any) => {
 
                 <div>
                     <InputField label="Name" type="text" name="name" value={fieldValues.name} required onChange={handleChange} />
+                </div>
+
+                <div>
+                    <InputField label="Position" type="number" name="position" value={fieldValues.position} onChange={handleChange} />
                 </div>
 
                 <ToggleInput

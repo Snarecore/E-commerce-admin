@@ -15,6 +15,7 @@ interface CategoryDataProps {
 	image: string;
 	bannerImage: string;
 	status: boolean;
+	position?: number;
 }
 
 interface CategoryTableProps {
@@ -40,6 +41,7 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 		{ key: "image", label: "Image" },
 		{ key: "bannerImage", label: "Banner Image" },
 		{ key: "name", label: "Name" },
+		{ key: "position", label: "Position" },
 		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" }
 	];
@@ -108,6 +110,9 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 										/>
 									</td>
 									<td className="px-6 py-4">{data.name}</td>
+									<td className="px-6 py-4">
+										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
+									</td>
 									<td className="px-6 py-4">
 										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-[var(--color-active-green)] text-green-800" : "bg-[var(--color-inactive-red)] text-red-800"}`}>
 											{data.status ? "Active" : "Inactive"}

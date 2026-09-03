@@ -208,7 +208,7 @@ export const useAPI = () => {
         refetchOnMount = true,
         refetchInterval,
         showToast = true,
-        staleTime = 0
+        staleTime = 30000
     }: GetResponseProps) => {
         const {
             data: response,

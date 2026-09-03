@@ -17,6 +17,7 @@ interface SecondCategoryDataProps {
 	firstCategoryId: string;
 	firstCategoryName: string;
 	status: boolean;
+	position?: number;
 }
 
 interface SecondCategoryTableProps {
@@ -51,6 +52,7 @@ const SecondCategoryTable = ({
 		{ key: "name", label: "Name" },
 		{ key: "mainCategoryName", label: "Main Category" },
 		{ key: "firstCategoryName", label: "First Category" },
+		{ key: "position", label: "Position" },
 		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" }
 	];
@@ -113,6 +115,9 @@ const SecondCategoryTable = ({
 									<td className="px-6 py-4">{data.name}</td>
 									<td className="px-6 py-4">{data.mainCategoryName}</td>
 									<td className="px-6 py-4">{data.firstCategoryName}</td>
+									<td className="px-6 py-4">
+										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
+									</td>
 									<td className="px-6 py-4">
 										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-[var(--color-active-green)] text-green-800" : "bg-[var(--color-inactive-red)] text-red-800"}`}>
 											{data.status ? "Active" : "Inactive"}
