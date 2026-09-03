@@ -606,7 +606,11 @@ const ProductCreation = () => {
                                 /> */}
 
                                 <div>
-                                    <InputField label="Price" type="number" name="price" required value={fieldValues.price} onChange={handlePriceChange} />
+                                    <InputField label="Selling Price (বিক্রয় মূল্য)" type="number" name="price" required value={fieldValues.price} onChange={handlePriceChange} />
+                                </div>
+
+                                <div>
+                                    <InputField label="Unit Cost Price (কেনা দাম - Optional)" type="number" name="cost" value={fieldValues.cost} onChange={handleChange} placeholder="e.g. 600" />
                                 </div>
 
                                 <SelectInput

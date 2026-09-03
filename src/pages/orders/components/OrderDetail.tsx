@@ -246,36 +246,52 @@ const OrderDetail = () => {
                             <table className="w-full text-left text-sm">
                                 <thead>
                                     <tr className="bg-gray-50 text-gray-600 border-b border-gray-200">
-                                        <th className="px-4 py-3 w-[40%]">Product</th>
+                                        <th className="px-4 py-3 text-left">Product</th>
                                         <th className="px-4 py-3 text-center">Qty</th>
                                         <th className="px-4 py-3 text-center">Price</th>
+                                        <th className="px-4 py-3 text-center">Unit Cost</th>
                                         <th className="px-4 py-3 text-right">Subtotal</th>
+                                        <th className="px-4 py-3 text-right text-emerald-600">Est. Profit</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {orderItems.length > 0 ? (
-                                        orderItems.map((item: any) => (
-                                            <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <img
-                                                            src={item.productImage}
-                                                            alt={item.productName}
-                                                            className="w-12 h-12 object-cover rounded-lg border border-gray-200"
-                                                        />
-                                                        <span className="font-medium text-gray-800">{item.productName}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-3 text-center text-gray-600">{item.quantity}</td>
-                                                <td className="px-4 py-3 text-center text-gray-600">${item.price}</td>
-                                                <td className="px-4 py-3 text-right font-semibold text-gray-800">
-                                                    ${(item.price * item.quantity).toFixed(2)}
-                                                </td>
-                                            </tr>
-                                        ))
+                                        orderItems.map((item: any) => {
+                                            const unitCost = Number(item.unitCostPrice || item.product?.cost || 0);
+                                            const hasCost = unitCost > 0;
+                                            const itemSubtotal = item.price * item.quantity;
+                                            const itemCostTotal = unitCost * item.quantity;
+                                            const itemProfit = itemSubtotal - itemCostTotal;
+
+                                            return (
+                                                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                                    <td className="px-4 py-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <img
+                                                                src={item.productImage}
+                                                                alt={item.productName}
+                                                                className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                                                            />
+                                                            <span className="font-medium text-gray-800">{item.productName}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-center text-gray-600">{item.quantity}</td>
+                                                    <td className="px-4 py-3 text-center text-gray-600">৳{Number(item.price).toFixed(2)}</td>
+                                                    <td className="px-4 py-3 text-center text-gray-600">
+                                                        {hasCost ? `৳${unitCost.toFixed(2)}` : <span className="text-gray-400 italic text-xs">Unknown</span>}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right font-semibold text-gray-800">
+                                                        ৳{itemSubtotal.toFixed(2)}
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right font-bold text-emerald-600">
+                                                        {hasCost ? `+৳${itemProfit.toFixed(2)}` : <span className="text-gray-400 text-xs font-normal">N/A</span>}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     ) : (
                                         <tr>
-                                            <td colSpan={4} className="px-4 py-6 text-center text-gray-400 italic">
+                                            <td colSpan={6} className="px-4 py-6 text-center text-gray-400 italic">
                                                 No items found for this order.
                                             </td>
                                         </tr>
@@ -284,12 +300,12 @@ const OrderDetail = () => {
                                 {/* Totals */}
                                 <tfoot>
                                     <tr>
-                                        <td colSpan={3} className="px-4 py-2 text-right text-sm text-gray-500">Sub Total</td>
-                                        <td className="px-4 py-2 text-right font-semibold text-gray-700">${order.totalAmount ?? "0.00"}</td>
+                                        <td colSpan={5} className="px-4 py-2 text-right text-sm text-gray-500">Sub Total</td>
+                                        <td className="px-4 py-2 text-right font-semibold text-gray-700">৳{Number(order.totalAmount ?? 0).toFixed(2)}</td>
                                     </tr>
                                     <tr className="border-t border-gray-200">
-                                        <td colSpan={3} className="px-4 py-3 text-right text-base font-bold text-gray-800">Total Amount</td>
-                                        <td className="px-4 py-3 text-right text-base font-bold text-orange-600">${order.totalAmount ?? "0.00"}</td>
+                                        <td colSpan={5} className="px-4 py-3 text-right text-base font-bold text-gray-800">Total Amount</td>
+                                        <td className="px-4 py-3 text-right text-base font-bold text-orange-600">৳{Number(order.totalAmount ?? 0).toFixed(2)}</td>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -40,7 +40,7 @@ const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedSize, setSelectedSize] = useState<string | null>("M");
-    const apiUrl = `${apiConfig.inventory.productUrl}/${id}`;
+    const apiUrl = `${apiConfig.inventory.productUrl}/admin-product/${id}`;
     const { fetchData } = useAPI();
 
     const fetchProductData = async () => {
@@ -211,6 +211,27 @@ const ProductDetails = () => {
                                     <span className="text-3xl font-black text-gray-900">
                                         {Number(product.price).toFixed(2)}
                                     </span>
+                                )}
+                            </div>
+
+                            {/* Cost & Profit Info Badge for Admin */}
+                            <div className="mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200 flex flex-wrap items-center gap-4 text-xs">
+                                <div>
+                                    <span className="text-gray-500 block">Unit Cost (কেনা দাম):</span>
+                                    <span className="font-bold text-gray-800 text-sm">
+                                        {product.cost && Number(product.cost) > 0 ? `৳${Number(product.cost).toFixed(2)}` : 'Not Set'}
+                                    </span>
+                                </div>
+                                {product.cost && Number(product.cost) > 0 && (
+                                    <>
+                                        <div className="h-6 w-px bg-gray-300"></div>
+                                        <div>
+                                            <span className="text-gray-500 block">Est. Unit Profit:</span>
+                                            <span className="font-bold text-emerald-600 text-sm">
+                                                ৳{(Number(product.price) - Number(product.cost)).toFixed(2)} ({(((Number(product.price) - Number(product.cost)) / Number(product.price)) * 100).toFixed(1)}%)
+                                            </span>
+                                        </div>
+                                    </>
                                 )}
                             </div>
 
