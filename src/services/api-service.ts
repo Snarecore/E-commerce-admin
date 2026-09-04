@@ -6,21 +6,45 @@ const apiUrl = rawApiUrl.endsWith("/") ? rawApiUrl : `${rawApiUrl}/`;
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
-async function refreshAccessToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<string | null> {
     if (isRefreshing && refreshPromise) {
         return refreshPromise;
     }
     isRefreshing = true;
     refreshPromise = (async () => {
         try {
+            let storedToken = "";
+            let storedUserStr: string | null = null;
+            if (typeof window !== "undefined") {
+                storedUserStr = sessionStorage.getItem("user");
+                if (storedUserStr) {
+                    try {
+                        const parsed = JSON.parse(storedUserStr);
+                        storedToken = parsed?.token || "";
+                    } catch {}
+                }
+            }
+
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (storedToken) {
+                headers["Authorization"] = `Bearer ${storedToken}`;
+            }
+
             const response = await fetch(`${apiUrl}auth/refresh-token`, {
                 method: "POST",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" }
+                headers
             });
             if (response.ok) {
                 const resData = await response.json();
                 const newToken = resData?.accessToken || resData?.data?.accessToken || "refreshed";
+                if (newToken && typeof window !== "undefined" && storedUserStr) {
+                    try {
+                        const storedUser = JSON.parse(storedUserStr);
+                        storedUser.token = newToken;
+                        sessionStorage.setItem("user", JSON.stringify(storedUser));
+                    } catch {}
+                }
                 return newToken;
             }
             if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {

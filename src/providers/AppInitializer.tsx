@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useSetAtom } from "jotai";
 import { userAtom, User, userLoadedAtom } from "../store/user-store";
+import { refreshAccessToken } from "../services/api-service";
 
 const AppInitializer = () => {
     const setUser = useSetAtom(userAtom);
@@ -15,7 +16,7 @@ const AppInitializer = () => {
             try {
                 const storedUserStr = sessionStorage.getItem("user");
                 const storedUser = storedUserStr ? JSON.parse(storedUserStr) : null;
-                const token = storedUser?.token || "";
+                let token = storedUser?.token || "";
 
                 if (!storedUser || (!token && !storedUser?.id && !storedUser?._id && !storedUser?.email)) {
                     setUser(null);
@@ -30,11 +31,24 @@ const AppInitializer = () => {
                     headers["Authorization"] = `Bearer ${token}`;
                 }
 
-                const res = await fetch(`${apiUrl}/auth/admin/me`, {
+                let res = await fetch(`${apiUrl}/auth/admin/me`, {
                     method: "GET",
                     headers,
                     credentials: "include"
                 });
+
+                if (res.status === 401) {
+                    const newToken = await refreshAccessToken();
+                    if (newToken) {
+                        token = newToken;
+                        const retryHeaders: Record<string, string> = { Authorization: `Bearer ${newToken}` };
+                        res = await fetch(`${apiUrl}/auth/admin/me`, {
+                            method: "GET",
+                            headers: retryHeaders,
+                            credentials: "include"
+                        });
+                    }
+                }
 
                 if (res.ok) {
                     const data = await res.json();
