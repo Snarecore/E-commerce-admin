@@ -6,6 +6,7 @@ import CmsSkeleton from "../../../../components/skeleton/CmsSkeleton";
 import ImageUpload from "../../../../components/image/ImageUpload";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import Button from "../../../../components/buttons/ButtonStyleOne";
+import { extractCmsData } from "../../../../utils/cms-utils";
 
 const initialFieldValues = {
     bannerText: "",
@@ -106,18 +107,23 @@ const HeaderFooterCmsForm = () => {
         setIsLoading(true);
         try {
             const result = await fetchData({ apiUrl });
-            if (result && result.length > 0) {
-                setFieldValues(result[0]);
-                // setFooterSectionTwo(result[0].footerSectionTwo || [{ value: '', link: '' }]);
-                // setFooterSectionThree(result[0].footerSectionThree || [{ value: '', link: '' }]);
+            const data = extractCmsData(result);
+            if (data) {
+                setFieldValues(data);
                 setFooterSectionTwo(() => {
-                    const data = result[0].footerSectionTwo;
-                    return typeof data === 'string' ? JSON.parse(data) : data || [];
+                    const sec = data.footerSectionTwo;
+                    if (typeof sec === 'string') {
+                        try { return JSON.parse(sec); } catch { return [{ value: '', link: '' }]; }
+                    }
+                    return Array.isArray(sec) && sec.length > 0 ? sec : [{ value: '', link: '' }];
                 });
     
                 setFooterSectionThree(() => {
-                    const data = result[0].footerSectionThree;
-                    return typeof data === 'string' ? JSON.parse(data) : data || [];
+                    const sec = data.footerSectionThree;
+                    if (typeof sec === 'string') {
+                        try { return JSON.parse(sec); } catch { return [{ value: '', link: '' }]; }
+                    }
+                    return Array.isArray(sec) && sec.length > 0 ? sec : [{ value: '', link: '' }];
                 });
             }
         } finally {

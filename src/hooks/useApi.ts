@@ -1,6 +1,7 @@
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteData, getData, patchData, postData, putData, postFormData, patchFormData } from "../services/api-service";
 import { showErrorToast, showSuccessToast } from "../utils/toast-utils";
+import { getStoredToken } from "../utils/auth-storage";
 
 interface ApiResponse<T> {
     data: T;
@@ -88,12 +89,7 @@ const handleErrorMessage = (error: unknown) => {
 
 export const useAPI = () => {
     const getToken = () => {
-        try {
-            const user = JSON.parse(sessionStorage.getItem("user") || "{}");
-            return user?.token || '';
-        } catch {
-            return '';
-        }
+        return getStoredToken();
     };
     const queryClient = useQueryClient();
 

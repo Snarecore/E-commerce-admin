@@ -5,6 +5,7 @@ import apiConfig from "../../../../../config/api.json";
 import { homePageCmsQueryKey } from "../../../../../config/query-key";
 import ToggleInput from "../../../../../components/Inputs/ToggleButton";
 import ImageUpload from "../../../../../components/image/ImageUpload";
+import { extractCmsData } from "../../../../../utils/cms-utils";
 
 const initialFieldValues = {
     categorySectionTitle: "",
@@ -112,7 +113,10 @@ const HomePageCmsForm = () => {
         setIsLoading(true);
         try {
             const result = await fetchData({ apiUrl });
-            setFieldValues(result[0]);
+            const data = extractCmsData(result);
+            if (data) {
+                setFieldValues(data);
+            }
         } finally {
             setIsLoading(false);
         }

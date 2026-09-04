@@ -8,6 +8,7 @@ import { userAtom, userLoadedAtom } from "../../../store/user-store";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { loginQueryKey } from "../../../config/query-key";
+import { setStoredUser } from "../../../utils/auth-storage";
 
 const initialFieldValues = {
     email: "",
@@ -68,15 +69,17 @@ const Login = () => {
 				const rawData = result.data as any;
 				const userData = rawData?.data?.user || rawData?.user || rawData?.data?.admin || rawData?.admin || (typeof rawData?.data === 'object' ? rawData?.data : rawData);
 				const accessToken = rawData?.data?.accessToken || rawData?.accessToken || rawData?.data?.token || rawData?.token || rawData?.data?.access_token || rawData?.access_token;
+				const refreshToken = rawData?.data?.refreshToken || rawData?.refreshToken || rawData?.data?.refresh_token || rawData?.refresh_token;
 
 				const normalizedUser = {
 					...(typeof userData === 'object' ? userData : {}),
 					id: userData?.id || userData?._id || "",
 					role: userData?.role || "admin",
-					token: accessToken || ""
+					token: accessToken || "",
+					refreshToken: refreshToken || ""
 				};
 
-				sessionStorage.setItem("user", JSON.stringify(normalizedUser));
+				setStoredUser(normalizedUser);
 				setUser(normalizedUser);
 				navigate("/", { replace: true });
 			}

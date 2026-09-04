@@ -3,6 +3,7 @@ import { useAPI } from "../../../../hooks/useApi";
 import apiConfig from "../../../../config/api.json";
 import { shopPageCmsQueryKey } from "../../../../config/query-key";
 import CmsSkeleton from "../../../../components/skeleton/CmsSkeleton";
+import { extractCmsData } from "../../../../utils/cms-utils";
 import ImageUpload from "../../../../components/image/ImageUpload";
 
 const initialFieldValues = {
@@ -49,8 +50,9 @@ const ShopPageCmsForm = () => {
         setIsLoading(true);
         try {
             const result = await fetchData({ apiUrl });
-            if (result && result.length > 0) {
-                setFieldValues(result[0]);
+            const data = extractCmsData(result);
+            if (data) {
+                setFieldValues(data);
             }
         } finally {
             setIsLoading(false);

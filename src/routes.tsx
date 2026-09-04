@@ -49,6 +49,10 @@ const PolicyNine        = lazy(() => import("./pages/settings/policy/policy-nine
 const PolicyTen         = lazy(() => import("./pages/settings/policy/policy-ten"));
 const PolicyEleven      = lazy(() => import("./pages/settings/policy/policy-eleven"));
 const PolicyTwelve      = lazy(() => import("./pages/settings/policy/policy-twelve"));
+const PrivacyPolicy     = lazy(() => import("./pages/settings/policy/privacy"));
+const ExchangeReturn    = lazy(() => import("./pages/settings/policy/exchange-return"));
+const TermsConditions   = lazy(() => import("./pages/settings/policy/terms-conditions"));
+const Faq               = lazy(() => import("./pages/settings/faq"));
 const ProductReview     = lazy(() => import("./pages/inventory/product-reviews"));
 const CouponsPage       = lazy(() => import("./pages/coupons"));
 const MegaDiscountPage  = lazy(() => import("./pages/settings/mega-discount"));
@@ -321,6 +325,31 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<PolicyTwelve />
+							</RoleProtectedRoute>} />
+					<Route path="/privacy-policy"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PrivacyPolicy />
+							</RoleProtectedRoute>} />
+					<Route path="/exchange-policy"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<ExchangeReturn />
+							</RoleProtectedRoute>} />
+					<Route path="/terms-conditions"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<TermsConditions />
+							</RoleProtectedRoute>} />
+					<Route path="/faq"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Faq />
+							</RoleProtectedRoute>} />
+					<Route path="/faqs"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<Faq />
 							</RoleProtectedRoute>} />
 				</Route>
 				<Route path="*" element={<Navigate to="/" replace />} />

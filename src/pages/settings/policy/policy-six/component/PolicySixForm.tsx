@@ -5,6 +5,8 @@ import apiConfig from "../../../../../config/api.json";
 import { privacyPolicyCmsQueryKey } from "../../../../../config/query-key";
 import TextEditor from "../../../../../components/Editor/TextEditor";
 
+import { extractCmsData } from "../../../../../utils/cms-utils";
+
 const initialFieldValues = {
     title: "",
     description: "",
@@ -52,7 +54,14 @@ const PolicySixForm = () => {
         setIsLoading(true);
         try {
             const result = await fetchData({ apiUrl });
-            setFieldValues(result[0]);
+            const data = extractCmsData(result);
+            if (data) {
+                setFieldValues({
+                    ...data,
+                    title: data.title || "",
+                    description: data.description || ""
+                });
+            }
         } finally {
             setIsLoading(false);
         }

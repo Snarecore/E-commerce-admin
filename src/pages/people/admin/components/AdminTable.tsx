@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { useAPI } from "../../../../hooks/useApi";
 import apiConfig from "../../../../config/api.json";
+import { getStoredUser } from "../../../../utils/auth-storage";
 import TableSkeleton from "../../../../components/skeleton/TableSkeleton";
 import DeleteModal from "../../../../components/modals/DeleteModal";
 import EmptyState from "../../../../components/empty-state/EmptyState";
@@ -36,7 +37,7 @@ const AdminTable = ({
 }: AdminTableProps) => {
     const { handleDeleteAPI } = useAPI();
     const apiUrl = apiConfig.people.user;
-    const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+    const user = getStoredUser() || ({} as any);
 
     const tableHeaders = [
         { key: "sl", label: "Sl" },

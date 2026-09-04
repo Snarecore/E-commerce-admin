@@ -3,6 +3,7 @@ import CmsSkeleton from "../../../../../components/skeleton/CmsSkeleton";
 import { useAPI } from "../../../../../hooks/useApi";
 import apiConfig from "../../../../../config/api.json";
 import { contactPageCmsQueryKey } from "../../../../../config/query-key";
+import { extractCmsData } from "../../../../../utils/cms-utils";
 
 const initialFieldValues = {
     pageTitle: "",
@@ -66,7 +67,10 @@ const ContactPageCmsForm = () => {
         setIsLoading(true);
         try {
             const result = await fetchData({ apiUrl });
-            setFieldValues(result[0]);
+            const data = extractCmsData(result);
+            if (data) {
+                setFieldValues(data);
+            }
         } finally {
             setIsLoading(false);
         }

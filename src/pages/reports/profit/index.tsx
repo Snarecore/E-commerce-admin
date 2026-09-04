@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
+import { getStoredToken } from "../../../utils/auth-storage";
 import ProfitFilterHeader from "./components/ProfitFilterHeader";
 import ProfitOverviewCards from "./components/ProfitOverviewCards";
 import ProfitTrendChart from "./components/ProfitTrendChart";
@@ -219,13 +220,7 @@ export default function ProfitReportPage() {
     setIsExporting(true);
     try {
       const q = buildQueryParams();
-      let token = "";
-      try {
-        const user = JSON.parse(sessionStorage.getItem("user") || "{}");
-        token = user?.token || "";
-      } catch {
-        token = "";
-      }
+      const token = getStoredToken();
 
       const exportUrl = `${import.meta.env.VITE_API_URL || ""}/${apiConfig.reports.profitExportUrl}?${q}`;
 
