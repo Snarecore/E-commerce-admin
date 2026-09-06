@@ -124,6 +124,11 @@ export function recordUserActivity(): void {
     try {
         sessionStorage.setItem(STORAGE_KEY_LAST_ACTIVITY, String(now));
         localStorage.setItem(STORAGE_KEY_LAST_ACTIVITY, String(now));
+
+        // Slide session expiration forward on active user interaction (2 hours from now)
+        const newExpiry = now + SESSION_DURATION_MS;
+        sessionStorage.setItem(STORAGE_KEY_SESSION_EXPIRES_AT, String(newExpiry));
+        localStorage.setItem(STORAGE_KEY_SESSION_EXPIRES_AT, String(newExpiry));
     } catch {}
 }
 

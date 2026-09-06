@@ -39,17 +39,18 @@ export async function refreshAccessToken(): Promise<string | null> {
                 return null;
             }
 
+            const tokenToUse = storedRefreshToken || storedUser?.refreshToken || storedToken;
             const headers: Record<string, string> = { "Content-Type": "application/json" };
-            if (storedToken) {
-                headers["Authorization"] = `Bearer ${storedToken}`;
+            if (tokenToUse) {
+                headers["Authorization"] = `Bearer ${tokenToUse}`;
             }
             if (storedRefreshToken) {
                 headers["x-refresh-token"] = storedRefreshToken;
             }
 
             const payloadBody = JSON.stringify({
-                refreshToken: storedRefreshToken || storedToken,
-                refresh_token: storedRefreshToken || storedToken,
+                refreshToken: tokenToUse,
+                refresh_token: tokenToUse,
                 token: storedToken
             });
 
@@ -140,19 +141,27 @@ async function apiRequest<T>(url: string, options: RequestInit, isRetry = false)
         if (!response.ok) {
             console.error(`Error: ${response.status} - ${response.statusText}`);
             const errData = await response.json().catch(() => null);
+            if (response.status === 413) {
+                return {
+                    error: true,
+                    message: "Selected image(s) or payload size is too large (exceeds limit). Please upload smaller image files."
+                };
+            }
             if (response.status === 429) {
                 return {
                     error: true,
                     message: errData?.message || "Too many requests. Please wait a minute before trying again."
                 };
             }
-            return { error: true, message: errData?.message || `Failed: ${response.statusText}` };
+            const rawMsg = errData?.message || errData?.data?.message || `Failed (${response.status}): ${response.statusText}`;
+            const formattedMsg = Array.isArray(rawMsg) ? rawMsg.join(", ") : String(rawMsg);
+            return { error: true, message: formattedMsg };
         }
 
         return await response.json();
-    } catch (error) {
+    } catch (error: any) {
         console.error("Fetch error: ", error);
-        return { error: true, message: "An error occurred while making the request." };
+        return { error: true, message: error?.message || "An error occurred while making the request." };
     }
 }
 

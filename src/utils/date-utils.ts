@@ -1,16 +1,26 @@
 import moment from "moment";
 
-export const formatDate = (date?: Date | string | number | null, format: string = "YYYY-MM-DD HH:mm"): string => {
-    if (!date) return moment().format(format);
-    const m = moment(date);
-    if (!m.isValid()) {
-        if (typeof date === "string" && !isNaN(Number(date))) {
-            const mNum = moment(Number(date));
-            if (mNum.isValid()) return mNum.format(format);
+const parseDateSafely = (date?: Date | string | number | null): moment.Moment => {
+    if (!date) return moment();
+    if (typeof date === "string") {
+        const trimmed = date.trim();
+        if (/^\d+$/.test(trimmed)) {
+            const mNum = moment(Number(trimmed));
+            if (mNum.isValid()) return mNum;
         }
-        return moment().format(format);
+        // If string does not specify timezone offset (no Z and no +/-hh:mm), parse as UTC and convert to local time
+        if (!trimmed.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(trimmed)) {
+            const parsedUtc = moment.utc(trimmed);
+            if (parsedUtc.isValid()) return parsedUtc.local();
+        }
     }
-    return m.format(format);
+    const m = moment(date);
+    if (!m.isValid()) return moment();
+    return m;
+};
+
+export const formatDate = (date?: Date | string | number | null, format: string = "YYYY-MM-DD HH:mm"): string => {
+    return parseDateSafely(date).format(format);
 };
 
 export const getCurrentDate = (format: string = "YYYY-MM-DD HH:mm"): string => {
@@ -18,11 +28,11 @@ export const getCurrentDate = (format: string = "YYYY-MM-DD HH:mm"): string => {
 };
 
 export const addTimeToDate = (date: Date | string, amount: number, unit: moment.unitOfTime.DurationConstructor = "days"): string => {
-    return moment(date).add(amount, unit).format("YYYY-MM-DD HH:mm");
+    return parseDateSafely(date).add(amount, unit).format("YYYY-MM-DD HH:mm");
 };
 
 export const subtractTimeFromDate = (date: Date | string, amount: number, unit: moment.unitOfTime.DurationConstructor = "days"): string => {
-    return moment(date).subtract(amount, unit).format("YYYY-MM-DD HH:mm");
+    return parseDateSafely(date).subtract(amount, unit).format("YYYY-MM-DD HH:mm");
 };
 
 export const getStartOf = (unit: moment.unitOfTime.StartOf): string => {
@@ -34,28 +44,11 @@ export const getEndOf = (unit: moment.unitOfTime.StartOf): string => {
 };
 
 export const formatPrettyDate = (date?: Date | string | number | null): string => {
-    if (!date) return moment().format("LL");
-    const m = moment(date);
-    if (!m.isValid()) {
-        if (typeof date === "string" && !isNaN(Number(date))) {
-            const mNum = moment(Number(date));
-            if (mNum.isValid()) return mNum.format("LL");
-        }
-        return moment().format("LL");
-    }
-    return m.format("LL");
+    return parseDateSafely(date).format("LL");
 };
 
 export const formatPrettyDateWithTime = (date?: Date | string | number | null): string => {
-    if (!date) return moment().format("LLL");
-    const m = moment(date);
-    if (!m.isValid()) {
-        if (typeof date === "string" && !isNaN(Number(date))) {
-            const mNum = moment(Number(date));
-            if (mNum.isValid()) return mNum.format("LLL");
-        }
-        return moment().format("LLL");
-    }
-    return m.format("LLL");
+    return parseDateSafely(date).format("LLL");
 };
+
 

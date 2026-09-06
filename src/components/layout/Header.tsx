@@ -19,6 +19,7 @@ import { logoutUserAtom } from "../../store/user-store";
 import { useAtomValue } from "jotai";
 import { userAtom } from "../../store/user-store";
 import { IoShareSocialOutline } from "react-icons/io5";
+import AdminNotificationDropdown from "./AdminNotificationDropdown";
 
 const MenuItem = ({
 	icon,
@@ -373,6 +374,8 @@ const Header = () => {
 
 			<div className="flex justify-end items-center px-4 lg:py-1 bg-white border-b border-gray-200">
 				<div className="flex gap-4 items-center">
+					<AdminNotificationDropdown />
+
 					<div
 						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors relative"
 						onClick={() => setShowUserDropdown(!showUserDropdown)}>
