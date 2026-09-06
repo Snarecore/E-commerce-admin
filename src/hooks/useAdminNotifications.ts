@@ -81,7 +81,7 @@ export function useAdminNotifications() {
         // Detect new notifications for sound alert
         if (!isInitialLoadRef.current && document.visibilityState === "visible") {
           const hasBrandNewUnread = fetchedItems.some(
-            (item) => !item.isRead && !knownIdsRef.current.has(item.id)
+            (item) => !item.isRead && !knownIdsRef.current.has(item.id || item._id || "")
           );
           if (hasBrandNewUnread) {
             playChimeSound();
@@ -89,7 +89,10 @@ export function useAdminNotifications() {
         }
 
         // Update known IDs
-        fetchedItems.forEach((item) => knownIdsRef.current.add(item.id));
+        fetchedItems.forEach((item) => {
+          const key = item.id || item._id;
+          if (key) knownIdsRef.current.add(key);
+        });
         isInitialLoadRef.current = false;
 
         setItems(fetchedItems);
@@ -106,10 +109,10 @@ export function useAdminNotifications() {
 
   // Smart Polling Engine (Visibility API + Online/Offline + BroadcastChannel Signal)
   useEffect(() => {
-    let timerId: NodeJS.Timeout;
+    let timerId: ReturnType<typeof setTimeout> | undefined;
 
     const schedulePoll = () => {
-      clearTimeout(timerId);
+      if (timerId) clearTimeout(timerId);
       const isVisible = document.visibilityState === "visible";
       const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
 
@@ -154,7 +157,7 @@ export function useAdminNotifications() {
     }
 
     return () => {
-      clearTimeout(timerId);
+      if (timerId) clearTimeout(timerId);
       window.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
       if (channel) {
@@ -166,12 +169,12 @@ export function useAdminNotifications() {
   // Optimistic Mark as Read
   const markRead = async (id: string) => {
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, isRead: true } : item))
+      prev.map((item) => ((item.id === id || item._id === id) ? { ...item, isRead: true } : item))
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
 
     try {
-      await patchData({ url: `site/notifications/admin/${id}/read` });
+      await patchData({ url: `site/notifications/admin/${id}/read`, body: {} });
       // Notify other Admin tabs via signal
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         try {
@@ -189,7 +192,7 @@ export function useAdminNotifications() {
     setUnreadCount(0);
 
     try {
-      await patchData({ url: "site/notifications/admin/read-all" });
+      await patchData({ url: "site/notifications/admin/read-all", body: {} });
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         try {
           const bc = new BroadcastChannel("fashion_time_admin_notifications");

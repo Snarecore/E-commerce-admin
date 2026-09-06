@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/cards/PageHeader";
 import OrderTable from "./components/OrderTable";
 import { useAPI } from "../../hooks/useApi";
@@ -15,6 +16,10 @@ const ORDER_TABS = [
 ];
 
 const Orders = () => {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const urlOrderId = searchParams.get("orderId");
+
     const dataLimit = 10;
     const [activeTab, setActiveTab] = useState("all");
     const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -79,6 +84,9 @@ const Orders = () => {
         if (selectedFilters.endDate?.value) {
             params.append("endDate", new Date(selectedFilters.endDate.value.setHours(23, 59, 59, 999)).toISOString());
         }
+        if (urlOrderId) {
+            params.append("orderId", urlOrderId);
+        }
 
         return `${apiConfig.order.orderListUrl}?${params.toString()}`;
     };
@@ -95,7 +103,7 @@ const Orders = () => {
         isLoading,
     } = usePaginatedQuery({
         // @ts-ignore
-        queryKey: [orderQueryKey, selectedFilters, currentPageNumber.toString()],
+        queryKey: [orderQueryKey, selectedFilters, currentPageNumber.toString(), urlOrderId || ""],
         url: getOrderListApiUrl(),
     });
 
@@ -133,6 +141,19 @@ const Orders = () => {
                         </button>
                     ))}
                 </div>
+
+                {/* Filtered Order ID notice from Notification */}
+                {urlOrderId && (
+                    <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 text-sm text-blue-800">
+                        <span>Filtered for Order: <strong>#{urlOrderId}</strong></span>
+                        <button
+                            onClick={() => navigate("/orders")}
+                            className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1 rounded-md transition-colors cursor-pointer"
+                        >
+                            Clear Filter (View All)
+                        </button>
+                    </div>
+                )}
 
                 {/* Abandoned Orders notice */}
                 {activeTab === "abandoned" && (

@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiBell, FiCheck, FiShoppingCart, FiX } from "react-icons/fi";
 import { useAdminNotifications, AdminNotificationItem } from "../../hooks/useAdminNotifications";
+import moment from "moment";
 
-const timeAgo = (dateStr: string): string => {
+const timeAgo = (dateStr?: string | Date | null): string => {
   if (!dateStr) return "just now";
-  let parsedStr = String(dateStr).trim();
-  if (!parsedStr.endsWith("Z") && !parsedStr.includes("+") && !/-\d{2}:\d{2}$/.test(parsedStr)) {
-    parsedStr = parsedStr.includes("T") ? `${parsedStr}Z` : `${parsedStr.replace(" ", "T")}Z`;
+  let m = moment(dateStr);
+  if (!m.isValid()) {
+    m = moment(new Date(dateStr));
   }
-  const date = new Date(parsedStr);
-  if (isNaN(date.getTime())) return "just now";
-  const diffMs = Date.now() - date.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
+  if (!m.isValid()) return "just now";
+
+  const diffSec = moment().diff(m, "seconds");
   if (diffSec < 60) return "just now";
   const diffMin = Math.floor(diffSec / 60);
   if (diffMin < 60) return `${diffMin}m ago`;
@@ -20,7 +20,7 @@ const timeAgo = (dateStr: string): string => {
   if (diffHr < 24) return `${diffHr}h ago`;
   const diffDay = Math.floor(diffHr / 24);
   if (diffDay < 30) return `${diffDay}d ago`;
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
+  return m.format("MMM D");
 };
 
 export const AdminNotificationDropdown: React.FC = () => {
