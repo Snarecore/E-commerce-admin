@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { FiEye, FiMessageSquare } from "react-icons/fi";
+import { FiEye, FiMessageSquare, FiShield, FiTrash2 } from "react-icons/fi";
+import toast from "react-hot-toast";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import TableSkeleton from "../../../components/skeleton/TableSkeleton";
@@ -8,6 +9,7 @@ import DeleteModal from "../../../components/modals/DeleteModal";
 import Pagination from "../../../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../../utils/date-utils";
+import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
 import RefreshButton from "../../../components/table-components/RefreshButton";
@@ -97,6 +99,34 @@ const OrderTable = ({
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedOrderData, setSelectedOrderData] = useState<OrdersDataProps | null>(null);
+
+    // Block Customer Modal State
+    const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+    const [selectedBlockOrder, setSelectedBlockOrder] = useState<any>(null);
+    const [blockSeverity, setBlockSeverity] = useState<"HARD_BLOCK" | "SUSPICIOUS_FLAG">("HARD_BLOCK");
+    const [blockReason, setBlockReason] = useState("FRAUD_HISTORY");
+    const [blockNote, setBlockNote] = useState("");
+
+    const handleOpenBlockModal = (order: any) => {
+        setSelectedBlockOrder(order);
+        setBlockNote(`Blocked directly from Order #${order.orderId || order.id}`);
+        setIsBlockModalOpen(true);
+    };
+
+    const handleConfirmBlock = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedBlockOrder) return;
+        const name = getDisplayCustomerName(selectedBlockOrder);
+        const contact = getDisplayCustomerContact(selectedBlockOrder);
+        toast.success(`Customer "${name}" (${contact || 'Target'}) added to blacklist successfully!`);
+        setIsBlockModalOpen(false);
+        setSelectedBlockOrder(null);
+    };
+
+    const handleOpenDeleteModal = (data: OrdersDataProps) => {
+        setSelectedOrderData(data);
+        setIsDeleteModalOpen(true);
+    };
 
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false);
@@ -279,10 +309,10 @@ const OrderTable = ({
                                     <td className="px-6 py-4">
                                         <div>
                                             <p className="font-medium text-gray-800 text-sm">
-                                                {data.user?.name || "—"}
+                                                {getDisplayCustomerName(data)}
                                             </p>
                                             <p className="text-xs text-gray-400">
-                                                {data.user?.phone || data.user?.email || ""}
+                                                {getDisplayCustomerContact(data)}
                                             </p>
                                         </div>
                                     </td>
@@ -327,6 +357,22 @@ const OrderTable = ({
                                             >
                                                 <FiMessageSquare className="w-4 h-4" />
                                             </button>
+                                            {/* Block Customer */}
+                                            <button
+                                                onClick={() => handleOpenBlockModal(data)}
+                                                title="Block Customer / Add to Blacklist"
+                                                className="border border-red-200 text-red-600 hover:text-red-700 hover:border-red-400 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                            >
+                                                <FiShield className="w-4 h-4" />
+                                            </button>
+                                            {/* Delete Order */}
+                                            <button
+                                                onClick={() => handleOpenDeleteModal(data)}
+                                                title="Delete Order"
+                                                className="border border-red-200 text-red-600 hover:text-red-700 hover:border-red-400 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                            >
+                                                <FiTrash2 className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -362,6 +408,91 @@ const OrderTable = ({
                         currentPageNumber={currentPageNumber}
                         handlePagination={handlePagination}
                     />
+                </div>
+            )}
+
+            {/* Quick Block Modal */}
+            {isBlockModalOpen && selectedBlockOrder && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl space-y-4 border border-gray-200">
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                            <FiShield className="w-5 h-5 text-red-600" />
+                            <h3 className="text-lg font-bold text-gray-900">Block Customer</h3>
+                        </div>
+
+                        <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-red-800 space-y-1">
+                            <p className="font-semibold">Customer Information:</p>
+                            <p><strong>Name:</strong> {getDisplayCustomerName(selectedBlockOrder)}</p>
+                            <p><strong>Phone:</strong> {getDisplayCustomerContact(selectedBlockOrder) || 'N/A'}</p>
+                            <p><strong>Email:</strong> {selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email || 'N/A'}</p>
+                            <p><strong>Order ID:</strong> #{selectedBlockOrder.orderId || selectedBlockOrder.id}</p>
+                        </div>
+
+                        <form onSubmit={handleConfirmBlock} className="space-y-3 text-left">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Enforcement Severity
+                                </label>
+                                <select
+                                    value={blockSeverity}
+                                    onChange={(e) => setBlockSeverity(e.target.value as any)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                >
+                                    <option value="HARD_BLOCK">HARD BLOCK (Refuse Checkout & Fraud Prevention)</option>
+                                    <option value="SUSPICIOUS_FLAG">SUSPICIOUS FLAG (Allow Checkout + Force Manual Review)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Reason Code
+                                </label>
+                                <select
+                                    value={blockReason}
+                                    onChange={(e) => setBlockReason(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                >
+                                    <option value="FRAUD_HISTORY">FRAUD_HISTORY (Repeated fake orders or fraud)</option>
+                                    <option value="CHARGEBACK_RISK">CHARGEBACK_RISK (High chargeback / dispute risk)</option>
+                                    <option value="SUSPICIOUS_BEHAVIOR">SUSPICIOUS_BEHAVIOR (Abusive ordering pattern)</option>
+                                    <option value="ADMIN_REQUEST">ADMIN_REQUEST (Direct admin decision)</option>
+                                    <option value="POLICY_VIOLATION">POLICY_VIOLATION (Store rules violation)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Admin Note / Reference
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={blockNote}
+                                    onChange={(e) => setBlockNote(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-red-500 outline-none resize-none"
+                                    placeholder="Enter reason for blocking this customer..."
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsBlockModalOpen(false);
+                                        setSelectedBlockOrder(null);
+                                    }}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg cursor-pointer transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-lg cursor-pointer transition"
+                                >
+                                    Confirm Block Customer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

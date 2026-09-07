@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { formatDate } from "../../utils/date-utils";
+import { getDisplayCustomerName, getDisplayCustomerContact } from "../../utils/order-utils";
 import PageHeader from "../../components/cards/PageHeader";
 
 const InvoiceView = () => {
@@ -47,9 +48,9 @@ const InvoiceView = () => {
 
 						<div>
 							<p className="text-xl font-semibold mb-2">Customer</p>
-							<p className="font-bold text-lg">Name: {order.user?.name || "N/A"}</p>
-							<p className="font-medium">Email: {order.user?.email || "N/A"}</p>
-							<p className="font-medium">Phone: {order.user?.phone || "N/A"}</p>
+							<p className="font-bold text-lg">Name: {getDisplayCustomerName(order)}</p>
+							<p className="font-medium">Email: {order.user?.email || order.customerEmail || order.email || "N/A"}</p>
+							<p className="font-medium">Contact: {getDisplayCustomerContact(order) || "N/A"}</p>
 						</div>
 
 						<div>

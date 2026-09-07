@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiMessageSquare, FiPrinter } from "react-icons/fi";
+import { FiArrowLeft, FiMessageSquare, FiPrinter, FiShield, FiTrash2 } from "react-icons/fi";
+import toast from "react-hot-toast";
+import DeleteModal from "../../../components/modals/DeleteModal";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { formatDate } from "../../../utils/date-utils";
+import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 
@@ -15,22 +18,81 @@ const OrderDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams<{ id: string }>();
-    const { fetchData, handleApiMutation, patchMutation } = useAPI();
+    const { fetchData, handleApiMutation, patchMutation, handleDeleteAPI } = useAPI();
 
     const [order, setOrder] = useState<any>(location.state?.orderData || null);
     const [isLoading, setIsLoading] = useState(!location.state?.orderData);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const handleDeleteOrder = async () => {
+        if (!order?.id) return;
+        const apiResponse = await handleDeleteAPI({
+            url: `${apiConfig.order.orderListUrl}/${order.id}`,
+            showSuccessMessage: true,
+        });
+        if (apiResponse) {
+            navigate("/orders");
+        }
+    };
     const [selectedStatus, setSelectedStatus] = useState<string>("");
+
+    const parseOrderResponse = (res: any, cleanId: string) => {
+        if (!res) return null;
+
+        // Direct single order object
+        if (!Array.isArray(res) && !Array.isArray(res.data) && !Array.isArray(res.data?.data) && !Array.isArray(res.orderList)) {
+            if (typeof res === "object" && (res.id || res.orderId)) {
+                return res;
+            }
+        }
+
+        let items: any[] = [];
+        if (Array.isArray(res)) {
+            items = res;
+        } else if (Array.isArray(res.data)) {
+            items = res.data;
+        } else if (res.data && Array.isArray(res.data.data)) {
+            items = res.data.data;
+        } else if (Array.isArray(res.orderList)) {
+            items = res.orderList;
+        }
+
+        if (items.length > 0) {
+            const found = items.find((o: any) =>
+                String(o.id || "").toLowerCase() === cleanId.toLowerCase() ||
+                String(o.orderId || "").toLowerCase() === cleanId.toLowerCase() ||
+                String(o.id || "").replace(/^#/, "").toLowerCase() === cleanId.toLowerCase() ||
+                String(o.orderId || "").replace(/^#/, "").toLowerCase() === cleanId.toLowerCase()
+            );
+            return found || items[0];
+        }
+
+        return null;
+    };
 
     // Fetch order from API if not passed via navigation state
     useEffect(() => {
         if (!order && id) {
             setIsLoading(true);
-            fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${id}` })
-                .then((res: any) => {
-                    const data = res?.data || res;
-                    setOrder(data);
-                    setSelectedStatus(data?.status || "");
+            const cleanId = String(id).replace(/^#/, "").trim();
+
+            fetchData({ apiUrl: `${apiConfig.order.orderListUrl}?orderId=${cleanId}` })
+                .then(async (res: any) => {
+                    let targetOrder = parseOrderResponse(res, cleanId);
+                    if (!targetOrder) {
+                        const idRes: any = await fetchData({ apiUrl: `${apiConfig.order.orderListUrl}?id=${cleanId}` });
+                        targetOrder = parseOrderResponse(idRes, cleanId);
+                    }
+                    if (!targetOrder) {
+                        const directRes: any = await fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` });
+                        targetOrder = parseOrderResponse(directRes, cleanId);
+                    }
+
+                    if (targetOrder) {
+                        setOrder(targetOrder);
+                        setSelectedStatus(targetOrder.status || "");
+                    }
                 })
                 .catch((err: any) => console.error("Failed to fetch order detail:", err))
                 .finally(() => setIsLoading(false));
@@ -42,6 +104,26 @@ const OrderDetail = () => {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState("");
     const [rejectionMessage, setRejectionMessage] = useState("");
+
+    // Block Customer Modal State
+    const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+    const [blockSeverity, setBlockSeverity] = useState<"HARD_BLOCK" | "SUSPICIOUS_FLAG">("HARD_BLOCK");
+    const [blockReason, setBlockReason] = useState("FRAUD_HISTORY");
+    const [blockNote, setBlockNote] = useState("");
+
+    const handleOpenBlockModal = () => {
+        setBlockNote(`Blocked directly from Order #${order?.orderId || order?.id}`);
+        setIsBlockModalOpen(true);
+    };
+
+    const handleConfirmBlock = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!order) return;
+        const name = getDisplayCustomerName(order);
+        const contact = getDisplayCustomerContact(order);
+        toast.success(`Customer "${name}" (${contact || 'Target'}) added to blacklist successfully!`);
+        setIsBlockModalOpen(false);
+    };
 
     const REJECTION_REASONS = [
         "Product unavailable",
@@ -219,13 +301,22 @@ const OrderDetail = () => {
                     headerTitle="Order Detail"
                     headerDescription={`Viewing order #${order.orderId}`}
                 />
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 border border-gray-300 hover:border-orange-400 px-4 py-2 rounded-lg transition-all cursor-pointer"
-                >
-                    <FiArrowLeft className="w-4 h-4" />
-                    Back to Orders
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 bg-red-50 border border-red-200 hover:border-red-300 px-4 py-2 rounded-lg transition-all cursor-pointer font-medium"
+                    >
+                        <FiTrash2 className="w-4 h-4 text-red-600" />
+                        Delete Order
+                    </button>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 border border-gray-300 hover:border-orange-400 px-4 py-2 rounded-lg transition-all cursor-pointer"
+                    >
+                        <FiArrowLeft className="w-4 h-4" />
+                        Back to Orders
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-12 gap-5">
@@ -321,22 +412,149 @@ const OrderDetail = () => {
                         <h3 className="text-base font-semibold text-gray-800 mb-4">Customer</h3>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-11 h-11 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-lg shrink-0">
-                                {order.user?.name?.charAt(0)?.toUpperCase() || "?"}
+                                {getDisplayCustomerName(order).charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <p className="font-semibold text-gray-900">{order.user?.name || "—"}</p>
-                                <p className="text-xs text-gray-500">{order.user?.email || "—"}</p>
+                                <p className="font-semibold text-gray-900">{getDisplayCustomerName(order)}</p>
+                                <p className="text-xs text-gray-500">{order.user?.email || order.customerEmail || order.email || "—"}</p>
                             </div>
                         </div>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Phone</span>
-                                <span className="font-medium text-gray-800">{order.user?.phone || "—"}</span>
+                                <span className="text-gray-500">Contact / Phone</span>
+                                <span className="font-medium text-gray-800">{getDisplayCustomerContact(order) || "—"}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Order Date</span>
                                 <span className="font-medium text-gray-800">{formatDate(order.createdAt)}</span>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Customer Risk & Manual Review Card */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+                                Customer Risk Protection
+                            </h3>
+                            <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                                (order.riskLevel || 'LOW') === 'CRITICAL' || (order.riskLevel || 'LOW') === 'HIGH'
+                                    ? 'bg-red-100 text-red-800'
+                                    : (order.riskLevel || 'LOW') === 'MEDIUM'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-green-100 text-green-800'
+                            }`}>
+                                {order.riskLevel || 'LOW'} RISK
+                            </span>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500">Risk Score</span>
+                                <span className="font-bold text-gray-900">{order.riskScore ?? 0} / 100</span>
+                            </div>
+
+                            <div className="w-full bg-gray-100 rounded-full h-2">
+                                <div
+                                    className={`h-2 rounded-full ${
+                                        (order.riskScore || 0) >= 70
+                                            ? 'bg-red-600'
+                                            : (order.riskScore || 0) >= 50
+                                            ? 'bg-orange-500'
+                                            : (order.riskScore || 0) >= 30
+                                            ? 'bg-yellow-500'
+                                            : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${Math.min(100, Math.max(5, order.riskScore || 0))}%` }}
+                                ></div>
+                            </div>
+
+                            <div className="flex justify-between items-center pt-1">
+                                <span className="text-gray-500">Policy Decision</span>
+                                <span className="font-semibold text-gray-800">{order.policyDecision || 'ALLOW'}</span>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500">Fulfillment Hold</span>
+                                <span className={`font-semibold text-xs px-2 py-0.5 rounded ${
+                                    order.fulfillmentHold
+                                        ? 'bg-red-100 text-red-700 border border-red-200'
+                                        : 'bg-gray-100 text-gray-700'
+                                }`}>
+                                    {order.fulfillmentHold ? 'HELD (Fulfillment Restricted)' : 'CLEARED (No Hold)'}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500">Review Status</span>
+                                <span className="font-medium text-xs text-gray-700">
+                                    {order.riskReviewStatus || 'NOT_REQUIRED'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Signals breakdown */}
+                        {order.riskSnapshot?.signals && order.riskSnapshot.signals.length > 0 && (
+                            <div className="pt-2 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-600 mb-1.5">Detected Risk Signals:</p>
+                                <div className="space-y-1">
+                                    {order.riskSnapshot.signals.map((sig: any, idx: number) => (
+                                        <div key={idx} className="flex justify-between text-xs bg-gray-50 p-1.5 rounded border border-gray-100">
+                                            <span className="text-gray-700 font-medium">{sig.code}</span>
+                                            <span className="font-bold text-red-600">+{sig.weight}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Manual Review Actions */}
+                        {order.fulfillmentHold && order.riskReviewStatus === 'PENDING_REVIEW' && (
+                            <div className="pt-3 border-t border-gray-200 space-y-2">
+                                <p className="text-xs font-semibold text-gray-800">Manual Risk Review Actions:</p>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={async () => {
+                                            if (window.confirm('Approve order risk and release fulfillment hold?')) {
+                                                setOrder({
+                                                    ...order,
+                                                    fulfillmentHold: false,
+                                                    riskReviewStatus: 'APPROVED',
+                                                });
+                                                alert('Order risk approved successfully. Fulfillment hold released.');
+                                            }
+                                        }}
+                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                                    >
+                                        Approve & Release Hold
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            if (window.confirm('Reject risk review and keep fulfillment held?')) {
+                                                setOrder({
+                                                    ...order,
+                                                    riskReviewStatus: 'REJECTED',
+                                                });
+                                                alert('Risk review rejected.');
+                                            }
+                                        }}
+                                        className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 rounded-lg transition-colors"
+                                    >
+                                        Reject Review
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {/* Direct Block Customer Action */}
+                        <div className="pt-3 border-t border-gray-200">
+                            <button
+                                onClick={handleOpenBlockModal}
+                                className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold py-2 rounded-lg transition-colors cursor-pointer"
+                            >
+                                <FiShield className="w-4 h-4 text-red-600" />
+                                Block Customer / Add to Blacklist
+                            </button>
                         </div>
                     </div>
 
@@ -426,6 +644,13 @@ const OrderDetail = () => {
                             <FiPrinter className="w-4 h-4" />
                             Print Invoice
                         </button>
+                        <button
+                            onClick={() => setIsDeleteModalOpen(true)}
+                            className="w-full flex items-center justify-center gap-2 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 text-sm font-semibold py-2.5 rounded-lg transition-all cursor-pointer"
+                        >
+                            <FiTrash2 className="w-4 h-4 text-red-600" />
+                            Delete Order
+                        </button>
                     </div>
                 </div>
             </div>
@@ -488,6 +713,98 @@ const OrderDetail = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Quick Block Modal */}
+            {isBlockModalOpen && order && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl space-y-4 border border-gray-200">
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                            <FiShield className="w-5 h-5 text-red-600" />
+                            <h3 className="text-lg font-bold text-gray-900">Block Customer</h3>
+                        </div>
+
+                        <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-red-800 space-y-1">
+                            <p className="font-semibold">Customer Information:</p>
+                            <p><strong>Name:</strong> {getDisplayCustomerName(order)}</p>
+                            <p><strong>Phone:</strong> {getDisplayCustomerContact(order) || 'N/A'}</p>
+                            <p><strong>Email:</strong> {order.user?.email || order.customerEmail || order.email || 'N/A'}</p>
+                            <p><strong>Order ID:</strong> #{order.orderId || order.id}</p>
+                        </div>
+
+                        <form onSubmit={handleConfirmBlock} className="space-y-3 text-left">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Enforcement Severity
+                                </label>
+                                <select
+                                    value={blockSeverity}
+                                    onChange={(e) => setBlockSeverity(e.target.value as any)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                >
+                                    <option value="HARD_BLOCK">HARD BLOCK (Refuse Checkout & Fraud Prevention)</option>
+                                    <option value="SUSPICIOUS_FLAG">SUSPICIOUS FLAG (Allow Checkout + Force Manual Review)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Reason Code
+                                </label>
+                                <select
+                                    value={blockReason}
+                                    onChange={(e) => setBlockReason(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                >
+                                    <option value="FRAUD_HISTORY">FRAUD_HISTORY (Repeated fake orders or fraud)</option>
+                                    <option value="CHARGEBACK_RISK">CHARGEBACK_RISK (High chargeback / dispute risk)</option>
+                                    <option value="SUSPICIOUS_BEHAVIOR">SUSPICIOUS_BEHAVIOR (Abusive ordering pattern)</option>
+                                    <option value="ADMIN_REQUEST">ADMIN_REQUEST (Direct admin decision)</option>
+                                    <option value="POLICY_VIOLATION">POLICY_VIOLATION (Store rules violation)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                    Admin Note / Reference
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={blockNote}
+                                    onChange={(e) => setBlockNote(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-red-500 outline-none resize-none"
+                                    placeholder="Enter reason for blocking this customer..."
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBlockModalOpen(false)}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg cursor-pointer transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-lg cursor-pointer transition"
+                                >
+                                    Confirm Block Customer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {/* Delete Order Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <DeleteModal
+                    isOpen={isDeleteModalOpen}
+                    title="Delete Order"
+                    message={`Are you sure you want to delete order #${order.orderId || order.id}? This action cannot be undone.`}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onDelete={handleDeleteOrder}
+                />
             )}
         </div>
     );

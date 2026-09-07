@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { FiEye } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { getDisplayCustomerName } from "../../utils/order-utils";
 import { formatPrettyDateWithTime } from "../../utils/date-utils";
 
 interface OrdersDataProps {
@@ -86,7 +87,7 @@ const OrderListTable = ({
                                     {row?.orderId || row?.id || row?._id || "N/A"}
                                 </td>
 
-                                <td className="p-3">{row?.user?.name || row?.customer?.name || "N/A"}</td>
+                                <td className="p-3">{getDisplayCustomerName(row)}</td>
                                 <td className="p-3">${row?.totalAmount || row?.grandTotal || 0}</td>
                                 <td className="p-3">
                                     <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row?.status === "Completed" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>

@@ -46,9 +46,11 @@ export const AdminNotificationDropdown: React.FC = () => {
     }
     setIsOpen(false);
 
-    if (notif.orderId) {
-      const cleanOrderId = String(notif.orderId).replace(/^#/, "");
-      navigate(`/orders?orderId=${cleanOrderId}`);
+    const targetOrderId = notif.orderId || notif.metadata?.orderNumber || (notif as any).order_id;
+
+    if (targetOrderId) {
+      const cleanOrderId = String(targetOrderId).replace(/^#/, "").trim();
+      navigate(`/order-detail/${cleanOrderId}`);
     } else {
       navigate("/orders");
     }
@@ -64,7 +66,7 @@ export const AdminNotificationDropdown: React.FC = () => {
       >
         <FiBell className="text-xl sm:text-2xl" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1.5 flex items-center justify-center shadow-md animate-pulse">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1.5 flex items-center justify-center shadow-md">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
