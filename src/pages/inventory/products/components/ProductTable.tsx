@@ -56,6 +56,9 @@ interface ProductTableProps {
 	fetchProductList: () => void;
 	isLoading?: boolean;
 	pageCount: number;
+	totalItems?: number;
+	dataLimit?: number;
+	setDataLimit?: React.Dispatch<React.SetStateAction<number>>;
 	currentPageNumber: number;
 	setCurrentPageNumber: React.Dispatch<React.SetStateAction<number>>;
 	handlePagination: (paginationData: { selected: number }) => void;
@@ -87,7 +90,23 @@ const initialFieldValues = {
 	quantityAlert: 0
 };
 
-const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumber, setCurrentPageNumber, handlePagination, isLoading, isFetching: _isFetching, searchQuery, setSearchQuery, selectedFilters, setSelectedFilters }: ProductTableProps) => {
+const ProductsTable = ({
+	dataList,
+	fetchProductList,
+	pageCount,
+	totalItems: _totalItems = 0,
+	dataLimit = 10,
+	setDataLimit,
+	currentPageNumber,
+	setCurrentPageNumber,
+	handlePagination,
+	isLoading,
+	isFetching: _isFetching,
+	searchQuery,
+	setSearchQuery,
+	selectedFilters,
+	setSelectedFilters
+}: ProductTableProps) => {
 	const [fieldValues, setFieldValues] = useState(initialFieldValues);
 	const { handleDeleteAPI, handleApiMutation, patchMutation, fetchData } = useAPI();
 	const apiUrl = apiConfig.inventory.productUrl;
@@ -147,6 +166,7 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 	const tableHeaders = [
 		{ key: "sl", label: "Sl" },
 		{ key: "name", label: "Product Name" },
+		{ key: "category", label: "Category" },
 		{ key: "sku", label: "SKU" },
 		{ key: "price", label: "Price" },
 		{ key: "stock", label: "Stock" },
@@ -261,11 +281,13 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 		}
 	};
 
-	if (isLoading) return <TableSkeleton />;
+	const productsList = Array.isArray(dataList) ? dataList : (dataList?.data || []);
+
+	if (isLoading && productsList.length === 0) return <TableSkeleton />;
 
 	return (
 		<div className="p-6 bg-white rounded-lg border border-gray-200">
-			<div className="flex justify-between flex-wrap space-y-4">
+			<div className="flex justify-between items-center flex-wrap gap-4">
 				<Search
 					searchQuery={searchQuery}
 					onSearchChange={(value) => {
@@ -273,7 +295,27 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 						setCurrentPageNumber(1);
 					}}
 				/>
-				<div className="flex flex-wrap gap-2">
+				<div className="flex flex-wrap items-center gap-3">
+					{setDataLimit && (
+						<div className="flex items-center gap-2 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg">
+							<span>Show</span>
+							<select
+								value={dataLimit}
+								onChange={(e) => {
+									setDataLimit(Number(e.target.value));
+									setCurrentPageNumber(1);
+								}}
+								className="bg-white border border-gray-300 rounded px-2 py-0.5 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] cursor-pointer"
+							>
+								<option value={10}>10</option>
+								<option value={20}>20</option>
+								<option value={30}>30</option>
+								<option value={50}>50</option>
+								<option value={100}>100</option>
+							</select>
+							<span>entries</span>
+						</div>
+					)}
 					{(Object.entries(dropdownOptions) as [keyof typeof selectedFilters, any][]).map(([key, options]) => (
 						<DropdownFilter
 						key={key}
@@ -324,18 +366,31 @@ const ProductsTable = ({ dataList, fetchProductList, pageCount, currentPageNumbe
 									className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
 								>
 									<td className="px-6 py-4 font-medium text-gray-800">
-										{index + 1}
+										{(currentPageNumber - 1) * (dataLimit || 10) + index + 1}
 									</td>
 
 									<td className="px-6 py-4 flex items-center gap-2">
 										<img
 											src={data.featuredImage}
 											alt={data.name}
-											className="w-10 h-10 rounded-md shadow-sm border border-gray-200"
+											className="w-10 h-10 rounded-md shadow-sm border border-gray-200 object-cover"
 										/>
-										<span>
+										<span className="font-medium text-gray-800">
 											{data.name}
 										</span>
+									</td>
+
+									<td className="px-6 py-4">
+										<div className="flex flex-col">
+											<span className="text-sm font-medium text-gray-800">
+												{data.mainCategoryName || <span className="text-gray-400 italic">No Category</span>}
+											</span>
+											{data.firstCategoryName && (
+												<span className="text-xs text-gray-500">
+													{data.firstCategoryName}
+												</span>
+											)}
+										</div>
 									</td>
 
 									<td className="px-6 py-4">{data.sku}</td>

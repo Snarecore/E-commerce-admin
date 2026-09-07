@@ -9,7 +9,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { Link } from "react-router-dom";
 
 const Products = () => {
-	const dataLimit = 10;
+	const [dataLimit, setDataLimit] = useState(10);
 	const [currentPageNumber, setCurrentPageNumber] = useState(1);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [tempSearch, setTempSearch] = useState("");
@@ -50,13 +50,14 @@ const Products = () => {
 		setCurrentPageNumber(selectedPage);
 	};
 
-	const { data: dataList, isLoading, pageCount, isFetching, refetch: fetchProductList } = usePaginatedQuery({
+	const { data: dataList, totalItems, isLoading, pageCount, isFetching, refetch: fetchProductList } = usePaginatedQuery({
 		queryKey: [
 			productQueryKey,
 			searchQuery,
 			selectedFilters.mainCategoryId?.value || "",
 			selectedFilters.vendorId?.value || "",
-			currentPageNumber.toString()
+			currentPageNumber.toString(),
+			dataLimit.toString()
 		],
 		url: getProductListApiUrl()
 	});
@@ -87,6 +88,9 @@ const Products = () => {
 							dataList={dataList}
 							fetchProductList={fetchProductList}
 							pageCount={pageCount}
+							totalItems={totalItems}
+							dataLimit={dataLimit}
+							setDataLimit={setDataLimit}
 							currentPageNumber={currentPageNumber}
 							setCurrentPageNumber={setCurrentPageNumber}
 							handlePagination={handlePagination}

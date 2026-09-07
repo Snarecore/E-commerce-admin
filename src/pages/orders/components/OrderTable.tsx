@@ -202,6 +202,7 @@ const OrderTable = ({
     }, []);
 
     const dropdownOptions = useMemo(() => ({
+        userId: customers,
         status: [
             { label: "Pending", value: "Pending" },
             { label: "Processing", value: "Processing" },
@@ -214,7 +215,7 @@ const OrderTable = ({
             { label: "Paid", value: "Paid" },
             { label: "Unpaid", value: "Unpaid" },
         ],
-    }), []);
+    }), [customers]);
 
     const handleRefreshButton = () => {
         setSelectedFilters({

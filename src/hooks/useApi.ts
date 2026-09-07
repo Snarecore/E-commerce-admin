@@ -219,7 +219,8 @@ export const useAPI = () => {
             refetchOnMount,
             staleTime,
             refetchInterval,
-            enabled
+            enabled,
+            placeholderData: (previousData) => previousData
         });
 
         let data: T[] = [];
