@@ -95,8 +95,9 @@ const ProductCreation = () => {
 
     const fetchMainCategoryData = async () => {
         try {
-            const mainCategories = await fetchData({ apiUrl: mainCategoryUrl });
-            setMainCategories(mainCategories.mainCategory);
+            const res = await fetchData({ apiUrl: mainCategoryUrl });
+            const list = res?.data?.data || res?.data || res?.mainCategory || [];
+            setMainCategories(Array.isArray(list) ? list : []);
         } catch (err) {
             console.error("Fetch failed:", err);
         }
@@ -111,13 +112,13 @@ const ProductCreation = () => {
         value: item.id
     }));
 
-
     const fetchFirstCategoryData = async (mainCategoryId: string) => {
         try {
             const response = await fetchData({
                 apiUrl: `${firstCategoryUrl}?mainCategoryId=${mainCategoryId}`
             });
-            setFirstCategories(response.firstCategories || []);
+            const list = response?.data?.data || response?.data || response?.firstCategories || [];
+            setFirstCategories(Array.isArray(list) ? list : []);
         } catch (err) {
             console.error("Failed to fetch first categories", err);
         }
@@ -128,7 +129,8 @@ const ProductCreation = () => {
             const response = await fetchData({
                 apiUrl: `${secondCategoryUrl}?firstCategoryId=${firstCategoryId}`
             });
-            setSecondCategories(response.secondCategories || []);
+            const list = response?.data?.data || response?.data || response?.secondCategories || [];
+            setSecondCategories(Array.isArray(list) ? list : []);
         } catch (err) {
             console.error("Failed to fetch second categories", err);
         }
