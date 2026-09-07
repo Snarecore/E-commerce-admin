@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiShield, FiPlus, FiSearch, FiCheckCircle, FiXCircle, FiUser, FiPhone, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { getBlacklistItems, saveBlacklistItem, revokeBlacklistItem } from '../../../utils/blacklist-storage';
 
 export interface IBlacklistItem {
   id: string;
@@ -20,54 +21,20 @@ export interface IBlacklistItem {
   createdAt: string;
 }
 
-const mockBlacklist: IBlacklistItem[] = [
-  {
-    id: 'bl-001',
-    subjectType: 'PHONE',
-    customerName: 'Qligence Limited testing',
-    customerEmail: 'qligence.test@gmail.com',
-    displayValue: '01765753380 (+8801765753380)',
-    valueHash: 'a8f9c73e102b4d99e01827cf918a',
-    severity: 'HARD_BLOCK',
-    reasonCode: 'FRAUD_HISTORY',
-    note: 'Repeated fake orders and chargebacks',
-    status: 'ACTIVE',
-    createdByAdminId: 'Admin (System)',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'bl-002',
-    subjectType: 'EXACT_IP',
-    customerName: 'Automated Bot Spammer',
-    customerEmail: 'bot.net@proxy.org',
-    ipAddress: '103.145.78.53',
-    severity: 'HARD_BLOCK',
-    reasonCode: 'SUSPICIOUS_IP',
-    note: 'Automated bot checkout spammer',
-    status: 'ACTIVE',
-    createdByAdminId: 'Super Admin',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 'bl-003',
-    subjectType: 'CIDR',
-    customerName: 'Dhaka Subnet Range',
-    networkAddress: '103.145.64.0',
-    prefixLength: 20,
-    severity: 'SUSPICIOUS_FLAG',
-    reasonCode: 'POLICY_VIOLATION',
-    note: 'Subnet flagged for manual review',
-    status: 'ACTIVE',
-    createdByAdminId: 'Risk Manager',
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-  },
-];
-
 export default function BlacklistPage() {
-  const [items, setItems] = useState<IBlacklistItem[]>(mockBlacklist);
+  const [items, setItems] = useState<IBlacklistItem[]>(() => getBlacklistItems());
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'HISTORY'>('ACTIVE');
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
+
+  useEffect(() => {
+    const syncItems = () => {
+      setItems(getBlacklistItems());
+    };
+    syncItems();
+    window.addEventListener('blacklist_updated', syncItems);
+    return () => window.removeEventListener('blacklist_updated', syncItems);
+  }, []);
 
   // Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -112,7 +79,8 @@ export default function BlacklistPage() {
       createdAt: new Date().toISOString(),
     };
 
-    setItems([newItem, ...items]);
+    const updated = saveBlacklistItem(newItem);
+    setItems(updated);
     setIsAddModalOpen(false);
     setNewCustomerName('');
     setNewCustomerEmail('');
@@ -123,9 +91,8 @@ export default function BlacklistPage() {
 
   const handleRevoke = (id: string) => {
     if (window.confirm('Are you sure you want to revoke this blacklist entry?')) {
-      setItems(
-        items.map((item) => (item.id === id ? { ...item, status: 'REVOKED' } : item))
-      );
+      const updated = revokeBlacklistItem(id);
+      setItems(updated);
       toast.success('Blacklist entry revoked.');
     }
   };

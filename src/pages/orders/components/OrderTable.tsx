@@ -10,6 +10,8 @@ import Pagination from "../../../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
+import { saveBlacklistItem, isCustomerBlacklisted } from "../../../utils/blacklist-storage";
+import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
 import RefreshButton from "../../../components/table-components/RefreshButton";
@@ -118,7 +120,30 @@ const OrderTable = ({
         if (!selectedBlockOrder) return;
         const name = getDisplayCustomerName(selectedBlockOrder);
         const contact = getDisplayCustomerContact(selectedBlockOrder);
-        toast.success(`Customer "${name}" (${contact || 'Target'}) added to blacklist successfully!`);
+        const email = selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email;
+        const phone = contact || selectedBlockOrder.user?.phone || selectedBlockOrder.phone;
+
+        const simulatedHash = phone
+            ? Array.from(phone).map((c: any) => String(c).charCodeAt(0).toString(16)).join('').padEnd(32, '0').slice(0, 32)
+            : undefined;
+
+        const newItem: IBlacklistItem = {
+            id: `bl-${Date.now()}`,
+            subjectType: 'PHONE',
+            customerName: name !== 'Unknown Customer' ? name : undefined,
+            customerEmail: email || undefined,
+            displayValue: phone || name,
+            valueHash: simulatedHash,
+            severity: blockSeverity,
+            reasonCode: blockReason,
+            note: blockNote,
+            status: 'ACTIVE',
+            createdByAdminId: 'Admin (Order List)',
+            createdAt: new Date().toISOString(),
+        };
+
+        saveBlacklistItem(newItem);
+        toast.success(`Customer "${name}" (${phone || 'Target'}) added to Blacklist successfully!`);
         setIsBlockModalOpen(false);
         setSelectedBlockOrder(null);
     };
@@ -307,14 +332,29 @@ const OrderTable = ({
                                     </td>
                                     {/* Customer */}
                                     <td className="px-6 py-4">
-                                        <div>
-                                            <p className="font-medium text-gray-800 text-sm">
-                                                {getDisplayCustomerName(data)}
-                                            </p>
-                                            <p className="text-xs text-gray-400">
-                                                {getDisplayCustomerContact(data)}
-                                            </p>
-                                        </div>
+                                        {(() => {
+                                            const custContact = getDisplayCustomerContact(data);
+                                            const custEmail = data.user?.email || (data as any).email;
+                                            const isBlocked = isCustomerBlacklisted(custContact, custEmail);
+
+                                            return (
+                                                <div>
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <p className="font-medium text-gray-800 text-sm">
+                                                            {getDisplayCustomerName(data)}
+                                                        </p>
+                                                        {isBlocked && (
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-red-100 text-red-700 font-bold rounded border border-red-200">
+                                                                BLOCKED
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-400">
+                                                        {custContact}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })()}
                                     </td>
                                     {/* Amount */}
                                     <td className="px-6 py-4 font-semibold text-gray-800">

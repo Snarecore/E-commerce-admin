@@ -7,6 +7,8 @@ import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { formatDate } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
+import { saveBlacklistItem, isCustomerBlacklisted } from "../../../utils/blacklist-storage";
+import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 
@@ -121,7 +123,40 @@ const OrderDetail = () => {
         if (!order) return;
         const name = getDisplayCustomerName(order);
         const contact = getDisplayCustomerContact(order);
-        toast.success(`Customer "${name}" (${contact || 'Target'}) added to blacklist successfully!`);
+        const email = order.user?.email || order.customerEmail || order.email;
+        const phone = contact || order.user?.phone || order.phone;
+
+        const simulatedHash = phone
+            ? Array.from(phone).map((c: any) => String(c).charCodeAt(0).toString(16)).join('').padEnd(32, '0').slice(0, 32)
+            : undefined;
+
+        const newItem: IBlacklistItem = {
+            id: `bl-${Date.now()}`,
+            subjectType: 'PHONE',
+            customerName: name !== 'Unknown Customer' ? name : undefined,
+            customerEmail: email || undefined,
+            displayValue: phone || name,
+            valueHash: simulatedHash,
+            severity: blockSeverity,
+            reasonCode: blockReason,
+            note: blockNote,
+            status: 'ACTIVE',
+            createdByAdminId: 'Admin (Order Detail)',
+            createdAt: new Date().toISOString(),
+        };
+
+        saveBlacklistItem(newItem);
+        toast.success(`Customer "${name}" (${phone || 'Target'}) added to Blacklist successfully!`);
+
+        setOrder({
+            ...order,
+            riskLevel: 'CRITICAL',
+            riskScore: 100,
+            policyDecision: 'HARD_BLOCK',
+            fulfillmentHold: true,
+            riskReviewStatus: 'MANUAL_REVIEW',
+        });
+
         setIsBlockModalOpen(false);
     };
 
@@ -432,67 +467,80 @@ const OrderDetail = () => {
                     </div>
 
                     {/* Customer Risk & Manual Review Card */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
-                                Customer Risk Protection
-                            </h3>
-                            <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
-                                (order.riskLevel || 'LOW') === 'CRITICAL' || (order.riskLevel || 'LOW') === 'HIGH'
-                                    ? 'bg-red-100 text-red-800'
-                                    : (order.riskLevel || 'LOW') === 'MEDIUM'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-green-100 text-green-800'
-                            }`}>
-                                {order.riskLevel || 'LOW'} RISK
-                            </span>
-                        </div>
+                    {(() => {
+                        const isBlacklisted = isCustomerBlacklisted(
+                            getDisplayCustomerContact(order),
+                            order.user?.email || order.customerEmail || order.email
+                        );
+                        const effectiveRiskLevel = isBlacklisted ? 'CRITICAL' : (order.riskLevel || 'LOW');
+                        const effectiveRiskScore = isBlacklisted ? 100 : (order.riskScore ?? 0);
+                        const effectivePolicyDecision = isBlacklisted ? 'HARD_BLOCK' : (order.policyDecision || 'ALLOW');
+                        const effectiveFulfillmentHold = isBlacklisted || order.fulfillmentHold;
 
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">Risk Score</span>
-                                <span className="font-bold text-gray-900">{order.riskScore ?? 0} / 100</span>
-                            </div>
+                        return (
+                            <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                                        <span className={`w-2.5 h-2.5 rounded-full inline-block ${isBlacklisted ? 'bg-red-600 animate-pulse' : 'bg-red-500'}`}></span>
+                                        Customer Risk Protection
+                                    </h3>
+                                    <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                                        effectiveRiskLevel === 'CRITICAL' || effectiveRiskLevel === 'HIGH'
+                                            ? 'bg-red-100 text-red-800'
+                                            : effectiveRiskLevel === 'MEDIUM'
+                                            ? 'bg-yellow-100 text-yellow-800'
+                                            : 'bg-green-100 text-green-800'
+                                    }`}>
+                                        {effectiveRiskLevel} RISK {isBlacklisted && '(BLACK-LISTED)'}
+                                    </span>
+                                </div>
 
-                            <div className="w-full bg-gray-100 rounded-full h-2">
-                                <div
-                                    className={`h-2 rounded-full ${
-                                        (order.riskScore || 0) >= 70
-                                            ? 'bg-red-600'
-                                            : (order.riskScore || 0) >= 50
-                                            ? 'bg-orange-500'
-                                            : (order.riskScore || 0) >= 30
-                                            ? 'bg-yellow-500'
-                                            : 'bg-green-500'
-                                    }`}
-                                    style={{ width: `${Math.min(100, Math.max(5, order.riskScore || 0))}%` }}
-                                ></div>
-                            </div>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-500">Risk Score</span>
+                                        <span className="font-bold text-gray-900">{effectiveRiskScore} / 100</span>
+                                    </div>
 
-                            <div className="flex justify-between items-center pt-1">
-                                <span className="text-gray-500">Policy Decision</span>
-                                <span className="font-semibold text-gray-800">{order.policyDecision || 'ALLOW'}</span>
-                            </div>
+                                    <div className="w-full bg-gray-100 rounded-full h-2">
+                                        <div
+                                            className={`h-2 rounded-full ${
+                                                effectiveRiskScore >= 70
+                                                    ? 'bg-red-600'
+                                                    : effectiveRiskScore >= 50
+                                                    ? 'bg-orange-500'
+                                                    : effectiveRiskScore >= 30
+                                                    ? 'bg-yellow-500'
+                                                    : 'bg-green-500'
+                                            }`}
+                                            style={{ width: `${Math.min(100, Math.max(5, effectiveRiskScore))}%` }}
+                                        ></div>
+                                    </div>
 
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">Fulfillment Hold</span>
-                                <span className={`font-semibold text-xs px-2 py-0.5 rounded ${
-                                    order.fulfillmentHold
-                                        ? 'bg-red-100 text-red-700 border border-red-200'
-                                        : 'bg-gray-100 text-gray-700'
-                                }`}>
-                                    {order.fulfillmentHold ? 'HELD (Fulfillment Restricted)' : 'CLEARED (No Hold)'}
-                                </span>
-                            </div>
+                                    <div className="flex justify-between items-center pt-1">
+                                        <span className="text-gray-500">Policy Decision</span>
+                                        <span className={`font-semibold ${isBlacklisted ? 'text-red-700 font-bold' : 'text-gray-800'}`}>
+                                            {effectivePolicyDecision}
+                                        </span>
+                                    </div>
 
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">Review Status</span>
-                                <span className="font-medium text-xs text-gray-700">
-                                    {order.riskReviewStatus || 'NOT_REQUIRED'}
-                                </span>
-                            </div>
-                        </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-500">Fulfillment Hold</span>
+                                        <span className={`font-semibold text-xs px-2 py-0.5 rounded ${
+                                            effectiveFulfillmentHold
+                                                ? 'bg-red-100 text-red-700 border border-red-200'
+                                                : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                            {effectiveFulfillmentHold ? 'HELD (Fulfillment Restricted)' : 'CLEARED (No Hold)'}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-gray-500">Review Status</span>
+                                        <span className="font-medium text-xs text-gray-700">
+                                            {isBlacklisted ? 'HARD_BLOCKED' : (order.riskReviewStatus || 'NOT_REQUIRED')}
+                                        </span>
+                                    </div>
+                                </div>
 
                         {/* Signals breakdown */}
                         {order.riskSnapshot?.signals && order.riskSnapshot.signals.length > 0 && (
@@ -556,7 +604,9 @@ const OrderDetail = () => {
                                 Block Customer / Add to Blacklist
                             </button>
                         </div>
-                    </div>
+                        </div>
+                    );
+                })()}
 
                     {/* Payment & Order Status */}
                     <div className="bg-white rounded-xl border border-gray-200 p-5">
