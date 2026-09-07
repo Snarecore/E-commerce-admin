@@ -277,6 +277,14 @@ const OrderDetail = () => {
                     rejectionMessage: bodyPayload.rejectionMessage
                 }));
                 setIsRejectModalOpen(false);
+
+                if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+                    try {
+                        const bc = new BroadcastChannel("fashion_time_notifications");
+                        bc.postMessage({ type: "ORDER_STATUS_CHANGED", orderId: order.orderId || order.id, status: selectedStatus });
+                        bc.close();
+                    } catch {}
+                }
             }
         } catch (err) {
             console.error("Status update failed:", err);

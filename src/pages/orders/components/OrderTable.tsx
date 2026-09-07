@@ -9,7 +9,7 @@ import DeleteModal from "../../../components/modals/DeleteModal";
 import Pagination from "../../../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../../utils/date-utils";
-import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
+import { getDisplayCustomerName, getDisplayCustomerContact, getDisplayCustomerPhone } from "../../../utils/order-utils";
 import { saveBlacklistItem, isCustomerBlacklisted } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
@@ -202,7 +202,6 @@ const OrderTable = ({
     }, []);
 
     const dropdownOptions = useMemo(() => ({
-        userId: customers,
         status: [
             { label: "Pending", value: "Pending" },
             { label: "Processing", value: "Processing" },
@@ -215,7 +214,7 @@ const OrderTable = ({
             { label: "Paid", value: "Paid" },
             { label: "Unpaid", value: "Unpaid" },
         ],
-    }), [customers]);
+    }), []);
 
     const handleRefreshButton = () => {
         setSelectedFilters({
@@ -333,8 +332,9 @@ const OrderTable = ({
                                     {/* Customer */}
                                     <td className="px-6 py-4">
                                         {(() => {
-                                            const custContact = getDisplayCustomerContact(data);
-                                            const custEmail = data.user?.email || (data as any).email;
+                                            const custPhone = getDisplayCustomerPhone(data);
+                                            const custContact = custPhone || getDisplayCustomerContact(data);
+                                            const custEmail = data.user?.email || (data as any).email || (data as any).customerEmail;
                                             const isBlocked = isCustomerBlacklisted(custContact, custEmail);
 
                                             return (
@@ -349,8 +349,8 @@ const OrderTable = ({
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-gray-400">
-                                                        {custContact}
+                                                    <p className="text-xs text-gray-400 font-mono">
+                                                        {custPhone || custContact || "N/A"}
                                                     </p>
                                                 </div>
                                             );
