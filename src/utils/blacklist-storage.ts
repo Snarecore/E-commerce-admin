@@ -1,4 +1,6 @@
 import { IBlacklistItem } from '../pages/settings/blacklist/BlacklistPage';
+import { postData, patchData, getData } from '../services/api-service';
+import apiConfig from '../config/api.json';
 
 const STORAGE_KEY = 'qligence_admin_blacklist_items_v1';
 
@@ -68,8 +70,15 @@ export function saveBlacklistItem(newItem: IBlacklistItem): IBlacklistItem[] {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event('blacklist_updated'));
   } catch (e) {
-    console.error('Failed to save blacklist item:', e);
+    console.error('Failed to save blacklist item locally:', e);
   }
+
+  // Dual Persistence: Async sync to Backend REST API database
+  postData({
+    url: apiConfig.site.blacklistUrl,
+    body: newItem as unknown as Record<string, unknown>,
+  }).catch((err) => console.log('Backend sync notice (offline/mock mode fallback active):', err));
+
   return updated;
 }
 
@@ -82,9 +91,31 @@ export function revokeBlacklistItem(id: string): IBlacklistItem[] {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event('blacklist_updated'));
   } catch (e) {
-    console.error('Failed to revoke blacklist item:', e);
+    console.error('Failed to revoke blacklist item locally:', e);
   }
+
+  // Dual Persistence: Async sync to Backend REST API database
+  patchData({
+    url: `${apiConfig.site.blacklistUrl}/${id}`,
+    body: { status: 'REVOKED' } as Record<string, unknown>,
+  }).catch((err) => console.log('Backend revoke notice (offline/mock mode fallback active):', err));
+
   return updated;
+}
+
+export async function fetchBlacklistFromApi(): Promise<IBlacklistItem[]> {
+  try {
+    const res: any = await getData({ url: apiConfig.site.blacklistUrl });
+    if (res && !res.error && Array.isArray(res.data || res)) {
+      const items = res.data || res;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.dispatchEvent(new Event('blacklist_updated'));
+      return items;
+    }
+  } catch (err) {
+    console.log('Using local cached blacklist rules');
+  }
+  return getBlacklistItems();
 }
 
 export function isCustomerBlacklisted(contactOrPhone?: string, email?: string): boolean {

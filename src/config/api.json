@@ -50,7 +50,8 @@
         "thirdCategoryUrl": "site/third-categories",
         "productUniqueCodeUrl": "unique-code/product",
         "vendorListUrl": "site/vendor?role=vendor",
-        "customerListUrl": "site/customer"
+        "customerListUrl": "site/customer",
+        "blacklistUrl": "site/blacklist"
     },
     "blog": {
         "blogUrl": "blog"
