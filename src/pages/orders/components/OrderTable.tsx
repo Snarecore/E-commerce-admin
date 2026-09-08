@@ -359,7 +359,7 @@ const OrderTable = ({
                                     </td>
                                     {/* Amount */}
                                     <td className="px-6 py-4 font-semibold text-gray-800">
-                                        ${data.totalAmount}
+                                        ৳{Number(data.totalAmount || 0).toFixed(2)}
                                     </td>
                                     {/* Payment Status */}
                                     <td className="px-6 py-4">

@@ -394,7 +394,38 @@ const ProductsTable = ({
 									</td>
 
 									<td className="px-6 py-4">{data.sku}</td>
-									<td className="px-6 py-4">{data.price}</td>
+									<td className="px-6 py-4">
+										{(() => {
+											const basePrice = Number(data.price) || 0;
+											const dAmount = Number((data as any).discountAmount) || 0;
+											const dType = String((data as any).discountType || "").toUpperCase();
+											let salePrice = basePrice;
+
+											if (dAmount > 0) {
+												if (dType === "PERCENT" || dType.includes("PERCENTAGE")) {
+													salePrice = basePrice - (basePrice * dAmount) / 100;
+												} else if (dType === "FLAT" || dType.includes("FIXED") || dType.includes("AMOUNT")) {
+													salePrice = Math.max(0, basePrice - dAmount);
+												}
+												salePrice = Math.round((salePrice + Number.EPSILON) * 100) / 100;
+											}
+
+											if (dAmount > 0 && salePrice < basePrice) {
+												return (
+													<div className="flex flex-col">
+														<span className="font-semibold text-gray-900">৳{salePrice.toFixed(2)}</span>
+														<div className="flex items-center gap-1">
+															<span className="text-xs text-gray-400 line-through">৳{basePrice}</span>
+															<span className="text-[10px] bg-red-100 text-red-700 font-bold px-1 rounded">
+																{dType.includes("PERCENT") ? `${dAmount}% OFF` : `-৳${dAmount}`}
+															</span>
+														</div>
+													</div>
+												);
+											}
+											return <span className="font-semibold text-gray-800">৳{basePrice}</span>;
+										})()}
+									</td>
 
 									<td className="px-6 py-4">
 										{(() => {
