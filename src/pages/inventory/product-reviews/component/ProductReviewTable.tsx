@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiTrash2, FiEye } from "react-icons/fi";
+import { FiTrash2, FiEye, FiCheck, FiX } from "react-icons/fi";
 import apiConfig from "../../../../config/api.json";
 import { useAPI } from "../../../../hooks/useApi";
 import TableSkeleton from "../../../../components/skeleton/TableSkeleton";
@@ -24,6 +24,7 @@ interface ReviewDataProps {
     comment?: string;
     status?: "pending" | "approved";
     isApprove: string;
+    isApproved?: boolean;
     created_at?: string;
     body: string;
 }
@@ -49,7 +50,7 @@ const ProductReviewTable = ({
     isLoading,
     isFetching: _isFetching,
 }: ReviewTableProps) => {
-    const { handleDeleteAPI } = useAPI() as any;
+    const { handleDeleteAPI, handleApiMutation, patchMutation } = useAPI() as any;
     const apiUrl = apiConfig.inventory.productCommentUrl;
 
     const tableHeaders = [
@@ -57,6 +58,7 @@ const ProductReviewTable = ({
         { key: "product", label: "Product" },
         { key: "name", label: "Name" },
         { key: "commnet", label: "Comment" },
+        { key: "status", label: "Status" },
         { key: "action", label: "Action" },
     ];
 
@@ -134,6 +136,20 @@ const ProductReviewTable = ({
     };
 
 
+    const handleToggleStatus = async (review: ReviewDataProps, targetStatus: boolean) => {
+        const res = await handleApiMutation({
+            mutation: patchMutation,
+            url: `${apiUrl}/${review.id}/status`,
+            body: { isApproved: targetStatus },
+            showSuccessMessage: true,
+            requiredFields: []
+        });
+        if (res?.success) {
+            fetchData();
+            if (isViewModalOpen) closeViewModal();
+        }
+    };
+
     if (isLoading) return <TableSkeleton />;
 
     return (
@@ -161,34 +177,55 @@ const ProductReviewTable = ({
                                     >
                                         <td className="px-6 py-4 font-medium text-gray-800">{index + 1}</td>
                                         <td className="px-6 py-4 flex items-center gap-2">
-                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-10 h-10" />
-                                            {data?.product?.name}
+                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-10 h-10 rounded-md object-cover border border-gray-200" />
+                                            <span className="font-semibold text-gray-800">{data?.product?.name}</span>
                                         </td>
 
-                                        <td className="px-6 py-4">{data?.user?.name}</td>
+                                        <td className="px-6 py-4">{data?.user?.name || "Anonymous"}</td>
                                         <td className="px-6 py-4">
                                             <button
                                                 type="button"
                                                 onClick={() => openViewModal(data)}
                                                 title="Click to view full comment"
-                                                className="max-w-[460px] text-left text-gray-700 hover:underline focus:underline focus:outline-none break-words cursor-pointer"
+                                                className="max-w-[360px] text-left text-gray-700 hover:underline focus:underline focus:outline-none break-words cursor-pointer"
                                             >
                                                 {preview}
                                             </button>
                                         </td>
 
                                         <td className="px-6 py-4">
+                                            {data.isApproved ? (
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                    Approved
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                                    Pending
+                                                </span>
+                                            )}
+                                        </td>
+
+                                        <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
+                                                {!data.isApproved && (
+                                                    <button
+                                                        onClick={() => handleToggleStatus(data, true)}
+                                                        className="border border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer px-2.5 py-1.5 rounded-md transition duration-300 flex items-center gap-1 text-xs font-semibold"
+                                                        title="Approve Comment"
+                                                    >
+                                                        <FiCheck className="text-sm text-emerald-600" /> Approve
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => openCommentViewModal(data)}
                                                     className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300"
-                                                    title="View"
+                                                    title="View Replies"
                                                 >
                                                     <FiEye />
                                                 </button>
                                                 <button
                                                     onClick={() => openDeleteModal(data)}
-                                                    className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300"
+                                                    className="border border-gray-300 text-gray-700 hover:text-red-600 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
                                                     title="Delete"
                                                 >
                                                     <FiTrash2 />
@@ -220,63 +257,84 @@ const ProductReviewTable = ({
                 />
             )}
 
-            {/* View modal */}
-            {/* Modal */}
+            {/* View Modal */}
             <Modal
                 isOpen={isViewModalOpen}
-                title="View Full Comment"
+                title="Review Comment Details"
                 onClose={closeViewModal}
             >
                 {!viewReview ? (
                     <div className="p-6 text-center text-gray-500">Loading…</div>
                 ) : (
-                    <div className="">
-                        <div className="flex items-start justify-between">
-                            {/* <div>
-                                <div className="text-base font-semibold">
+                    <div className="space-y-4">
+                        {/* Product & User Header Info */}
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            {viewReview?.product?.featuredImage && (
+                                <img
+                                    src={viewReview.product.featuredImage}
+                                    alt={viewReview?.product?.name ?? "Product image"}
+                                    className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                                />
+                            )}
+                            <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-bold text-gray-900 truncate">
                                     {viewReview?.product?.name ?? "—"}
-                                </div>
-                            </div> */}
-
-                            {/* Images */}
-                            {/* <div className="flex gap-2 flex-wrap justify-end">
-                                {viewReview?.product?.featuredImage && (
-                                    <img
-                                        src={viewReview.product.featuredImage}
-                                        alt={viewReview?.product?.name ?? "Product image"}
-                                        width={50}
-                                        className="rounded-md"
-                                    />
+                                </h4>
+                                <p className="text-xs text-gray-500 truncate">
+                                    Posted by: <strong className="text-gray-700">{viewReview?.user?.name || "Anonymous"}</strong> ({viewReview?.user?.email || "No email"})
+                                </p>
+                            </div>
+                            <div>
+                                {viewReview?.isApproved ? (
+                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        Approved
+                                    </span>
+                                ) : (
+                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                        Pending
+                                    </span>
                                 )}
-                            </div> */}
+                            </div>
                         </div>
+
+                        {/* Full Comment Text */}
                         <div>
-                            <div className="text-sm font-medium text-gray-700 mb-1">Comment</div>
-                            <div className="p-3 rounded-md border border-gray-300 bg-gray-50 text-sm whitespace-pre-wrap">
+                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Comment Body
+                            </label>
+                            <div className="p-4 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 whitespace-pre-wrap leading-relaxed shadow-inner max-h-60 overflow-y-auto">
                                 {viewReview?.body || "—"}
                             </div>
                         </div>
 
-                        {/* Approve/Reject */}
-                        {/* <div className="flex items-center justify-end gap-3 pt-2">
+                        {/* Modal Action Buttons */}
+                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
                             <button
                                 type="button"
                                 onClick={closeViewModal}
-                                disabled={changingStatus}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-md border text-gray-700 border-gray-200 hover:bg-gray-50 disabled:opacity-60 cursor-pointer"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-100 text-xs font-semibold transition cursor-pointer"
                             >
-                                Cancel
+                                Close
                             </button>
 
-                            <button
-                                type="button"
-                                onClick={() => updateStatus(true)}
-                                disabled={changingStatus || !!viewReview?.isApprove}
-                                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-white bg-green-600 cursor-pointer hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed`}
-                            >
-                                {changingStatus ? "Saving..." : !!viewReview?.isApprove ? "Approved" : "Approve"}
-                            </button>
-                        </div> */}
+                            {!viewReview?.isApproved ? (
+                                <button
+                                    type="button"
+                                    onClick={() => handleToggleStatus(viewReview, true)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 text-xs font-semibold shadow-md transition cursor-pointer"
+                                >
+                                    <FiCheck className="text-sm" /> Approve & Publish
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => handleToggleStatus(viewReview, false)}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 text-xs font-semibold transition cursor-pointer"
+                                >
+                                    <FiX className="text-sm" /> Mark Pending
+                                </button>
+                            )}
+                        </div>
                     </div>
                 )}
             </Modal>
