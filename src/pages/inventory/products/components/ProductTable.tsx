@@ -33,7 +33,7 @@ interface ProductDataProps {
 	cost: number;
 	discount: number;
 	discountType: string;
-	vendorName: string;
+	vendorName?: string;
 	isProductSectionOne: string;
 	isProductSectionTwo: string;
 	isProductSectionThree: string;
@@ -67,12 +67,10 @@ interface ProductTableProps {
 	setSearchQuery: (query: string) => void;
 	selectedFilters: {
 		mainCategoryId: { label: string; value: string } | null;
-		vendorId: { label: string; value: string } | null;
 		isApprove: { label: string; value: string } | null;
 	};
 	setSelectedFilters: React.Dispatch<React.SetStateAction<{
 		mainCategoryId: { label: string; value: string } | null;
-		vendorId: { label: string; value: string } | null;
 		isApprove: { label: string; value: string } | null;
 	}>>;
 }
@@ -154,7 +152,6 @@ const ProductsTable = ({
 	const handleRefreshButton = () => {
 		setSelectedFilters({
 			mainCategoryId: null,
-			vendorId: null,
 			isApprove: null,
 		});
 		setSearchQuery("");
@@ -322,8 +319,6 @@ const ProductsTable = ({
 						title={
 							key === "mainCategoryId"
 								? "Category"
-								: key === "vendorId"
-								? "Vendor"
 								: key === "isApprove"
 								? "Approval"
 								: key

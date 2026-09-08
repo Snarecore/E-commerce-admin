@@ -15,7 +15,7 @@ interface Product {
     cost: number;
     discountAmount: number;
     discountType: string;
-    vendorName: string;
+    vendorName?: string;
     isBestSeller: boolean;
     isRecommended: boolean;
     isNew: boolean;

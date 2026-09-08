@@ -107,13 +107,6 @@ const menu = [
 				subItems: [],
 			},
 			{
-				id: 7,
-				name: "Vendors",
-				icon: <FaStore />,
-				path: "/vendors",
-				subItems: [],
-			},
-			{
 				id: 8,
 				name: "Users",
 				icon: <FaUser />,

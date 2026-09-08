@@ -23,11 +23,9 @@ const Products = () => {
 	}, [tempSearch]);
 	const [selectedFilters, setSelectedFilters] = useState<{
 		mainCategoryId: { label: string; value: string } | null;
-		vendorId: { label: string; value: string } | null;
 		isApprove: { label: string; value: string } | null;
 	}>({
 		mainCategoryId: null,
-		vendorId: null,
 		isApprove: null
 	});
 	const { usePaginatedQuery } = useAPI();
@@ -37,8 +35,7 @@ const Products = () => {
 			page: currentPageNumber.toString(),
 			limit: dataLimit.toString(),
 			...(searchQuery && { searchKeyword: searchQuery }),
-			...(selectedFilters.mainCategoryId?.value && { mainCategoryId: selectedFilters.mainCategoryId.value }),
-			...(selectedFilters.vendorId?.value && { vendorId: selectedFilters.vendorId.value })
+			...(selectedFilters.mainCategoryId?.value && { mainCategoryId: selectedFilters.mainCategoryId.value })
 		});
 	
 		return `${apiConfig.inventory.productListUrl}?${queryParams.toString()}`;
@@ -55,7 +52,6 @@ const Products = () => {
 			productQueryKey,
 			searchQuery,
 			selectedFilters.mainCategoryId?.value || "",
-			selectedFilters.vendorId?.value || "",
 			currentPageNumber.toString(),
 			dataLimit.toString()
 		],

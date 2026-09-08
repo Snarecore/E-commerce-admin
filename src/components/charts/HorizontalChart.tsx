@@ -56,7 +56,7 @@ interface HorizontalChartProps {
 }
 
 export default function NewAgentsBar({
-  title = "New added vendor",
+  title = "New Registered Customers",
   dataValues = DEFAULT_DATA,
   barColor = "#FE9F43",
   cardBg = "#ffffff",

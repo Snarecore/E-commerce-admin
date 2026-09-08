@@ -51,13 +51,6 @@ const requiredFields = [
     { key: "firstCategoryId", value: "first category", label: "dropdown" },
 ]
 
-// const vendorOptions: Option[] = [
-//     { label: "ElectroVendor", value: "f47ac10b-58cc-4372-a567-0e02b2c3d479" },
-//     { label: "SmartTrade Inc", value: "a27dcf11-3fc4-4c64-b1d7-5edcfbfa48d2" },
-//     { label: "Gadgetify", value: "bb8bdb87-ea6e-4e42-b329-1e772f91a2a5" },
-//     { label: "RetailX", value: "c2fef71e-7f74-4e12-9aa5-126fc07a3f47" },
-// ]
-
 const discountTypeOptions: Option[] = [
     { label: "Percentage", value: "PERCENT" },
     { label: "Fixed Amount", value: "FLAT" },
@@ -71,7 +64,6 @@ const ProductCreation = () => {
     const [description, setDescription] = useState("");
     const [uniqueCode, setUniqueCode] = useState("");
     const [productImages, setProductImages] = useState<(File | string)[]>([]);
-    // const [selectedVendorName, setSelectedVendorName] = useState<Option | null>(null);
     const [selectedDiscountType, setSelectedDiscountType] = useState<Option | null>(null);
     const [selectedMainCategory, setSelectedMainCategory] = useState<Option | null>(null);
     const [selectedFirstCategory, setSelectedFirstCategory] = useState<Option | null>(null);
@@ -348,14 +340,6 @@ const ProductCreation = () => {
         setFields(updated);
     };
 
-    // const handleVendorNameChange = (option: Option | null) => {
-    //     setSelectedVendorName(option);
-    //     setFieldValues(prev => ({
-    //         ...prev,
-    //         vendorName: option?.label || ""
-    //     }));
-    // };
-
     const handleSummaryChange = (index: number, value: string) => {
         const updated = [...fields];
         updated[index] = value;
@@ -597,15 +581,6 @@ const ProductCreation = () => {
                                         Generate
                                     </button>
                                 </div>
-
-                                {/* <SelectInput
-                                    label="Vendor Name"
-                                    value={selectedVendorName}
-                                    options={vendorOptions}
-                                    onChange={handleVendorNameChange}
-                                    placeholder="Select Vendor"
-                                    required
-                                /> */}
 
                                 <div>
                                     <InputField label="Selling Price (বিক্রয় মূল্য)" type="number" name="price" required value={fieldValues.price} onChange={handlePriceChange} />
