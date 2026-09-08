@@ -53,14 +53,17 @@ export function playChimeSound() {
   } catch {}
 }
 
+import { useSocket } from "./useSocket";
+import { SocketEvent } from "../types/socket.types";
+
 export function useAdminNotifications() {
   const [items, setItems] = useState<AdminNotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { socket } = useSocket();
   
   const knownIdsRef = useRef<Set<string>>(new Set());
   const isInitialLoadRef = useRef<boolean>(true);
-  const backoffDelayRef = useRef<number>(5000);
 
   const fetchAdminNotifications = useCallback(async () => {
     const token = getStoredToken();
@@ -97,53 +100,43 @@ export function useAdminNotifications() {
 
         setItems(fetchedItems);
         setUnreadCount(fetchedUnreadCount);
-        backoffDelayRef.current = 5000; // Reset backoff on success
       }
     } catch {
-      // Exponential backoff up to 60s on fetch error
-      backoffDelayRef.current = Math.min(backoffDelayRef.current * 2, 60000);
+      // Error fetching admin notifications
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Smart Polling Engine (Visibility API + Online/Offline + BroadcastChannel Signal)
+  // Initial Load once on mount
   useEffect(() => {
-    let timerId: ReturnType<typeof setTimeout> | undefined;
+    fetchAdminNotifications();
+  }, [fetchAdminNotifications]);
 
-    const schedulePoll = () => {
-      if (timerId) clearTimeout(timerId);
-      const isVisible = document.visibilityState === "visible";
-      const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+  // Real-time notification updates via Socket.IO
+  useEffect(() => {
+    if (!socket) return;
 
-      if (!isOnline) return; // Pause polling when offline
-
-      const interval = isVisible ? backoffDelayRef.current : 60000; // 5s active, 60s when hidden
-
-      timerId = setTimeout(async () => {
-        await fetchAdminNotifications();
-        schedulePoll();
-      }, interval);
+    const handleAdminNotification = () => {
+      fetchAdminNotifications();
+      playChimeSound();
     };
 
-    fetchAdminNotifications().then(schedulePoll);
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        backoffDelayRef.current = 5000;
-        fetchAdminNotifications().then(schedulePoll);
-      }
+    const handleOrderCreated = () => {
+      fetchAdminNotifications();
     };
 
-    const handleOnline = () => {
-      backoffDelayRef.current = 5000;
-      fetchAdminNotifications().then(schedulePoll);
+    socket.on(SocketEvent.ADMIN_NOTIFICATION, handleAdminNotification);
+    socket.on(SocketEvent.ORDER_CREATED, handleOrderCreated);
+
+    return () => {
+      socket.off(SocketEvent.ADMIN_NOTIFICATION, handleAdminNotification);
+      socket.off(SocketEvent.ORDER_CREATED, handleOrderCreated);
     };
+  }, [socket, fetchAdminNotifications]);
 
-    window.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("online", handleOnline);
-
-    // BroadcastChannel Signal Listener (Admin Tabs Sync Only)
+  // BroadcastChannel Signal Listener (Admin Tabs Sync Only)
+  useEffect(() => {
     let channel: BroadcastChannel | null = null;
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       try {
@@ -157,9 +150,6 @@ export function useAdminNotifications() {
     }
 
     return () => {
-      if (timerId) clearTimeout(timerId);
-      window.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("online", handleOnline);
       if (channel) {
         channel.close();
       }
