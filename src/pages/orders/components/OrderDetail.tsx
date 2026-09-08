@@ -408,7 +408,8 @@ const OrderDetail = () => {
                     {(() => {
                         const isBlacklisted = isCustomerBlacklisted(
                             getDisplayCustomerContact(order),
-                            order.user?.email || order.customerEmail || order.email
+                            order.user?.email || order.customerEmail || order.email,
+                            (order as any).ipAddress || (order as any).userIp || (order as any).clientIp || (order as any).ip
                         );
                         const effectiveRiskLevel = isBlacklisted ? 'CRITICAL' : (order.riskLevel || 'LOW');
                         const effectiveRiskScore = isBlacklisted ? 100 : (order.riskScore ?? 0);

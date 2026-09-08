@@ -118,18 +118,48 @@ export async function fetchBlacklistFromApi(): Promise<IBlacklistItem[]> {
   return getBlacklistItems();
 }
 
-export function isCustomerBlacklisted(contactOrPhone?: string, email?: string): boolean {
-  if (!contactOrPhone && !email) return false;
+function ipToInt(ip: string): number {
+  return ip.split('.').reduce((acc, octet) => ((acc << 8) + (parseInt(octet, 10) || 0)) >>> 0, 0);
+}
+
+function isIpInSubnet(ip: string, networkIp: string, prefixLength: number): boolean {
+  try {
+    const ipNum = ipToInt(ip);
+    const netNum = ipToInt(networkIp);
+    const mask = prefixLength === 0 ? 0 : (~0 << (32 - prefixLength)) >>> 0;
+    return (ipNum & mask) === (netNum & mask);
+  } catch {
+    return false;
+  }
+}
+
+export function isCustomerBlacklisted(contactOrPhone?: string, email?: string, ipAddress?: string): boolean {
+  if (!contactOrPhone && !email && !ipAddress) return false;
   const items = getBlacklistItems().filter((i) => i.status === 'ACTIVE' && i.severity === 'HARD_BLOCK');
   const cleanPhone = (contactOrPhone || '').replace(/\D/g, '');
+  const cleanIp = (ipAddress || '').trim();
 
   return items.some((item) => {
+    // Email check
     if (email && item.customerEmail && item.customerEmail.toLowerCase() === email.toLowerCase()) {
       return true;
     }
+    // Phone check
     if (cleanPhone && item.displayValue) {
       const itemClean = item.displayValue.replace(/\D/g, '');
       if (itemClean && (itemClean.length >= 6 && cleanPhone.length >= 6) && (itemClean.includes(cleanPhone) || cleanPhone.includes(itemClean))) {
+        return true;
+      }
+    }
+    // Exact IP check
+    if (cleanIp && item.subjectType === 'EXACT_IP' && item.ipAddress) {
+      if (item.ipAddress.trim() === cleanIp) {
+        return true;
+      }
+    }
+    // CIDR Subnet check
+    if (cleanIp && item.subjectType === 'CIDR' && item.networkAddress) {
+      if (isIpInSubnet(cleanIp, item.networkAddress, item.prefixLength || 24)) {
         return true;
       }
     }

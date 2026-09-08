@@ -336,7 +336,8 @@ const OrderTable = ({
                                             const custPhone = getDisplayCustomerPhone(data);
                                             const custContact = custPhone || getDisplayCustomerContact(data);
                                             const custEmail = data.user?.email || (data as any).email || (data as any).customerEmail;
-                                            const isBlocked = isCustomerBlacklisted(custContact, custEmail);
+                                            const custIp = (data as any).ipAddress || (data as any).userIp || (data as any).clientIp || (data as any).ip;
+                                            const isBlocked = isCustomerBlacklisted(custContact, custEmail, custIp);
 
                                             return (
                                                 <div>
