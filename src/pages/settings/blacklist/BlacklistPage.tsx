@@ -318,7 +318,15 @@ export default function BlacklistPage() {
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Subject Type</label>
                 <select
                   value={newSubjectType}
-                  onChange={(e) => setNewSubjectType(e.target.value as any)}
+                  onChange={(e) => {
+                    const selected = e.target.value as 'PHONE' | 'EXACT_IP' | 'CIDR';
+                    setNewSubjectType(selected);
+                    if (selected === 'PHONE') {
+                      setNewSeverity('HARD_BLOCK');
+                    } else {
+                      setNewSeverity('SUSPICIOUS_FLAG');
+                    }
+                  }}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
                 >
                   <option value="PHONE">Phone Number</option>

@@ -166,3 +166,33 @@ export function isCustomerBlacklisted(contactOrPhone?: string, email?: string, i
     return false;
   });
 }
+
+export function isCustomerSuspicious(contactOrPhone?: string, email?: string, ipAddress?: string): boolean {
+  if (!contactOrPhone && !email && !ipAddress) return false;
+  const items = getBlacklistItems().filter((i) => i.status === 'ACTIVE' && i.severity === 'SUSPICIOUS_FLAG');
+  const cleanPhone = (contactOrPhone || '').replace(/\D/g, '');
+  const cleanIp = (ipAddress || '').trim();
+
+  return items.some((item) => {
+    if (email && item.customerEmail && item.customerEmail.toLowerCase() === email.toLowerCase()) {
+      return true;
+    }
+    if (cleanPhone && item.displayValue) {
+      const itemClean = item.displayValue.replace(/\D/g, '');
+      if (itemClean && (itemClean.length >= 6 && cleanPhone.length >= 6) && (itemClean.includes(cleanPhone) || cleanPhone.includes(itemClean))) {
+        return true;
+      }
+    }
+    if (cleanIp && item.subjectType === 'EXACT_IP' && item.ipAddress) {
+      if (item.ipAddress.trim() === cleanIp) {
+        return true;
+      }
+    }
+    if (cleanIp && item.subjectType === 'CIDR' && item.networkAddress) {
+      if (isIpInSubnet(cleanIp, item.networkAddress, item.prefixLength || 24)) {
+        return true;
+      }
+    }
+    return false;
+  });
+}

@@ -7,7 +7,7 @@ import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { formatDate } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
-import { saveBlacklistItem, isCustomerBlacklisted } from "../../../utils/blacklist-storage";
+import { saveBlacklistItem, isCustomerBlacklisted, isCustomerSuspicious } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
@@ -411,10 +411,15 @@ const OrderDetail = () => {
                             order.user?.email || order.customerEmail || order.email,
                             (order as any).ipAddress || (order as any).userIp || (order as any).clientIp || (order as any).ip
                         );
-                        const effectiveRiskLevel = isBlacklisted ? 'CRITICAL' : (order.riskLevel || 'LOW');
-                        const effectiveRiskScore = isBlacklisted ? 100 : (order.riskScore ?? 0);
-                        const effectivePolicyDecision = isBlacklisted ? 'HARD_BLOCK' : (order.policyDecision || 'ALLOW');
-                        const effectiveFulfillmentHold = isBlacklisted || order.fulfillmentHold;
+                        const isSuspicious = !isBlacklisted && isCustomerSuspicious(
+                            getDisplayCustomerContact(order),
+                            order.user?.email || order.customerEmail || order.email,
+                            (order as any).ipAddress || (order as any).userIp || (order as any).clientIp || (order as any).ip
+                        );
+                        const effectiveRiskLevel = isBlacklisted ? 'CRITICAL' : (isSuspicious ? 'HIGH' : (order.riskLevel || 'LOW'));
+                        const effectiveRiskScore = isBlacklisted ? 100 : (isSuspicious ? Math.max(order.riskScore ?? 0, 50) : (order.riskScore ?? 0));
+                        const effectivePolicyDecision = isBlacklisted ? 'HARD_BLOCK' : (isSuspicious ? 'MANUAL_REVIEW' : (order.policyDecision || 'ALLOW'));
+                        const effectiveFulfillmentHold = isBlacklisted || isSuspicious || order.fulfillmentHold;
 
                         return (
                             <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">

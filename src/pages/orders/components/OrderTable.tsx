@@ -10,7 +10,7 @@ import Pagination from "../../../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact, getDisplayCustomerPhone } from "../../../utils/order-utils";
-import { saveBlacklistItem, isCustomerBlacklisted } from "../../../utils/blacklist-storage";
+import { saveBlacklistItem, isCustomerBlacklisted, isCustomerSuspicious } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
@@ -338,6 +338,7 @@ const OrderTable = ({
                                             const custEmail = data.user?.email || (data as any).email || (data as any).customerEmail;
                                             const custIp = (data as any).ipAddress || (data as any).userIp || (data as any).clientIp || (data as any).ip;
                                             const isBlocked = isCustomerBlacklisted(custContact, custEmail, custIp);
+                                            const isSuspicious = !isBlocked && isCustomerSuspicious(custContact, custEmail, custIp);
 
                                             return (
                                                 <div>
@@ -348,6 +349,11 @@ const OrderTable = ({
                                                         {isBlocked && (
                                                             <span className="px-1.5 py-0.5 text-[10px] bg-red-100 text-red-700 font-bold rounded border border-red-200">
                                                                 BLOCKED
+                                                            </span>
+                                                        )}
+                                                        {isSuspicious && (
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-yellow-100 text-yellow-800 font-bold rounded border border-yellow-300">
+                                                                SUSPICIOUS
                                                             </span>
                                                         )}
                                                     </div>
