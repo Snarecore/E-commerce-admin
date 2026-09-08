@@ -6,6 +6,9 @@ import { useAPI } from "../../hooks/useApi";
 import apiConfig from "../../config/api.json";
 import { orderQueryKey } from "../../config/query-key";
 
+import { useSocket } from "../../hooks/useSocket";
+import { SocketEvent } from "../../types/socket.types";
+
 const ORDER_TABS = [
     { key: "all", label: "All Orders" },
     { key: "Pending", label: "Pending" },
@@ -19,6 +22,7 @@ const Orders = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const urlOrderId = searchParams.get("orderId");
+    const { socket } = useSocket();
 
     const dataLimit = 10;
     const [activeTab, setActiveTab] = useState("all");
@@ -110,6 +114,27 @@ const Orders = () => {
     useEffect(() => {
         fetchOrderList();
     }, [currentPageNumber]);
+
+    // Real-time socket events for admin order updates
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleOrderCreated = () => {
+            fetchOrderList();
+        };
+
+        const handleOrderStatusUpdated = () => {
+            fetchOrderList();
+        };
+
+        socket.on(SocketEvent.ORDER_CREATED, handleOrderCreated);
+        socket.on(SocketEvent.ORDER_STATUS_UPDATED, handleOrderStatusUpdated);
+
+        return () => {
+            socket.off(SocketEvent.ORDER_CREATED, handleOrderCreated);
+            socket.off(SocketEvent.ORDER_STATUS_UPDATED, handleOrderStatusUpdated);
+        };
+    }, [socket, fetchOrderList]);
 
     return (
         <div>

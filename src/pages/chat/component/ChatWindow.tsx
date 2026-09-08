@@ -5,6 +5,8 @@ import apiConfig from "../../../config/api.json";
 import avatar from "/images/avatar.png";
 import moment from "moment";
 import { ConversationItem } from "./ChatSidebar";
+import { useSocket } from "../../../hooks/useSocket";
+import { SocketEvent, MessageCreatedPayload } from "../../../types/socket.types";
 
 interface Message {
     id: string;
@@ -30,6 +32,7 @@ const ChatWindow = ({ selectedUser, prefillMessage }: { selectedUser: Conversati
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const oldestCursor = messages.length > 0 ? messages[0].id : undefined;
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const { socket, joinConversation, leaveConversation } = useSocket();
 
     useEffect(() => {
         if (prefillMessage) {
@@ -99,14 +102,45 @@ const ChatWindow = ({ selectedUser, prefillMessage }: { selectedUser: Conversati
     useEffect(() => {
         if (!selectedUser?.id) return;
         fetchThread(true);
+        joinConversation(selectedUser.id);
 
-        // Polling thread for incoming customer messages every 2.5s
-        const interval = setInterval(() => {
-            fetchThread(false);
-        }, 2500);
-
-        return () => clearInterval(interval);
+        return () => {
+            leaveConversation(selectedUser.id);
+        };
     }, [selectedUser?.id]);
+
+    // Listen to real-time incoming messages
+    useEffect(() => {
+        if (!socket || !selectedUser?.id) return;
+
+        const handleMessageCreated = (newMsg: MessageCreatedPayload) => {
+            if (!newMsg?.id) return;
+            if (newMsg.conversationId !== selectedUser.id) return;
+
+            setMessages((prev) => {
+                if (prev.some((m) => m.id === newMsg.id)) return prev;
+                return [
+                    ...prev,
+                    {
+                        id: newMsg.id,
+                        conversationId: newMsg.conversationId,
+                        senderId: newMsg.senderId,
+                        senderRole: newMsg.senderRole,
+                        content: newMsg.content,
+                        isRead: false,
+                        createdAt: newMsg.createdAt
+                    }
+                ];
+            });
+            setTimeout(scrollToBottom, 50);
+        };
+
+        socket.on(SocketEvent.MESSAGE_CREATED, handleMessageCreated);
+
+        return () => {
+            socket.off(SocketEvent.MESSAGE_CREATED, handleMessageCreated);
+        };
+    }, [socket, selectedUser?.id]);
 
     const handleSendMessage = async () => {
         if (!content.trim() || isMessageLoading) return;
@@ -130,9 +164,16 @@ const ChatWindow = ({ selectedUser, prefillMessage }: { selectedUser: Conversati
                 requiredFields
             });
 
-            if (result?.success || result?.data) {
-                await fetchThread(false);
-                setTimeout(scrollToBottom, 100);
+            const res: any = result;
+            if (res?.success || res?.data) {
+                const newMsg: Message = res?.data || res;
+                if (newMsg?.id) {
+                    setMessages((prev) => {
+                        if (prev.some((m) => m.id === newMsg.id)) return prev;
+                        return [...prev, newMsg];
+                    });
+                }
+                setTimeout(scrollToBottom, 50);
             } else {
                 // Restore input on failure
                 setContent(currentContent);

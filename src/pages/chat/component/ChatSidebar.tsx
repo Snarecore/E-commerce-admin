@@ -3,6 +3,8 @@ import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import avatar from "/images/avatar.png";
 import moment from "moment";
+import { useSocket } from "../../../hooks/useSocket";
+import { SocketEvent, ConversationUpdatedPayload, MessageCreatedPayload } from "../../../types/socket.types";
 
 export interface Customer {
     id: string;
@@ -31,6 +33,7 @@ const ChatSidebar = ({ setSelectedUser, selectedUser, autoSelectCustomerId }: Ch
     const [conversations, setConversations] = useState<ConversationItem[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const { socket } = useSocket();
 
     const getConversations = async () => {
         try {
@@ -65,11 +68,60 @@ const ChatSidebar = ({ setSelectedUser, selectedUser, autoSelectCustomerId }: Ch
     useEffect(() => {
         setIsLoading(true);
         getConversations().finally(() => setIsLoading(false));
-
-        // Auto-refresh conversations every 4 seconds for live inbox experience
-        const interval = setInterval(getConversations, 4000);
-        return () => clearInterval(interval);
     }, [autoSelectCustomerId]);
+
+    // Real-time conversation updates via Socket.IO
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleConversationUpdated = (payload: ConversationUpdatedPayload) => {
+            if (!payload?.conversationId) return;
+            setConversations((prev) => {
+                const existingIndex = prev.findIndex((c) => c.id === payload.conversationId);
+                if (existingIndex === -1) {
+                    // Fetch list if new conversation unknown
+                    getConversations();
+                    return prev;
+                }
+                const updated = [...prev];
+                const item = { ...updated[existingIndex] };
+                item.lastMessage = payload.lastMessage;
+                item.lastMessageAt = payload.lastMessageAt;
+                item.unreadCountAdmin = payload.unreadCountAdmin;
+                // Move updated conversation to top of list
+                updated.splice(existingIndex, 1);
+                return [item, ...updated];
+            });
+        };
+
+        const handleMessageCreated = (payload: MessageCreatedPayload) => {
+            if (!payload?.conversationId) return;
+            setConversations((prev) => {
+                const existingIndex = prev.findIndex((c) => c.id === payload.conversationId);
+                if (existingIndex === -1) {
+                    getConversations();
+                    return prev;
+                }
+                const updated = [...prev];
+                const item = { ...updated[existingIndex] };
+                item.lastMessage = payload.content;
+                item.lastMessageAt = payload.createdAt;
+                if (payload.senderRole === "customer") {
+                    item.unreadCountAdmin = (item.unreadCountAdmin || 0) + 1;
+                }
+                updated.splice(existingIndex, 1);
+                return [item, ...updated];
+            });
+        };
+
+        socket.on(SocketEvent.CONVERSATION_UPDATED, handleConversationUpdated);
+        socket.on(SocketEvent.MESSAGE_CREATED, handleMessageCreated);
+
+        return () => {
+            socket.off(SocketEvent.CONVERSATION_UPDATED, handleConversationUpdated);
+            socket.off(SocketEvent.MESSAGE_CREATED, handleMessageCreated);
+        };
+    }, [socket]);
 
     const filteredConversations = conversations.filter((convo) => {
         const name = convo.customer?.name?.toLowerCase() || "";

@@ -22,6 +22,7 @@ interface DashboardData {
 	topCategories?: Array<{ category: string; sales: number }>;
 	monthlySalesCommissionData?: Array<{ month: string; totalSales: string | number; totalCommission: string | number }>;
 	customerMonthlyReports?: number[];
+	newVendorMonthlyReports?: number[];
 	recentProducts: any;
 	recentOrders: any;
 }

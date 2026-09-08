@@ -6,7 +6,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { TbLayoutGrid, TbListDetails, TbTablePlus } from "react-icons/tb";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaFacebookMessenger, FaStore, FaUser } from "react-icons/fa";
+import { FaFacebookMessenger, FaUser } from "react-icons/fa";
 import userAvatar from "/images/avatar.png";
 import companyLogo from "/images/Admin-logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
