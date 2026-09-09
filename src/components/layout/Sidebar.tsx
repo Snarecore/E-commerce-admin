@@ -9,6 +9,7 @@ import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/m
 import { FiShoppingCart, FiZap, FiShield } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
+import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
 // import { FaQuestion, FaStore, FaUser } from "react-icons/fa";
 
 const menu = [
@@ -249,6 +250,7 @@ const menu = [
 const Sidebar = () => {
 	const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
 	const location = useLocation();
+	const { unreadChatCount } = useUnreadChatCount();
 
 	useEffect(() => {
 		menu.forEach((section) => {
@@ -330,6 +332,12 @@ const Sidebar = () => {
 												{item.name}
 											</span>
 										</div>
+
+										{item.name === "Chat" && unreadChatCount > 0 && (
+											<span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-xs animate-pulse">
+												{unreadChatCount > 9 ? "9+" : unreadChatCount}
+											</span>
+										)}
 
 										{item.subItems.length > 0 && (
 											<span className="text-xl bg-gray-100 rounded-full">

@@ -20,6 +20,7 @@ import { useAtomValue } from "jotai";
 import { userAtom } from "../../store/user-store";
 import { IoShareSocialOutline } from "react-icons/io5";
 import AdminNotificationDropdown from "./AdminNotificationDropdown";
+import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
 
 const MenuItem = ({
 	icon,
@@ -227,6 +228,7 @@ const Header = () => {
 	const navigate = useNavigate();
 	const setLogout = useSetAtom(logoutUserAtom);
 	const userData = useAtomValue(userAtom);
+	const { unreadChatCount } = useUnreadChatCount();
 
 	const handleLogout = () => {
 		setLogout(() => navigate("/login"));
@@ -320,6 +322,11 @@ const Header = () => {
 														>
 															{item.name}
 														</span>
+														{item.name === "Chat" && unreadChatCount > 0 && (
+															<span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-xs ml-auto">
+																{unreadChatCount > 9 ? "9+" : unreadChatCount}
+															</span>
+														)}
 													</div>
 
 													{item.subItems.length > 0 && (
@@ -366,7 +373,21 @@ const Header = () => {
 			)}
 
 			<div className="flex justify-end items-center px-4 lg:py-1 bg-white border-b border-gray-200">
-				<div className="flex gap-4 items-center">
+				<div className="flex gap-3 items-center">
+					<NavLink
+						to="/chat"
+						className="relative p-2 text-gray-600 hover:text-[var(--color-primary)] hover:bg-gray-100 rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						title="Customer Messages"
+						aria-label="Customer Messages"
+					>
+						<FaFacebookMessenger className="text-xl sm:text-2xl" />
+						{unreadChatCount > 0 && (
+							<span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1.5 flex items-center justify-center shadow-md animate-pulse">
+								{unreadChatCount > 9 ? "9+" : unreadChatCount}
+							</span>
+						)}
+					</NavLink>
+
 					<AdminNotificationDropdown />
 
 					<div

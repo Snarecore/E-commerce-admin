@@ -34,6 +34,11 @@ const Products = () => {
 		const queryParams = new URLSearchParams({
 			page: currentPageNumber.toString(),
 			limit: dataLimit.toString(),
+			sortBy: "createdAt",
+			sortOrder: "DESC",
+			sort_by: "createdAt",
+			sort_order: "desc",
+			sort: "-createdAt",
 			...(searchQuery && { searchKeyword: searchQuery }),
 			...(selectedFilters.mainCategoryId?.value && { mainCategoryId: selectedFilters.mainCategoryId.value })
 		});

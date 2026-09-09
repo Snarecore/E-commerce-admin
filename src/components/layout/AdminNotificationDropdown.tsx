@@ -6,13 +6,13 @@ import moment from "moment";
 
 const timeAgo = (dateStr?: string | Date | null): string => {
   if (!dateStr) return "just now";
-  let m = moment(dateStr);
+  let m = moment(dateStr).utcOffset('+06:00');
   if (!m.isValid()) {
-    m = moment(new Date(dateStr));
+    m = moment(new Date(dateStr)).utcOffset('+06:00');
   }
   if (!m.isValid()) return "just now";
 
-  const diffSec = moment().diff(m, "seconds");
+  const diffSec = moment().utcOffset('+06:00').diff(m, "seconds");
   if (diffSec < 60) return "just now";
   const diffMin = Math.floor(diffSec / 60);
   if (diffMin < 60) return `${diffMin}m ago`;

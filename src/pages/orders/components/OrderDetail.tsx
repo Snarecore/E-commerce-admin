@@ -42,8 +42,9 @@ const OrderDetail = () => {
 
         // Direct single order object
         if (!Array.isArray(res) && !Array.isArray(res.data) && !Array.isArray(res.data?.data) && !Array.isArray(res.orderList)) {
-            if (typeof res === "object" && (res.id || res.orderId)) {
-                return res;
+            const single = res.data && typeof res.data === "object" ? res.data : res;
+            if (single && (single.id || single.orderId)) {
+                return single;
             }
         }
 
@@ -65,7 +66,7 @@ const OrderDetail = () => {
                 String(o.id || "").replace(/^#/, "").toLowerCase() === cleanId.toLowerCase() ||
                 String(o.orderId || "").replace(/^#/, "").toLowerCase() === cleanId.toLowerCase()
             );
-            return found || items[0];
+            return found || null;
         }
 
         return null;
@@ -77,16 +78,17 @@ const OrderDetail = () => {
             setIsLoading(true);
             const cleanId = String(id).replace(/^#/, "").trim();
 
-            fetchData({ apiUrl: `${apiConfig.order.orderListUrl}?orderId=${cleanId}` })
-                .then(async (res: any) => {
-                    let targetOrder = parseOrderResponse(res, cleanId);
+            // Try direct single order lookup first
+            fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` })
+                .then(async (directRes: any) => {
+                    let targetOrder = parseOrderResponse(directRes, cleanId);
+                    if (!targetOrder) {
+                        const res: any = await fetchData({ apiUrl: `${apiConfig.order.orderListUrl}?orderId=${cleanId}` });
+                        targetOrder = parseOrderResponse(res, cleanId);
+                    }
                     if (!targetOrder) {
                         const idRes: any = await fetchData({ apiUrl: `${apiConfig.order.orderListUrl}?id=${cleanId}` });
                         targetOrder = parseOrderResponse(idRes, cleanId);
-                    }
-                    if (!targetOrder) {
-                        const directRes: any = await fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` });
-                        targetOrder = parseOrderResponse(directRes, cleanId);
                     }
 
                     if (targetOrder) {
