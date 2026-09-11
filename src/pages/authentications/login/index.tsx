@@ -68,15 +68,12 @@ const Login = () => {
 			if (result?.success && result?.data) {
 				const rawData = result.data as any;
 				const userData = rawData?.data?.user || rawData?.user || rawData?.data?.admin || rawData?.admin || (typeof rawData?.data === 'object' ? rawData?.data : rawData);
-				const accessToken = rawData?.data?.accessToken || rawData?.accessToken || rawData?.data?.token || rawData?.token || rawData?.data?.access_token || rawData?.access_token;
-				const refreshToken = rawData?.data?.refreshToken || rawData?.refreshToken || rawData?.data?.refresh_token || rawData?.refresh_token;
 
 				const normalizedUser = {
-					...(typeof userData === 'object' ? userData : {}),
 					id: userData?.id || userData?._id || "",
-					role: userData?.role || "admin",
-					token: accessToken || "",
-					refreshToken: refreshToken || ""
+					name: userData?.name || "Admin",
+					email: userData?.email || "",
+					role: userData?.role || "admin"
 				};
 
 				setStoredUser(normalizedUser);

@@ -225,6 +225,7 @@ export default function ProfitReportPage() {
       const exportUrl = `${import.meta.env.VITE_API_URL || ""}/${apiConfig.reports.profitExportUrl}?${q}`;
 
       const res = await fetch(exportUrl, {
+        credentials: "include",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },

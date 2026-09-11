@@ -26,42 +26,52 @@ export function isTokenExpired(token?: string | null, offsetSeconds = 60): boole
 }
 
 /**
- * Reads the stored user from sessionStorage or localStorage.
+ * Reads the stored user from sessionStorage or localStorage (safe profile only, no raw tokens).
  */
 export function getStoredUser(): User | null {
     if (typeof window === "undefined") return null;
     try {
         const raw = sessionStorage.getItem(STORAGE_KEY_USER) || localStorage.getItem(STORAGE_KEY_USER);
         if (!raw) return null;
-        return JSON.parse(raw) as User;
+        const parsed = JSON.parse(raw);
+        return {
+            id: parsed.id || parsed._id || "",
+            name: parsed.name || "",
+            email: parsed.email || "",
+            role: parsed.role || "admin"
+        } as User;
     } catch {
         return null;
     }
 }
 
 /**
- * Returns the current stored access token.
+ * Returns the current stored access token (optional, deprecated in favor of HttpOnly cookies).
  */
 export function getStoredToken(): string {
-    const user = getStoredUser();
-    return user?.token || "";
+    return "";
 }
 
 /**
- * Returns the stored refresh token.
+ * Returns the stored refresh token (deprecated in favor of HttpOnly cookies).
  */
 export function getStoredRefreshToken(): string {
-    const user = getStoredUser();
-    return user?.refreshToken || "";
+    return "";
 }
 
 /**
- * Saves or updates user session data across both sessionStorage and localStorage.
+ * Saves or updates safe non-sensitive user profile data.
  */
 export function setStoredUser(user: User, customExpiryMs?: number): void {
     if (typeof window === "undefined") return;
     try {
-        const userStr = JSON.stringify(user);
+        const safeUser = {
+            id: user.id || (user as any)._id || "",
+            name: user.name || "",
+            email: user.email || "",
+            role: user.role || "admin"
+        };
+        const userStr = JSON.stringify(safeUser);
         sessionStorage.setItem(STORAGE_KEY_USER, userStr);
         localStorage.setItem(STORAGE_KEY_USER, userStr);
 

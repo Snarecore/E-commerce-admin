@@ -9,12 +9,6 @@ export function useUnreadChatCount() {
     const { socket } = useSocket();
 
     const fetchUnreadCount = useCallback(async () => {
-        const token = getStoredToken();
-        if (!token) {
-            setUnreadCount(0);
-            return;
-        }
-
         try {
             const res: any = await getData({ url: "message/conversations?page=1&limit=100" });
             let items: any[] = [];

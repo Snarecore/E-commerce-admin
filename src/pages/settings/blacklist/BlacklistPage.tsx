@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiShield, FiPlus, FiSearch, FiCheckCircle, FiXCircle, FiUser, FiPhone, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { getBlacklistItems, saveBlacklistItem, revokeBlacklistItem } from '../../../utils/blacklist-storage';
+import { getBlacklistItems, saveBlacklistItem, revokeBlacklistItem, fetchBlacklistFromApi } from '../../../utils/blacklist-storage';
 
 export interface IBlacklistItem {
   id: string;
@@ -28,10 +28,12 @@ export default function BlacklistPage() {
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
 
   useEffect(() => {
+    fetchBlacklistFromApi().then((data) => {
+      if (data) setItems(data);
+    });
     const syncItems = () => {
       setItems(getBlacklistItems());
     };
-    syncItems();
     window.addEventListener('blacklist_updated', syncItems);
     return () => window.removeEventListener('blacklist_updated', syncItems);
   }, []);
@@ -47,7 +49,7 @@ export default function BlacklistPage() {
   const [newReason, setNewReason] = useState('ADMIN_REQUEST');
   const [newNote, setNewNote] = useState('');
 
-  const handleAddEntry = (e: React.FormEvent) => {
+  const handleAddEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     const rawVal = newInputValue.trim();
     if (!rawVal) {
@@ -55,19 +57,12 @@ export default function BlacklistPage() {
       return;
     }
 
-    const simulatedHash = Array.from(rawVal)
-      .map((c) => c.charCodeAt(0).toString(16))
-      .join('')
-      .padEnd(32, '0')
-      .slice(0, 32);
-
     const newItem: IBlacklistItem = {
       id: `bl-${Date.now()}`,
       subjectType: newSubjectType,
       customerName: newCustomerName.trim() || undefined,
       customerEmail: newCustomerEmail.trim() || undefined,
       displayValue: newSubjectType === 'PHONE' ? rawVal : undefined,
-      valueHash: newSubjectType === 'PHONE' ? simulatedHash : undefined,
       ipAddress: newSubjectType === 'EXACT_IP' ? rawVal : undefined,
       networkAddress: newSubjectType === 'CIDR' ? rawVal : undefined,
       prefixLength: newSubjectType === 'CIDR' ? newPrefixLength : undefined,
@@ -79,7 +74,7 @@ export default function BlacklistPage() {
       createdAt: new Date().toISOString(),
     };
 
-    const updated = saveBlacklistItem(newItem);
+    const updated = await saveBlacklistItem(newItem);
     setItems(updated);
     setIsAddModalOpen(false);
     setNewCustomerName('');
@@ -89,9 +84,9 @@ export default function BlacklistPage() {
     toast.success(`Blacklist entry for ${newCustomerName || rawVal} added successfully!`);
   };
 
-  const handleRevoke = (id: string) => {
+  const handleRevoke = async (id: string) => {
     if (window.confirm('Are you sure you want to revoke this blacklist entry?')) {
-      const updated = revokeBlacklistItem(id);
+      const updated = await revokeBlacklistItem(id);
       setItems(updated);
       toast.success('Blacklist entry revoked.');
     }

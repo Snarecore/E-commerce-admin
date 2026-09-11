@@ -66,14 +66,6 @@ export function useAdminNotifications() {
   const isInitialLoadRef = useRef<boolean>(true);
 
   const fetchAdminNotifications = useCallback(async () => {
-    const token = getStoredToken();
-    if (!token) {
-      setItems([]);
-      setUnreadCount(0);
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const res: any = await getData({ url: "site/notifications/admin?limit=20" });
       if (res && !res.error) {

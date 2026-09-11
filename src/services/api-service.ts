@@ -1,19 +1,11 @@
 import { GetDataProps, PostDataProps, PatchDataProps, PutDataProps, DeleteDataProps, FormDataProps } from "../models/api-models";
-import { getStoredUser, setStoredUser, removeStoredUser, getStoredToken, getStoredRefreshToken, isSessionExpired } from "../utils/auth-storage";
+import { removeStoredUser, getStoredToken, isSessionExpired } from "../utils/auth-storage";
 
 const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
 const apiUrl = rawApiUrl.endsWith("/") ? rawApiUrl : `${rawApiUrl}/`;
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
-
-const REFRESH_ENDPOINTS = [
-    "auth/refresh-token",
-    "auth/refresh",
-    "auth/admin/refresh-token",
-    "auth/admin/refresh",
-    "auth/refreshToken"
-];
 
 export async function refreshAccessToken(): Promise<string | null> {
     if (isRefreshing && refreshPromise) {
@@ -31,80 +23,22 @@ export async function refreshAccessToken(): Promise<string | null> {
     isRefreshing = true;
     refreshPromise = (async () => {
         try {
-            const storedUser = getStoredUser();
-            const storedToken = getStoredToken();
-            const storedRefreshToken = getStoredRefreshToken();
-
-            if (!storedUser && !storedToken && !storedRefreshToken) {
-                return null;
-            }
-
-            const tokenToUse = storedRefreshToken || storedUser?.refreshToken || storedToken;
-            const headers: Record<string, string> = { "Content-Type": "application/json" };
-            if (tokenToUse) {
-                headers["Authorization"] = `Bearer ${tokenToUse}`;
-            }
-            if (storedRefreshToken) {
-                headers["x-refresh-token"] = storedRefreshToken;
-            }
-
-            const payloadBody = JSON.stringify({
-                refreshToken: tokenToUse,
-                refresh_token: tokenToUse,
-                token: storedToken
+            const response = await fetch(`${apiUrl}auth/refresh-token`, {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" }
             });
 
-            for (const endpoint of REFRESH_ENDPOINTS) {
-                try {
-                    const response = await fetch(`${apiUrl}${endpoint}`, {
-                        method: "POST",
-                        credentials: "include",
-                        headers,
-                        body: payloadBody
-                    });
+            if (response.ok) {
+                const resData = await response.json();
+                const newToken = resData?.accessToken || resData?.data?.accessToken || "refreshed";
+                return newToken;
+            }
 
-                    if (response.ok) {
-                        const resData = await response.json();
-                        const newToken =
-                            resData?.accessToken ||
-                            resData?.data?.accessToken ||
-                            resData?.token ||
-                            resData?.data?.token ||
-                            resData?.access_token ||
-                            resData?.data?.access_token ||
-                            (typeof resData?.data === "string" ? resData.data : null);
-
-                        const newRefreshToken =
-                            resData?.refreshToken ||
-                            resData?.data?.refreshToken ||
-                            resData?.refresh_token ||
-                            resData?.data?.refresh_token ||
-                            storedRefreshToken;
-
-                        if (newToken && typeof newToken === "string" && newToken.trim().length > 10) {
-                            if (storedUser) {
-                                const updatedUser = {
-                                    ...storedUser,
-                                    token: newToken,
-                                    refreshToken: newRefreshToken || storedUser.refreshToken
-                                };
-                                setStoredUser(updatedUser);
-                                if (typeof window !== "undefined") {
-                                    window.dispatchEvent(new CustomEvent("auth-token-refreshed", { detail: updatedUser }));
-                                }
-                            }
-                            return newToken;
-                        }
-                    } else if (response.status === 404) {
-                        // Endpoint doesn't exist on server, try next endpoint candidate
-                        continue;
-                    } else if (response.status === 401 || response.status === 403) {
-                        // Refresh token was explicitly rejected
-                        break;
-                    }
-                } catch {
-                    // Try next candidate endpoint
-                    continue;
+            if (response.status === 401 || response.status === 403) {
+                removeStoredUser();
+                if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+                    window.location.href = "/login";
                 }
             }
 
@@ -129,12 +63,10 @@ async function apiRequest<T>(url: string, options: RequestInit, isRetry = false)
 
         const response = await fetch(`${apiUrl}${url}`, fetchOptions);
 
-        if (response.status === 401 && !isRetry && !url.includes("auth/login") && !REFRESH_ENDPOINTS.some(ep => url.includes(ep))) {
+        if (response.status === 401 && !isRetry && !url.includes("auth/login") && !url.includes("auth/refresh")) {
             const newToken = await refreshAccessToken();
             if (newToken) {
-                const newHeaders = new Headers(options.headers || {});
-                newHeaders.set("Authorization", `Bearer ${newToken}`);
-                return apiRequest<T>(url, { ...options, headers: newHeaders }, true);
+                return apiRequest<T>(url, { ...options }, true);
             }
         }
 

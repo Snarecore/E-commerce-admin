@@ -8,7 +8,6 @@ import {
     setStoredUser,
     removeStoredUser,
     isSessionExpired,
-    isTokenExpired,
     recordUserActivity
 } from "../utils/auth-storage";
 import { showErrorToast } from "../utils/toast-utils";
@@ -28,7 +27,7 @@ const AppInitializer = () => {
             try {
                 const storedUser = getStoredUser();
 
-                if (!storedUser || (!storedUser.token && !storedUser.id && !storedUser.email)) {
+                if (!storedUser || (!storedUser.id && !storedUser.email)) {
                     setUser(null);
                     setUserLoaded(true);
                     return;
@@ -44,37 +43,19 @@ const AppInitializer = () => {
                     return;
                 }
 
-                let token = storedUser.token || "";
-
-                // If JWT is already expired or expiring within 60s, refresh silently before proceeding
-                if (isTokenExpired(token, 60)) {
-                    const refreshedToken = await refreshAccessToken();
-                    if (refreshedToken) {
-                        token = refreshedToken;
-                    }
-                }
-
                 const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
                 const apiUrl = rawApiUrl.replace(/\/$/, "");
-                const headers: Record<string, string> = {};
-                if (token) {
-                    headers["Authorization"] = `Bearer ${token}`;
-                }
 
                 let res = await fetch(`${apiUrl}/auth/admin/me`, {
                     method: "GET",
-                    headers,
                     credentials: "include"
                 });
 
                 if (res.status === 401) {
-                    const newToken = await refreshAccessToken();
-                    if (newToken) {
-                        token = newToken;
-                        const retryHeaders: Record<string, string> = { Authorization: `Bearer ${newToken}` };
+                    const refreshed = await refreshAccessToken();
+                    if (refreshed) {
                         res = await fetch(`${apiUrl}/auth/admin/me`, {
                             method: "GET",
-                            headers: retryHeaders,
                             credentials: "include"
                         });
                     }
@@ -85,10 +66,10 @@ const AppInitializer = () => {
                     const userData = data?.data || data?.user;
                     if (userData) {
                         const mergedUser: User = {
-                            ...(storedUser || {}),
-                            ...(userData as User),
                             id: userData.id || userData._id || storedUser?.id || "",
-                            token: token || (userData as any)?.token || (userData as any)?.accessToken || storedUser?.token
+                            name: userData.name || storedUser?.name || "Admin",
+                            email: userData.email || storedUser?.email || "",
+                            role: userData.role || storedUser?.role || "admin"
                         };
                         setUser(mergedUser);
                         setStoredUser(mergedUser);
@@ -96,15 +77,12 @@ const AppInitializer = () => {
                         setUser(storedUser);
                     }
                 } else {
-                    if (storedUser && (storedUser.token || storedUser.id || storedUser.email)) {
-                        setUser(storedUser);
-                    } else {
-                        setUser(null);
-                    }
+                    removeStoredUser();
+                    setUser(null);
                 }
             } catch {
                 const storedUser = getStoredUser();
-                if (storedUser && (storedUser.token || storedUser.id || storedUser.email)) {
+                if (storedUser && (storedUser.id || storedUser.email)) {
                     setUser(storedUser);
                 } else {
                     setUser(null);
@@ -119,7 +97,7 @@ const AppInitializer = () => {
 
     // Proactive background interval: runs every 30s
     // 1. Checks 2-hour session expiry
-    // 2. Silently refreshes access token before the 5-min JWT expires
+    // 2. Silently refreshes access token cookie in the background
     useEffect(() => {
         let lastRefreshTime = Date.now();
 
@@ -136,18 +114,13 @@ const AppInitializer = () => {
                 return;
             }
 
-            const currentToken = currentUser.token || "";
             const now = Date.now();
             const timeSinceLastRefresh = now - lastRefreshTime;
 
-            // Refresh if JWT is within 90s of expiry OR every 3.5 minutes (210,000 ms)
-            if (isTokenExpired(currentToken, 90) || timeSinceLastRefresh >= 210000) {
+            // Refresh cookie every 10 minutes
+            if (timeSinceLastRefresh >= 600000) {
                 lastRefreshTime = now;
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    const updatedUser = { ...currentUser, token: newToken };
-                    setUser(updatedUser);
-                }
+                await refreshAccessToken();
             }
         }, 30000);
 
