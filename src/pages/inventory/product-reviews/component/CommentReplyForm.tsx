@@ -78,7 +78,7 @@ type CommentUser = {
                   {/* indent replies visually based on depth */}
                   <div
                     className="text-sm whitespace-pre-wrap break-words"
-                    style={{ paddingLeft: depth * 16 }} // 16px per level
+                    style={{ paddingLeft: depth * 16 }} 
                   >
                     {getBody(node)}
                   </div>
