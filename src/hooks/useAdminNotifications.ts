@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getData, patchData } from "../services/api-service";
-import { getStoredToken } from "../utils/auth-storage";
 
 export interface AdminNotificationMetadata {
   orderNumber?: string;

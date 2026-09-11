@@ -115,7 +115,7 @@ export function isCustomerBlacklisted(contactOrPhone?: string, email?: string, i
 
 export function isCustomerSuspicious(contactOrPhone?: string, email?: string, ipAddress?: string): boolean {
   if (!contactOrPhone && !email && !ipAddress) return false;
-  const items = getBlacklistItems().filter((i) => i.status === 'ACTIVE' && i.severity === 'FLAG_SUSPICIOUS');
+  const items = getBlacklistItems().filter((i) => i.status === 'ACTIVE' && i.severity === 'SUSPICIOUS_FLAG');
   const cleanPhone = (contactOrPhone || '').replace(/\D/g, '');
   const cleanIp = (ipAddress || '').trim();
 

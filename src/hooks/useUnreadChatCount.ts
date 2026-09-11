@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { getData } from "../services/api-service";
-import { getStoredToken } from "../utils/auth-storage";
 import { useSocket } from "./useSocket";
 import { SocketEvent, ConversationUpdatedPayload, MessageCreatedPayload } from "../types/socket.types";
 
