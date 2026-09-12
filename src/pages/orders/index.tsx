@@ -107,7 +107,18 @@ const Orders = () => {
         isLoading,
     } = usePaginatedQuery({
         // @ts-ignore
-        queryKey: [orderQueryKey, selectedFilters, currentPageNumber.toString(), urlOrderId || ""],
+        queryKey: [
+            orderQueryKey,
+            activeTab,
+            selectedFilters.userId?.value || "",
+            selectedFilters.status?.value || "",
+            selectedFilters.paymentStatus?.value || "",
+            selectedFilters.startDate?.value ? new Date(selectedFilters.startDate.value).toISOString().split('T')[0] : "",
+            selectedFilters.endDate?.value ? new Date(selectedFilters.endDate.value).toISOString().split('T')[0] : "",
+            currentPageNumber.toString(),
+            dataLimit.toString(),
+            urlOrderId || ""
+        ],
         url: getOrderListApiUrl(),
     });
 
