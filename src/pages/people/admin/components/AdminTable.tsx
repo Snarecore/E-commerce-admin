@@ -96,7 +96,7 @@ const AdminTable = ({
                                     className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
                                 >
                                     <td className="px-6 py-4 font-medium text-gray-800">
-                                        {index + 1}
+                                        {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
                                     <td className="px-6 py-4 font-medium text-gray-800">
                                         {data.name}

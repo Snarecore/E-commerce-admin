@@ -6,6 +6,7 @@ import { auditLogQueryKey } from "../../config/query-key";
 import { AuditLogItem } from "../../models/audit-log-models";
 import { FiSearch, FiEye, FiActivity, FiCheckCircle, FiXCircle } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
+import RefreshButton from "../../components/table-components/RefreshButton";
 
 const MODULE_OPTIONS = [
     { label: "All Modules", value: "" },
@@ -45,7 +46,7 @@ const AuditLogs = () => {
         return () => clearTimeout(handler);
     }, [search]);
 
-    const auditApiUrl = `${apiConfig.audit.auditLogsUrl}?page=${page}&limit=${limit}${
+    const auditApiUrl = `${apiConfig.audit.auditLogsUrl}?page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC${
         debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ""
     }${selectedModule ? `&module=${selectedModule}` : ""}${selectedStatus ? `&status=${selectedStatus}` : ""}`;
 
@@ -54,7 +55,8 @@ const AuditLogs = () => {
         totalItems,
         pageCount,
         isLoading,
-        isFetching
+        isFetching,
+        refetch: fetchAuditLogs
     } = usePaginatedQuery<AuditLogItem>({
         queryKey: [auditLogQueryKey, String(page), String(limit), debouncedSearch, selectedModule, selectedStatus],
         url: auditApiUrl,
@@ -144,6 +146,8 @@ const AuditLogs = () => {
                             </option>
                         ))}
                     </select>
+
+                    <RefreshButton onClick={() => fetchAuditLogs()} />
                 </div>
 
                 <div className="text-xs font-semibold text-gray-500">

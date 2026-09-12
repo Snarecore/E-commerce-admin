@@ -20,9 +20,20 @@ const Users = () => {
     const { usePaginatedQuery } = useAPI();
 
     const getOrderListApiUrl = () => {
-		const apiUrl = `${apiConfig.people.user}?role=${Role.CUSTOMER}&page=${currentPageNumber}&limit=${dataLimit}`;
-		return apiUrl;
-	}
+		const queryParams = new URLSearchParams({
+			role: Role.CUSTOMER,
+			page: currentPageNumber.toString(),
+			limit: dataLimit.toString(),
+			sortBy: "createdAt",
+			sortOrder: "DESC",
+			sort_by: "createdAt",
+			sort_order: "desc",
+			sort: "-createdAt",
+			orderBy: "createdAt",
+			order: "DESC"
+		});
+		return `${apiConfig.people.user}?${queryParams.toString()}`;
+	};
 
     const handlePagination = (paginationData: { selected: number }) => {
 		const selectedPage = paginationData.selected + 1;
@@ -36,13 +47,13 @@ const Users = () => {
         isFetching,
         isLoading
     } = usePaginatedQuery<UserDataProps>({
-        queryKey: [userQueryKey],
+        queryKey: [userQueryKey, Role.CUSTOMER, currentPageNumber.toString(), dataLimit.toString()],
         url: getOrderListApiUrl()
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [currentPageNumber]);
 
     return (
         <div>

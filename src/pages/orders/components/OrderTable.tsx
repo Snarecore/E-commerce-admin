@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FiEye, FiMessageSquare, FiShield, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiMessageSquare, FiShield, FiTrash2, FiPackage } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
@@ -23,6 +23,19 @@ interface OrderUser {
     phone?: string;
 }
 
+interface OrderSummaryItem {
+    id?: string;
+    productId?: string;
+    productName?: string;
+    productImage?: string;
+    quantity?: number;
+    price?: number;
+    product?: {
+        featuredImage?: string;
+        name?: string;
+    };
+}
+
 interface OrdersDataProps {
     id: string;
     orderId: string;
@@ -32,6 +45,8 @@ interface OrdersDataProps {
     paymentStatus: string;
     createdAt?: string;
     user?: OrderUser;
+    orderSummaries?: OrderSummaryItem[];
+    items?: any[];
 }
 
 interface OrderTableProps {
@@ -59,6 +74,29 @@ interface OrderTableProps {
         endDate: { label: Date; value: Date } | null;
     }>>;
 }
+
+const getFirstProductImage = (order: any): string | null => {
+    if (order.orderSummaries && order.orderSummaries.length > 0) {
+        for (const item of order.orderSummaries) {
+            if (item.productImage) return item.productImage;
+            if (item.product?.featuredImage) return item.product.featuredImage;
+        }
+    }
+    if (order.items && order.items.length > 0) {
+        for (const item of order.items) {
+            if (item.productImage) return item.productImage;
+            if (item.product?.featuredImage) return item.product.featuredImage;
+            if (item.featuredImage) return item.featuredImage;
+            if (item.image) return item.image;
+        }
+    }
+    return order.productImage || order.featuredImage || null;
+};
+
+const getProductItemCount = (order: any): number => {
+    const list = order.orderSummaries || order.items || [];
+    return list.length;
+};
 
 const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -89,6 +127,7 @@ const OrderTable = ({
     const apiUrl = apiConfig.order.orderListUrl;
 
     const tableHeaders = [
+        { key: "image", label: "Item" },
         { key: "sl", label: "Sl" },
         { key: "orderId", label: "Order ID" },
         { key: "customer", label: "Customer" },
@@ -252,12 +291,13 @@ const OrderTable = ({
     }, [dataList]);
 
     const displayDataList = useMemo(() => {
-        if (sortedDataList.length > 10) {
+        if (!sortedDataList || sortedDataList.length === 0) return [];
+        if (sortedDataList.length > 10 && (!pageCount || pageCount <= 1)) {
             const startIndex = (currentPageNumber - 1) * 10;
             return sortedDataList.slice(startIndex, startIndex + 10);
         }
         return sortedDataList;
-    }, [sortedDataList, currentPageNumber]);
+    }, [sortedDataList, currentPageNumber, pageCount]);
 
     if (isLoading) return <TableSkeleton />;
 
@@ -322,6 +362,45 @@ const OrderTable = ({
                                     key={data.id}
                                     className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
                                 >
+                                    {/* Product Image Thumbnail */}
+                                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                        {(() => {
+                                            const imgUrl = getFirstProductImage(data);
+                                            const itemCount = getProductItemCount(data);
+                                            const firstItem = data.orderSummaries?.[0] || (data as any).items?.[0];
+                                            const title = firstItem?.productName || "Ordered Product";
+
+                                            return (
+                                                <div
+                                                    className="relative group w-10 h-10 flex-shrink-0 cursor-pointer"
+                                                    onClick={() => navigate(`/order-detail/${data.id}`)}
+                                                    title={title}
+                                                >
+                                                    {imgUrl ? (
+                                                        <img
+                                                            src={imgUrl}
+                                                            alt={title}
+                                                            className="w-10 h-10 rounded-lg object-cover border border-gray-200 shadow-xs bg-gray-50 hover:scale-105 transition-transform duration-200"
+                                                            onError={(e) => {
+                                                                (e.target as HTMLElement).style.display = "none";
+                                                                const fallback = (e.target as HTMLElement).nextElementSibling;
+                                                                if (fallback) fallback.classList.remove("hidden");
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                    <div className={`w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 ${imgUrl ? 'hidden' : ''}`}>
+                                                        <FiPackage className="text-gray-400 text-lg" />
+                                                    </div>
+                                                    {itemCount > 1 && (
+                                                        <span className="absolute -bottom-1 -right-1 bg-gray-900 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 shadow leading-none">
+                                                            +{itemCount - 1}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
+                                    </td>
+
                                     {/* Sl */}
                                     <td className="px-6 py-4 font-medium text-gray-800">
                                         {(currentPageNumber - 1) * 10 + index + 1}

@@ -27,9 +27,20 @@ const Admins = () => {
 	const [editData, setEditData] = useState<AdminDataProps | null>(null);
 
     const getOrderListApiUrl = () => {
-		const apiUrl = `${apiConfig.people.user}?role=${Role.ADMIN}&page=${currentPageNumber}&limit=${dataLimit}`;
-		return apiUrl;
-	}
+		const queryParams = new URLSearchParams({
+			role: Role.ADMIN,
+			page: currentPageNumber.toString(),
+			limit: dataLimit.toString(),
+			sortBy: "createdAt",
+			sortOrder: "DESC",
+			sort_by: "createdAt",
+			sort_order: "desc",
+			sort: "-createdAt",
+			orderBy: "createdAt",
+			order: "DESC"
+		});
+		return `${apiConfig.people.user}?${queryParams.toString()}`;
+	};
 
     const handlePagination = (paginationData: { selected: number }) => {
 		const selectedPage = paginationData.selected + 1;
@@ -43,13 +54,13 @@ const Admins = () => {
         isFetching,
         isLoading
     } = usePaginatedQuery<AdminDataProps>({
-        queryKey: [userQueryKey],
+        queryKey: [userQueryKey, Role.ADMIN, currentPageNumber.toString(), dataLimit.toString()],
         url: getOrderListApiUrl()
     });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [currentPageNumber]);
 
     const openModal = (data?: AdminDataProps) => {
 		setEditData(data || null);
