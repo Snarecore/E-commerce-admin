@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -20,57 +21,34 @@ interface DoughnutChartProps {
   topCategories?: TopCategory[];
 }
 
-const defaultTopCategories: TopCategory[] = [
-  { category: "Men's Collection", sales: 0 },
-  { category: "Girls Collection", sales: 0 },
-  { category: "Kids Collection", sales: 0 },
-  { category: "Others", sales: 0 },
-];
+const PALETTE = ['#1b2850', '#FE9F43', '#28c76f', '#00cfe8', '#8B5CF6', '#EC4899'];
 
 const DoughnutChart = ({
   totalCategories = 0,
   totalProducts = 0,
-  topCategories,
+  topCategories = [],
 }: DoughnutChartProps) => {
-  // Format categories so they prioritize Men's, Girls, Kids, and Others
-  const categoriesToDisplay: TopCategory[] = (() => {
-    if (!topCategories || topCategories.length === 0) {
-      return defaultTopCategories;
+  // Use authoritative categories aggregated directly from backend database
+  const categoriesToDisplay: TopCategory[] = useMemo(() => {
+    if (topCategories && topCategories.length > 0) {
+      return topCategories;
     }
+    return [];
+  }, [topCategories]);
 
-    let mensSales = 0;
-    let girlsSales = 0;
-    let kidsSales = 0;
-    let othersSales = 0;
+  const hasSalesData = categoriesToDisplay.some((item) => Number(item.sales || 0) > 0);
 
-    topCategories.forEach((item) => {
-      if (!item) return;
-      const name = item.category ? String(item.category).toLowerCase() : "";
-      const sales = Number(item.sales || 0);
-      if (name.includes('men') && !name.includes('women')) {
-        mensSales += sales;
-      } else if (name.includes('girl') || name.includes('women') || name.includes('lady') || name.includes('female')) {
-        girlsSales += sales;
-      } else if (name.includes('kid') || name.includes('child') || name.includes('baby')) {
-        kidsSales += sales;
-      } else {
-        othersSales += sales;
-      }
-    });
+  const chartData = hasSalesData
+    ? categoriesToDisplay.map((item) => Number(item.sales || 0))
+    : [1];
 
-    const result: TopCategory[] = [
-      { category: "Men's Collection", sales: mensSales },
-      { category: "Girls Collection", sales: girlsSales },
-      { category: "Kids Collection", sales: kidsSales },
-      { category: "Others", sales: othersSales },
-    ];
+  const chartLabels = hasSalesData
+    ? categoriesToDisplay.map((item) => item.category)
+    : ["No Sales Data Yet"];
 
-    return result;
-  })();
-
-  const chartData = categoriesToDisplay.map((item) => item.sales);
-  const chartLabels = categoriesToDisplay.map((item) => item.category);
-  const chartColors = ['#1b2850', '#FE9F43', '#28c76f', '#00cfe8'];
+  const chartColors = hasSalesData
+    ? categoriesToDisplay.map((_, i) => PALETTE[i % PALETTE.length])
+    : ['#E5E7EB'];
 
   const data = {
     labels: chartLabels,
@@ -82,7 +60,7 @@ const DoughnutChart = ({
         borderColor: '#fff',
         borderRadius: 8,
         spacing: 4,
-        hoverOffset: 12,
+        hoverOffset: hasSalesData ? 12 : 0,
       },
     ],
   };
@@ -104,9 +82,10 @@ const DoughnutChart = ({
         display: false,
       },
       tooltip: {
+        enabled: hasSalesData,
         callbacks: {
           label: function (context: any) {
-            return `${context.label}: ${context.raw} Sales`;
+            return `${context.label}: ৳${Number(context.raw || 0).toLocaleString()}`;
           },
         },
         displayColors: false,
@@ -120,8 +99,8 @@ const DoughnutChart = ({
 
   const legendItems = categoriesToDisplay.map((item, index) => ({
     label: item.category,
-    value: item.sales,
-    color: chartColors[index % chartColors.length],
+    value: Number(item.sales || 0),
+    color: PALETTE[index % PALETTE.length],
   }));
 
   return (

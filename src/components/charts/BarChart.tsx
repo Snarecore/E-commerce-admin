@@ -80,7 +80,7 @@ const SalesPurchaseChart = ({ monthlySalesCommissionData = [] }: SalesPurchaseCh
           label: (context: any) => {
             const label = context.dataset.label || '';
             const value = context.parsed.y || 0;
-            return `${label}: $${value.toLocaleString()}`;
+            return `${label}: ৳${value.toLocaleString()}`;
           },
         },
       },
@@ -106,7 +106,7 @@ const SalesPurchaseChart = ({ monthlySalesCommissionData = [] }: SalesPurchaseCh
         stacked: true,
         beginAtZero: true,
         ticks: {
-          callback: (value: any) => `$${value}`,
+          callback: (value: any) => `৳${value}`,
           color: '#6B7280',
           font: {
             size: 12,
@@ -141,7 +141,7 @@ const SalesPurchaseChart = ({ monthlySalesCommissionData = [] }: SalesPurchaseCh
             <span className="w-2.5 h-2.5 rounded-full bg-[#FE9F43]"></span>
             <span>Total Sales</span>
           </div>
-          <p className="font-bold text-xl mt-1 text-gray-800">${totalSales.toLocaleString()}</p>
+          <p className="font-bold text-xl mt-1 text-gray-800">৳{totalSales.toLocaleString()}</p>
         </div>
 
         <div className="text-md border border-gray-200 rounded-lg p-3 min-w-[140px] flex-1">
@@ -149,7 +149,7 @@ const SalesPurchaseChart = ({ monthlySalesCommissionData = [] }: SalesPurchaseCh
             <span className="w-2.5 h-2.5 rounded-full bg-[#F9C1A4]"></span>
             <span>Total Commissions</span>
           </div>
-          <p className="font-bold text-xl mt-1 text-gray-800">${totalCommissions.toLocaleString()}</p>
+          <p className="font-bold text-xl mt-1 text-gray-800">৳{totalCommissions.toLocaleString()}</p>
         </div>
       </div>
 

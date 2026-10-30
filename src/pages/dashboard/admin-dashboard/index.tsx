@@ -70,37 +70,10 @@ const Dashboard = () => {
 		fetchDashboardData();
 	}, []);
 
-	// useMemo: only recalculates when recentOrders/monthlySalesCommissionData changes
+	// Authoritative monthly sales and commissions directly from backend SQL analytics
 	const monthlySalesCommissionData = useMemo(() => {
-		if (dashboardData?.monthlySalesCommissionData && dashboardData.monthlySalesCommissionData.length > 0) {
-			return dashboardData.monthlySalesCommissionData;
-		}
-		const ordersList = Array.isArray(dashboardData?.recentOrders?.data)
-			? dashboardData.recentOrders.data
-			: (Array.isArray(dashboardData?.recentOrders) ? dashboardData.recentOrders : []);
-
-		const monthlyMap: Record<string, { totalSales: number; totalCommission: number }> = {};
-
-		(ordersList || []).forEach((order: any) => {
-			if (order && (order.createdAt || order.created_at || order.date)) {
-				const dateVal = order.createdAt || order.created_at || order.date;
-				const month = String(dateVal).substring(0, 7);
-				if (!monthlyMap[month]) {
-					monthlyMap[month] = { totalSales: 0, totalCommission: 0 };
-				}
-				monthlyMap[month].totalSales += Number(order.totalAmount || order.grandTotal || 0) || 0;
-				monthlyMap[month].totalCommission += Number(order.totalCommission || 0) || 0;
-			}
-		});
-
-		const result = Object.keys(monthlyMap).map(m => ({
-			month: m,
-			totalSales: monthlyMap[m].totalSales,
-			totalCommission: monthlyMap[m].totalCommission,
-		}));
-
-		return result;
-	}, [dashboardData?.recentOrders, dashboardData?.monthlySalesCommissionData]);
+		return dashboardData?.monthlySalesCommissionData || [];
+	}, [dashboardData?.monthlySalesCommissionData]);
 
 	if (isLoading) return <DashboardSkeleton />;
 

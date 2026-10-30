@@ -1,46 +1,55 @@
+import { useEffect, useState } from "react";
 import BestSeller from "../../../components/cards/BestSeller";
 import RecentTransactions from "../../../components/cards/RecentTransactions";
 import { IoMdRefresh } from "react-icons/io";
 import WeeklyEarningCard from "../../../components/cards/WeeklyEarningCard";
 import WelcomeCard from "../../../components/cards/welcomeCard/WelcomeCard";
 import SalesCard from "../../../components/cards/SalesCard";
+import { useAPI } from "../../../hooks/useApi";
+import apiConfig from "../../../config/api.json";
+import { formatPrettyDateWithTime } from "../../../utils/date-utils";
+import { getDisplayCustomerName } from "../../../utils/order-utils";
 
 const SalesDashboard = () => {
-	const transactionsData = [
-		{
-			id: 1,
-			image: "./images/products/product1.png",
-			name: "Lobar Handy",
-			time: "15 Mins",
-			payment: "PayPal",
-			serialNumber: "#416645453773",
-			status: "Success",
-			statusBg: "#3EB780",
-			amount: "$1,099.00",
-		},
-		{
-			id: 2,
-			image: "./images/products/product1.png",
-			name: "Smart Watch",
-			time: "5 hours ago",
-			payment: "Credit Card",
-			serialNumber: "#416645453774",
-			status: "Cancelled",
-			statusBg: "#FF0000",
-			amount: "$600.55",
-		},
-		{
-			id: 3,
-			image: "./images/products/product1.png",
-			name: "Gaming Mouse",
-			time: "1 day ago",
-			payment: "PayPal",
-			serialNumber: "#416645453775",
-			status: "Success",
-			statusBg: "#3EB780",
-			amount: "$1,099.00",
-		},
-	];
+	const { fetchData } = useAPI();
+	const [dashboardData, setDashboardData] = useState<any>(null);
+	const [isLoading, setIsLoading] = useState(true);
+
+	const loadData = async () => {
+		try {
+			setIsLoading(true);
+			const response = await fetchData({
+				apiUrl: `${apiConfig.dashboard.adminDashboardUrl}`
+			});
+			if (response) {
+				setDashboardData(response);
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		loadData();
+	}, []);
+
+	const transactionsData = (dashboardData?.recentOrders?.data || dashboardData?.recentOrders || []).map((order: any, idx: number) => {
+		const isCompleted = order.status === "Completed" || order.status === "Delivered";
+		const isFailed = order.status === "Failed" || order.status === "Rejected" || order.status === "Cancelled";
+		const statusBg = isCompleted ? "#3EB780" : isFailed ? "#EF4444" : "#FE9F43";
+
+		return {
+			id: order.id || idx,
+			image: order.orderSummaries?.[0]?.productImage || "./images/products/product1.png",
+			name: getDisplayCustomerName(order) || "Customer",
+			time: formatPrettyDateWithTime(order.createdAt),
+			payment: order.paymentMethod || "COD",
+			serialNumber: `#${order.orderId || order.id?.slice(0, 8)}`,
+			status: order.status || "Pending",
+			statusBg,
+			amount: `৳${Number(order.totalAmount || 0).toLocaleString()}`,
+		};
+	});
 
 	return (
 		<div className="flex flex-col gap-8">
@@ -49,7 +58,10 @@ const SalesDashboard = () => {
 			<div className="grid grid-cols-12 gap-8">
 				{/* Weekly Earnings */}
 				<div className="col-span-12 lg:col-span-12 xl:col-span-6">
-					<WeeklyEarningCard />
+					<WeeklyEarningCard
+						amount={dashboardData?.weeklyEarnings?.amount || 0}
+						percentageChange={dashboardData?.weeklyEarnings?.percentageChange || 0}
+					/>
 				</div>
 
 				{/* Sales Cards */}
@@ -57,9 +69,9 @@ const SalesDashboard = () => {
 					<SalesCard
 						bgColor="bg-[#FE9F43]"
 						imageSrc="./images/total-sales.svg"
-						mainText="10,000+"
-						subText="No of Total Sales"
-						icon={<IoMdRefresh />}
+						mainText={String(dashboardData?.totalOrders ?? (isLoading ? "..." : 0))}
+						subText="Total Orders Placed"
+						icon={<IoMdRefresh onClick={loadData} title="Refresh" className="hover:rotate-180 transition-all duration-300" />}
 					/>
 				</div>
 
@@ -67,17 +79,17 @@ const SalesDashboard = () => {
 					<SalesCard
 						bgColor="bg-[#092C4C]"
 						imageSrc="./images/total-sales.svg"
-						mainText="10,000+"
-						subText="No of Total Sales"
-						icon={<IoMdRefresh />}
+						mainText={String(dashboardData?.totalProducts ?? (isLoading ? "..." : 0))}
+						subText="Total Active Products"
+						icon={<IoMdRefresh onClick={loadData} title="Refresh" className="hover:rotate-180 transition-all duration-300" />}
 					/>
 				</div>
 			</div>
 
 			<div className="grid grid-cols-12 gap-6">
-				{/* Best Seller - 2 Columns */}
+				{/* Best Seller - 4 Columns */}
 				<div className="col-span-12 xl:col-span-4">
-					<BestSeller />
+					<BestSeller bestSellers={dashboardData?.bestSellers || []} />
 				</div>
 
 				{/* Recent Transactions - 8 Columns */}
