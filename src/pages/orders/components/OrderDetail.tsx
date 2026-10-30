@@ -7,7 +7,7 @@ import { useAPI } from "../../../hooks/useApi";
 import apiConfig from "../../../config/api.json";
 import { formatDate } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact } from "../../../utils/order-utils";
-import { saveBlacklistItem, isCustomerBlacklisted, isCustomerSuspicious } from "../../../utils/blacklist-storage";
+import { saveBlacklistItem } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
@@ -118,7 +118,7 @@ const OrderDetail = () => {
         setIsBlockModalOpen(true);
     };
 
-    const handleConfirmBlock = (e: React.FormEvent) => {
+    const handleConfirmBlock = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!order) return;
         const name = getDisplayCustomerName(order);
@@ -126,35 +126,29 @@ const OrderDetail = () => {
         const email = order.user?.email || order.customerEmail || order.email;
         const phone = contact || order.user?.phone || order.phone;
 
-        const simulatedHash = phone
-            ? Array.from(phone).map((c: any) => String(c).charCodeAt(0).toString(16)).join('').padEnd(32, '0').slice(0, 32)
-            : undefined;
-
-        const newItem: IBlacklistItem = {
-            id: `bl-${Date.now()}`,
+        const newItem: Partial<IBlacklistItem> = {
             subjectType: 'PHONE',
             customerName: name !== 'Unknown Customer' ? name : undefined,
             customerEmail: email || undefined,
             displayValue: phone || name,
-            valueHash: simulatedHash,
             severity: blockSeverity,
-            reasonCode: blockReason,
+            reasonCode: blockReason as any,
             note: blockNote,
             status: 'ACTIVE',
-            createdByAdminId: 'Admin (Order Detail)',
-            createdAt: new Date().toISOString(),
         };
 
-        saveBlacklistItem(newItem);
+        await saveBlacklistItem(newItem);
         toast.success(`Customer "${name}" (${phone || 'Target'}) added to Blacklist successfully!`);
 
         setOrder({
             ...order,
-            riskLevel: 'CRITICAL',
-            riskScore: 100,
-            policyDecision: 'HARD_BLOCK',
+            isBlacklisted: blockSeverity === 'HARD_BLOCK',
+            isSuspicious: blockSeverity === 'SUSPICIOUS_FLAG',
+            riskLevel: blockSeverity === 'HARD_BLOCK' ? 'CRITICAL' : 'HIGH',
+            riskScore: blockSeverity === 'HARD_BLOCK' ? 100 : 60,
+            policyDecision: blockSeverity === 'HARD_BLOCK' ? 'HARD_BLOCK' : 'MANUAL_REVIEW',
             fulfillmentHold: true,
-            riskReviewStatus: 'MANUAL_REVIEW',
+            riskReviewStatus: blockSeverity === 'HARD_BLOCK' ? 'HARD_BLOCKED' : 'MANUAL_REVIEW',
         });
 
         setIsBlockModalOpen(false);
@@ -325,9 +319,9 @@ const OrderDetail = () => {
                                         orderItems.map((item: any) => {
                                             const unitCost = Number(item.unitCostPrice || item.product?.cost || 0);
                                             const hasCost = unitCost > 0;
-                                            const itemSubtotal = item.price * item.quantity;
-                                            const itemCostTotal = unitCost * item.quantity;
-                                            const itemProfit = itemSubtotal - itemCostTotal;
+                                            const itemSubtotal = item.subtotal !== undefined ? Number(item.subtotal) : (item.price * item.quantity);
+                                            const itemCostTotal = item.totalCost !== undefined ? Number(item.totalCost) : (unitCost * item.quantity);
+                                            const itemProfit = item.profit !== null && item.profit !== undefined ? Number(item.profit) : (itemSubtotal - itemCostTotal);
 
                                             return (
                                                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
@@ -408,16 +402,8 @@ const OrderDetail = () => {
 
                     {/* Customer Risk & Manual Review Card */}
                     {(() => {
-                        const isBlacklisted = isCustomerBlacklisted(
-                            getDisplayCustomerContact(order),
-                            order.user?.email || order.customerEmail || order.email,
-                            (order as any).ipAddress || (order as any).userIp || (order as any).clientIp || (order as any).ip
-                        );
-                        const isSuspicious = !isBlacklisted && isCustomerSuspicious(
-                            getDisplayCustomerContact(order),
-                            order.user?.email || order.customerEmail || order.email,
-                            (order as any).ipAddress || (order as any).userIp || (order as any).clientIp || (order as any).ip
-                        );
+                        const isBlacklisted = Boolean(order.isBlacklisted || order.riskLevel === 'CRITICAL');
+                        const isSuspicious = Boolean(!isBlacklisted && (order.isSuspicious || order.riskLevel === 'HIGH'));
                         const effectiveRiskLevel = isBlacklisted ? 'CRITICAL' : (isSuspicious ? 'HIGH' : (order.riskLevel || 'LOW'));
                         const effectiveRiskScore = isBlacklisted ? 100 : (isSuspicious ? Math.max(order.riskScore ?? 0, 50) : (order.riskScore ?? 0));
                         const effectivePolicyDecision = isBlacklisted ? 'HARD_BLOCK' : (isSuspicious ? 'MANUAL_REVIEW' : (order.policyDecision || 'ALLOW'));

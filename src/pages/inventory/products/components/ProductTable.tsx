@@ -44,6 +44,10 @@ interface ProductDataProps {
 	status: string;
 	quantity: number;
 	quantityAlert: number;
+	totalStock?: number;
+	stockStatus?: string;
+	isOutOfStock?: boolean;
+	isLowStock?: boolean;
 }
 
 interface ProductTableProps {
@@ -424,21 +428,24 @@ const ProductsTable = ({
 
 									<td className="px-6 py-4">
 										{(() => {
-											let totalQty = Number(data.quantity) || 0;
-											// @ts-ignore
-											if (data.sizeStock && typeof data.sizeStock === 'object') {
-												// @ts-ignore
-												totalQty = Object.values(data.sizeStock).reduce((sum, q) => sum + (Number(q) || 0), 0);
+											const totalQty = data.totalStock !== undefined ? Number(data.totalStock) : (Number(data.quantity) || 0);
+											const status = data.stockStatus || (totalQty === 0 ? 'OUT_OF_STOCK' : totalQty <= Number(data.quantityAlert || 5) ? 'LOW_STOCK' : 'IN_STOCK');
+
+											if (status === 'OUT_OF_STOCK' || totalQty === 0) {
+												return (
+													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+														Out of Stock
+													</span>
+												);
 											}
-											return totalQty === 0 ? (
-												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-													Out of Stock
-												</span>
-											) : totalQty <= Number(data.quantityAlert || 5) ? (
-												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-													Low Stock ({totalQty})
-												</span>
-											) : (
+											if (status === 'LOW_STOCK') {
+												return (
+													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+														Low Stock ({totalQty})
+													</span>
+												);
+											}
+											return (
 												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
 													In Stock ({totalQty})
 												</span>

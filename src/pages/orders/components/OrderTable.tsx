@@ -10,7 +10,7 @@ import Pagination from "../../../components/pagination";
 import { useNavigate } from "react-router-dom";
 import { formatPrettyDateWithTime } from "../../../utils/date-utils";
 import { getDisplayCustomerName, getDisplayCustomerContact, getDisplayCustomerPhone } from "../../../utils/order-utils";
-import { saveBlacklistItem, isCustomerBlacklisted, isCustomerSuspicious } from "../../../utils/blacklist-storage";
+import { saveBlacklistItem } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
@@ -154,7 +154,7 @@ const OrderTable = ({
         setIsBlockModalOpen(true);
     };
 
-    const handleConfirmBlock = (e: React.FormEvent) => {
+    const handleConfirmBlock = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedBlockOrder) return;
         const name = getDisplayCustomerName(selectedBlockOrder);
@@ -162,29 +162,22 @@ const OrderTable = ({
         const email = selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email;
         const phone = contact || selectedBlockOrder.user?.phone || selectedBlockOrder.phone;
 
-        const simulatedHash = phone
-            ? Array.from(phone).map((c: any) => String(c).charCodeAt(0).toString(16)).join('').padEnd(32, '0').slice(0, 32)
-            : undefined;
-
-        const newItem: IBlacklistItem = {
-            id: `bl-${Date.now()}`,
+        const newItem: Partial<IBlacklistItem> = {
             subjectType: 'PHONE',
             customerName: name !== 'Unknown Customer' ? name : undefined,
             customerEmail: email || undefined,
             displayValue: phone || name,
-            valueHash: simulatedHash,
             severity: blockSeverity,
-            reasonCode: blockReason,
+            reasonCode: blockReason as any,
             note: blockNote,
             status: 'ACTIVE',
-            createdByAdminId: 'Admin (Order List)',
-            createdAt: new Date().toISOString(),
         };
 
-        saveBlacklistItem(newItem);
+        await saveBlacklistItem(newItem);
         toast.success(`Customer "${name}" (${phone || 'Target'}) added to Blacklist successfully!`);
         setIsBlockModalOpen(false);
         setSelectedBlockOrder(null);
+        fetchOrderList();
     };
 
     const handleOpenDeleteModal = (data: OrdersDataProps) => {
@@ -414,10 +407,8 @@ const OrderTable = ({
                                         {(() => {
                                             const custPhone = getDisplayCustomerPhone(data);
                                             const custContact = custPhone || getDisplayCustomerContact(data);
-                                            const custEmail = data.user?.email || (data as any).email || (data as any).customerEmail;
-                                            const custIp = (data as any).ipAddress || (data as any).userIp || (data as any).clientIp || (data as any).ip;
-                                            const isBlocked = isCustomerBlacklisted(custContact, custEmail, custIp);
-                                            const isSuspicious = !isBlocked && isCustomerSuspicious(custContact, custEmail, custIp);
+                                            const isBlocked = Boolean((data as any).isBlacklisted || (data as any).riskLevel === 'CRITICAL');
+                                            const isSuspicious = Boolean(!isBlocked && ((data as any).isSuspicious || (data as any).riskLevel === 'HIGH'));
 
                                             return (
                                                 <div>
