@@ -38,19 +38,19 @@ const ProductImage: React.FC<ProductImageProps> = ({ value, onChange }) => {
 
 	return (
 		<div className="">
-			<div className="px-4 sm:px-4 md:py-3 border-b border-gray-200">
-                    <h3 className="text-base font-bold text-[#212b36]">
+			<div className="px-4 sm:px-4 md:py-3 border-b border-[var(--ui-border)]">
+                    <h3 className="text-base font-bold text-[var(--ui-text)]">
                         Product Images
                     </h3>
-                    <p className="">You can upload up to 5 additional images to showcase your product from different angles or perspectives.</p>
+                    <p className="text-xs text-[var(--ui-text-muted)]">You can upload up to 5 additional images to showcase your product from different angles or perspectives.</p>
                     </div>
 			<div className="flex flex-wrap gap-4 px-8 pb-2 pt-4">
 				<label
 					htmlFor={`${id}-multi-upload`}
-					className="w-[120px] h-[120px] flex items-center justify-center flex-col gap-2 border border-dashed border-[#e6eaed] text-sm rounded-md cursor-pointer hover:border-[var(--primary-color)] transition-all ease-in-out duration-300"
+					className="w-[120px] h-[120px] flex items-center justify-center flex-col gap-2 border border-dashed border-[var(--ui-border)] text-sm rounded-md cursor-pointer hover:border-[var(--primary-color)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] transition-all ease-in-out duration-300"
 				>
 					<IoCloudUploadOutline size={20} />
-					<p className="font-semibold text-center">Upload Images</p>
+					<p className="font-semibold text-center text-xs">Upload Images</p>
 				</label>
 				<input
 					id={`${id}-multi-upload`}

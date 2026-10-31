@@ -82,23 +82,23 @@ const FirstCategoryTable = ({
 	if (isLoading) return <TableSkeleton />;
 
 	return (
-		<div className="p-6 bg-white rounded-lg border border-gray-200">
+		<div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
 			<div className="mt-4 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[900px] cursor-pointer">
-					<thead className="bg-gray-100">
-						<tr className="text-gray-600 text-sm border-b border-gray-200">
+					<thead className="bg-[var(--ui-surface-muted)]">
+						<tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
 							{tableHeaders?.map(({ key, label }) => (
-								<th key={key} className="px-6 py-4 text-left text-[#000000e0]">
+								<th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
 									{label}
 								</th>
 							))}
 						</tr>
 					</thead>
-					<tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+					<tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
 						{dataList?.length > 0 ? (
 							dataList?.map((data, index) => (
-								<tr key={data.id} className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300">
-									<td className="px-6 py-4 font-medium text-gray-800">
+								<tr key={data.id} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200">
+									<td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
 										{index + 1}
 									</td>
 									<td className="px-6 py-4">
@@ -125,21 +125,21 @@ const FirstCategoryTable = ({
 										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
 									</td>
 									<td className="px-6 py-4">
-										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-[var(--color-active-green)] text-green-800" : "bg-[var(--color-inactive-red)] text-red-800"}`}>
+										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
 											{data.status ? "Active" : "Inactive"}
 										</span>
 									</td>
 									<td className="px-6 py-4">
-										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.showOnHome ? "bg-[var(--color-active-green)] text-green-800" : "bg-gray-100 text-gray-800"}`}>
+										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.showOnHome ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-[var(--ui-surface-muted)] text-[var(--ui-text-muted)] border border-[var(--ui-border)]"}`}>
 											{data.showOnHome ? "Yes" : "No"}
 										</span>
 									</td>
 									<td className="px-6 py-4">
 										<div className="flex items-center gap-2">
-											<button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--primary-color)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+											<button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200">
 												<FaEdit />
 											</button>
-											<button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--primary-color)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+											<button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200">
 												<FiTrash2 />
 											</button>
 										</div>

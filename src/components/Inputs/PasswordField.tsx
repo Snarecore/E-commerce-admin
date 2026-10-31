@@ -23,25 +23,25 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <div>
       {label && (
-        <label className="text-sm font-semibold">
-          {label} {required && <span className="text-red-600">*</span>}
+        <label className="text-sm font-semibold text-[var(--ui-text)]">
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <div className="flex items-stretch w-full appearance-none outline-0 text-black disabled:opacity-50 transition-all duration-300 ease-in-out border border-gray-300 hover:ring-1 hover:ring-orange-300 focus:border-gray-400 focus:bg-transparent px-2 py-2 text-lg rounded-lg">
+      <div className="flex items-stretch w-full appearance-none outline-0 text-[var(--ui-text)] bg-[var(--ui-surface)] disabled:opacity-50 transition-all duration-300 ease-in-out border border-[var(--ui-border)] hover:border-[var(--primary-color)] focus-within:border-[var(--primary-color)] px-2 py-2 text-lg rounded-lg">
         {/* Input Field */}
         <input
           required={required}
           type={isShowPassword ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full bg-transparent h-full outline-none ${inputClass}`}
+          className={`w-full bg-transparent h-full outline-none text-[var(--ui-text)] ${inputClass}`}
         />
 
         {/* Show/Hide Password Icon */}
         <button
           type="button"
           onClick={() => setIsShowPassword(!isShowPassword)}
-          className="flex items-center justify-center px-2 text-gray-600"
+          className="flex items-center justify-center px-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] cursor-pointer"
         >
           {isShowPassword ? <FiEyeOff /> : <FiEye />}
         </button>

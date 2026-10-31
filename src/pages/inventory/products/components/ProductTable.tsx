@@ -287,7 +287,7 @@ const ProductsTable = ({
 	if (isLoading && productsList.length === 0) return <TableSkeleton />;
 
 	return (
-		<div className="p-6 bg-white rounded-lg border border-gray-200">
+		<div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
 			<div className="flex justify-between items-center flex-wrap gap-4">
 				<Search
 					searchQuery={searchQuery}
@@ -298,7 +298,7 @@ const ProductsTable = ({
 				/>
 				<div className="flex flex-wrap items-center gap-3">
 					{setDataLimit && (
-						<div className="flex items-center gap-2 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg">
+						<div className="flex items-center gap-2 text-xs font-medium text-[var(--ui-text-muted)] bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] px-3 py-2 rounded-md">
 							<span>Show</span>
 							<select
 								value={dataLimit}
@@ -306,7 +306,7 @@ const ProductsTable = ({
 									setDataLimit(Number(e.target.value));
 									setCurrentPageNumber(1);
 								}}
-								className="bg-white border border-gray-300 rounded px-2 py-0.5 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] cursor-pointer"
+								className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded px-2 py-0.5 text-xs font-semibold text-[var(--ui-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] cursor-pointer"
 							>
 								<option value={10}>10</option>
 								<option value={20}>20</option>
@@ -344,10 +344,10 @@ const ProductsTable = ({
 			</div>
 			<div className="mt-4 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[1300px] cursor-pointer">
-					<thead className="bg-gray-100">
-						<tr className="text-[14px] font-semibold border-b border-gray-200">
+					<thead className="bg-[var(--ui-surface-muted)]">
+						<tr className="text-[14px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
 							{tableHeaders.map(({ key, label }) => (
-								<th key={key} className="px-6 py-4 text-left text-[#000000e0]">
+								<th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
 									<span>{label}</span>
 								</th>
 							))}
@@ -355,16 +355,16 @@ const ProductsTable = ({
 					</thead>
 
 
-					<tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+					<tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
 						{(() => {
 							const productsList = Array.isArray(dataList) ? dataList : (dataList?.data || []);
 							return productsList.length > 0 ? (
 								productsList.map((data, index) => (
 								<tr
 									key={data.id}
-									className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
+									className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
 								>
-									<td className="px-6 py-4 font-medium text-gray-800">
+									<td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
 										{(currentPageNumber - 1) * (dataLimit || 10) + index + 1}
 									</td>
 
@@ -372,27 +372,27 @@ const ProductsTable = ({
 										<img
 											src={data.featuredImage}
 											alt={data.name}
-											className="w-10 h-10 rounded-md shadow-sm border border-gray-200 object-cover"
+											className="w-10 h-10 rounded-md shadow-sm border border-[var(--ui-border)] object-cover"
 										/>
-										<span className="font-medium text-gray-800">
+										<span className="font-medium text-[var(--ui-text)]">
 											{data.name}
 										</span>
 									</td>
 
 									<td className="px-6 py-4">
 										<div className="flex flex-col">
-											<span className="text-sm font-medium text-gray-800">
-												{data.mainCategoryName || <span className="text-gray-400 italic">No Category</span>}
+											<span className="text-sm font-medium text-[var(--ui-text)]">
+												{data.mainCategoryName || <span className="text-[var(--ui-text-muted)] opacity-60 italic">No Category</span>}
 											</span>
 											{data.firstCategoryName && (
-												<span className="text-xs text-gray-500">
+												<span className="text-xs text-[var(--ui-text-muted)]">
 													{data.firstCategoryName}
 												</span>
 											)}
 										</div>
 									</td>
 
-									<td className="px-6 py-4">{data.sku}</td>
+									<td className="px-6 py-4 text-[var(--ui-text-muted)]">{data.sku}</td>
 									<td className="px-6 py-4">
 										{(() => {
 											const basePrice = Number(data.price) || 0;
@@ -412,17 +412,17 @@ const ProductsTable = ({
 											if (dAmount > 0 && salePrice < basePrice) {
 												return (
 													<div className="flex flex-col">
-														<span className="font-semibold text-gray-900">৳{salePrice.toFixed(2)}</span>
+														<span className="font-semibold text-[var(--ui-text)]">৳{salePrice.toFixed(2)}</span>
 														<div className="flex items-center gap-1">
-															<span className="text-xs text-gray-400 line-through">৳{basePrice}</span>
-															<span className="text-[10px] bg-red-100 text-red-700 font-bold px-1 rounded">
+															<span className="text-xs text-[var(--ui-text-muted)] line-through">৳{basePrice}</span>
+															<span className="text-[10px] bg-red-500/15 text-red-400 font-bold px-1 rounded">
 																{dType.includes("PERCENT") ? `${dAmount}% OFF` : `-৳${dAmount}`}
 															</span>
 														</div>
 													</div>
 												);
 											}
-											return <span className="font-semibold text-gray-800">৳{basePrice}</span>;
+											return <span className="font-semibold text-[var(--ui-text)]">৳{basePrice}</span>;
 										})()}
 									</td>
 
@@ -433,20 +433,20 @@ const ProductsTable = ({
 
 											if (status === 'OUT_OF_STOCK' || totalQty === 0) {
 												return (
-													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
 														Out of Stock
 													</span>
 												);
 											}
 											if (status === 'LOW_STOCK') {
 												return (
-													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
 														Low Stock ({totalQty})
 													</span>
 												);
 											}
 											return (
-												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
 													In Stock ({totalQty})
 												</span>
 											);
@@ -462,11 +462,11 @@ const ProductsTable = ({
 													onChange={() => handleToggleProductStatus(data)}
 													className="sr-only peer"
 												/>
-												<div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
+												<div className="w-9 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
 													<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${String(data.status) === "true" ? "translate-x-4" : "translate-x-0"}`} />
 												</div>
 											</label>
-											<span className={`text-xs font-semibold ${String(data.status) === "true" ? "text-green-600" : "text-gray-400"}`}>
+											<span className={`text-xs font-semibold ${String(data.status) === "true" ? "text-emerald-500" : "text-[var(--ui-text-muted)]"}`}>
 												{String(data.status) === "true" ? "Active" : "Inactive"}
 											</span>
 										</div>
@@ -475,23 +475,23 @@ const ProductsTable = ({
 									<td className="px-6 py-4">
 										<div className="flex items-center gap-2">
 											<Link to={`/product-details/${data.id}`}
-												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer">
+												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors">
 												<FiEye />
 											</Link>
 											<Link
 												to="/edit-product"
 												state={{ editData: data }}
-												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer"
+												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors"
 											>
 												<FaEdit />
 											</Link>
 											<button
 												onClick={() => openDeleteModal(data)}
-												className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer"
+												className="inline-flex items-center justify-center hover:bg-red-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 p-2 rounded-md cursor-pointer transition-colors"
 											>
 												<FiTrash2 />
 											</button>
-											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-gray-200 border border-[#e6eaed] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer">
+											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors">
 												<FaEllipsisVertical />
 											</button>
 										</div>
@@ -512,18 +512,18 @@ const ProductsTable = ({
 
 			{
 				selectedProduct && isSelectionModalOpen && (
-					<div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-[#000000b6] z-[60] top-0 right-0 left-0 bottom-0 p-2">
-						<div className="bg-white rounded-lg shadow-lg w-[400px] p-6">
+					<div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs z-[60] top-0 right-0 left-0 bottom-0 p-2">
+						<div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] rounded-xl shadow-2xl w-[400px] p-6">
 							<div className="flex justify-between items-center pb-6">
-								<p className="text-lg font-semibold">Product Status Settings</p>
+								<p className="text-lg font-semibold text-[var(--ui-text)]">Product Status Settings</p>
 								<TiDelete
-									className="text-3xl cursor-pointer text-red-500 hover:text-red-600"
+									className="text-3xl cursor-pointer text-red-500 hover:text-red-600 transition-colors"
 									onClick={handleCloseModal}
 								/>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section One</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section One</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionOne"
@@ -532,15 +532,15 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)]">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)]">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-all ${fieldValues.isProductSectionOne ? "translate-x-5" : ""}`} />
 									</div>
 								</label>
 							</div>
 
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section Two</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section Two</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionTwo"
@@ -549,7 +549,7 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div
 											className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isProductSectionTwo ? "translate-x-5" : "translate-x-0"
 												}`}
@@ -559,8 +559,8 @@ const ProductsTable = ({
 							</div>
 
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section Three</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section Three</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionThree"
@@ -569,15 +569,15 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isProductSectionThree ? "translate-x-5" : "translate-x-0"
 											}`} />
 									</div>
 								</label>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section Four</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section Four</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionFour"
@@ -586,15 +586,15 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isProductSectionFour ? "translate-x-5" : "translate-x-0"
 											}`} />
 									</div>
 								</label>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section Five</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section Five</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionFive"
@@ -603,15 +603,15 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isProductSectionFive ? "translate-x-5" : "translate-x-0"
 											}`} />
 									</div>
 								</label>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Is Product Section Six</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Is Product Section Six</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="isProductSectionSix"
@@ -620,7 +620,7 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.isProductSectionSix ? "translate-x-5" : "translate-x-0"
 											}`} />
 									</div>
@@ -629,34 +629,34 @@ const ProductsTable = ({
 
 
 
-							<div className="flex flex-col gap-1 mb-4 bg-gray-50 border border-gray-200 p-3 rounded-md">
-								<span className="text-sm font-semibold text-gray-700">Stock Settings</span>
+							<div className="flex flex-col gap-1 mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-semibold text-[var(--ui-text)]">Stock Settings</span>
 								<div className="grid grid-cols-2 gap-2 mt-2">
 									<div>
-										<label className="text-[12px] font-medium text-gray-500 block mb-1">Quantity</label>
+										<label className="text-[12px] font-medium text-[var(--ui-text-muted)] block mb-1">Quantity</label>
 										<input
 											name="quantity"
 											type="number"
 											value={fieldValues.quantity}
 											onChange={handleSwitchChange}
-											className="w-full h-9 px-2 text-sm border border-gray-300 rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+											className="w-full h-9 px-2 text-sm bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
 										/>
 									</div>
 									<div>
-										<label className="text-[12px] font-medium text-gray-500 block mb-1">Qty Alert</label>
+										<label className="text-[12px] font-medium text-[var(--ui-text-muted)] block mb-1">Qty Alert</label>
 										<input
 											name="quantityAlert"
 											type="number"
 											value={fieldValues.quantityAlert}
 											onChange={handleSwitchChange}
-											className="w-full h-9 px-2 text-sm border border-gray-300 rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
+											className="w-full h-9 px-2 text-sm bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
 										/>
 									</div>
 								</div>
 							</div>
 
-							<div className="flex justify-between items-center mb-4 bg-[#fff2e6] p-3 rounded-md">
-								<span className="text-sm font-medium text-gray-700">Status</span>
+							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
+								<span className="text-sm font-medium text-[var(--ui-text)]">Status</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										name="status"
@@ -665,7 +665,7 @@ const ProductsTable = ({
 										onChange={handleSwitchChange}
 										className="sr-only peer"
 									/>
-									<div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
+									<div className="w-10 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative">
 										<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${fieldValues.status ? "translate-x-5" : "translate-x-0"
 											}`} />
 									</div>
@@ -675,13 +675,13 @@ const ProductsTable = ({
 							<div className="flex justify-end gap-2">
 								<button
 									onClick={handleCloseModal}
-									className="px-4 h-8 bg-gray-500 text-white text-[14px] cursor-pointer border border-gray-300 rounded-md hover:bg-gray-700"
+									className="px-4 h-8 bg-[var(--ui-surface-muted)] text-[var(--ui-text)] text-[14px] cursor-pointer border border-[var(--ui-border)] rounded-md hover:bg-[var(--ui-surface-sunken)] transition-colors"
 								>
 									Cancel
 								</button>
 								<button
 									onClick={handleSave}
-									className="px-4 h-8 bg-[var(--color-primary)] text-white cursor-pointer rounded-md hover:bg-[var(--color-primary-hover)]"
+									className="px-4 h-8 bg-[var(--color-primary)] text-white cursor-pointer rounded-md hover:bg-[var(--color-primary-hover)] transition-colors"
 								>
 									Save
 								</button>

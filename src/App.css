@@ -656,3 +656,151 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ============================================================================
+   Dark Mode Harmonization (Matches Dashboard Aesthetic Globally)
+   ========================================================================== */
+.dark,
+[data-theme-mode="dark"] {
+  color-scheme: dark;
+}
+
+.dark ::-webkit-scrollbar-track,
+[data-theme-mode="dark"] ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark ::-webkit-scrollbar-thumb,
+[data-theme-mode="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme-mode="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Tables in Dark Mode */
+.dark table thead,
+[data-theme-mode="dark"] table thead {
+  background-color: var(--ui-surface-muted) !important;
+}
+
+.dark table thead th,
+[data-theme-mode="dark"] table thead th,
+.dark table thead th span,
+[data-theme-mode="dark"] table thead th span {
+  color: var(--ui-text) !important;
+  border-color: var(--ui-border) !important;
+}
+
+.dark table tbody,
+[data-theme-mode="dark"] table tbody {
+  background-color: var(--ui-surface) !important;
+}
+
+.dark table tbody tr,
+[data-theme-mode="dark"] table tbody tr {
+  border-color: var(--ui-border) !important;
+  color: var(--ui-text);
+}
+
+.dark table tbody tr:hover,
+[data-theme-mode="dark"] table tbody tr:hover {
+  background-color: var(--ui-surface-muted) !important;
+}
+
+.dark table tbody td,
+[data-theme-mode="dark"] table tbody td {
+  border-color: var(--ui-border);
+}
+
+/* Common Text Tokens in Dark Mode */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-\[\#212B36\],
+.dark .text-\[\#000000e0\],
+.dark .text-\[\#1b2850\],
+[data-theme-mode="dark"] .text-gray-900,
+[data-theme-mode="dark"] .text-gray-800,
+[data-theme-mode="dark"] .text-gray-700,
+[data-theme-mode="dark"] .text-\[\#212B36\],
+[data-theme-mode="dark"] .text-\[\#000000e0\],
+[data-theme-mode="dark"] .text-\[\#1b2850\] {
+  color: var(--ui-text) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-\[\#646b72\],
+[data-theme-mode="dark"] .text-gray-600,
+[data-theme-mode="dark"] .text-gray-500,
+[data-theme-mode="dark"] .text-gray-400,
+[data-theme-mode="dark"] .text-\[\#646b72\] {
+  color: var(--ui-text-muted) !important;
+}
+
+/* Card & Surface Containers in Dark Mode */
+.dark .bg-white,
+[data-theme-mode="dark"] .bg-white {
+  background-color: var(--ui-surface) !important;
+  color: var(--ui-text);
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+[data-theme-mode="dark"] .bg-gray-50,
+[data-theme-mode="dark"] .bg-gray-100 {
+  background-color: var(--ui-surface-muted) !important;
+  color: var(--ui-text);
+}
+
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-gray-200:hover,
+[data-theme-mode="dark"] .hover\:bg-gray-50:hover,
+[data-theme-mode="dark"] .hover\:bg-gray-100:hover,
+[data-theme-mode="dark"] .hover\:bg-gray-200:hover {
+  background-color: var(--ui-surface-muted) !important;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-\[\#e6eaed\],
+[data-theme-mode="dark"] .border-gray-100,
+[data-theme-mode="dark"] .border-gray-200,
+[data-theme-mode="dark"] .border-gray-300,
+[data-theme-mode="dark"] .border-\[\#e6eaed\] {
+  border-color: var(--ui-border) !important;
+}
+
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--ui-border) !important;
+}
+
+/* Inputs & Form Controls in Dark Mode */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea,
+[data-theme-mode="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme-mode="dark"] select,
+[data-theme-mode="dark"] textarea {
+  background-color: var(--ui-surface) !important;
+  border-color: var(--ui-border) !important;
+  color: var(--ui-text) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+[data-theme-mode="dark"] input::placeholder,
+[data-theme-mode="dark"] textarea::placeholder {
+  color: var(--ui-text-muted) !important;
+}
+

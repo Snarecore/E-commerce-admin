@@ -295,7 +295,7 @@ const OrderTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-white rounded-lg border border-gray-200">
+        <div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
             {/* Filters */}
             <div className="flex justify-end flex-wrap space-y-4 mb-4">
                 <div className="flex flex-wrap gap-2">
@@ -339,21 +339,21 @@ const OrderTable = ({
             {/* Table */}
             <div className="mt-2 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
-                    <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-sm border-b border-gray-200">
+                    <thead className="bg-[var(--ui-surface-muted)]">
+                        <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left text-[#000000e0]">
+                                <th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
                                     {label}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+                    <tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
                         {displayDataList?.length > 0 ? (
                             displayDataList.map((data, index) => (
                                 <tr
                                     key={data.id}
-                                    className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
+                                    className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                 >
                                     {/* Product Image Thumbnail */}
                                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -373,7 +373,7 @@ const OrderTable = ({
                                                         <img
                                                             src={imgUrl}
                                                             alt={title}
-                                                            className="w-10 h-10 rounded-lg object-cover border border-gray-200 shadow-xs bg-gray-50 hover:scale-105 transition-transform duration-200"
+                                                            className="w-10 h-10 rounded-lg object-cover border border-[var(--ui-border)] shadow-xs bg-[var(--ui-surface-muted)] hover:scale-105 transition-transform duration-200"
                                                             onError={(e) => {
                                                                 (e.target as HTMLElement).style.display = "none";
                                                                 const fallback = (e.target as HTMLElement).nextElementSibling;
@@ -381,8 +381,8 @@ const OrderTable = ({
                                                             }}
                                                         />
                                                     ) : null}
-                                                    <div className={`w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 ${imgUrl ? 'hidden' : ''}`}>
-                                                        <FiPackage className="text-gray-400 text-lg" />
+                                                    <div className={`w-10 h-10 rounded-lg bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] flex items-center justify-center text-[var(--ui-text-muted)] ${imgUrl ? 'hidden' : ''}`}>
+                                                        <FiPackage className="text-[var(--ui-text-muted)] text-lg" />
                                                     </div>
                                                     {itemCount > 1 && (
                                                         <span className="absolute -bottom-1 -right-1 bg-gray-900 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 shadow leading-none">
@@ -395,11 +395,11 @@ const OrderTable = ({
                                     </td>
 
                                     {/* Sl */}
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
                                         {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
                                     {/* Order ID */}
-                                    <td className="px-6 py-4 font-medium text-orange-600">
+                                    <td className="px-6 py-4 font-semibold text-[var(--primary-color)]">
                                         #{data.orderId}
                                     </td>
                                     {/* Customer */}
@@ -413,21 +413,21 @@ const OrderTable = ({
                                             return (
                                                 <div>
                                                     <div className="flex items-center gap-1.5 flex-wrap">
-                                                        <p className="font-medium text-gray-800 text-sm">
+                                                        <p className="font-medium text-[var(--ui-text)] text-sm">
                                                             {getDisplayCustomerName(data)}
                                                         </p>
                                                         {isBlocked && (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-red-100 text-red-700 font-bold rounded border border-red-200">
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-red-500/15 text-red-400 font-bold rounded border border-red-500/30">
                                                                 BLOCKED
                                                             </span>
                                                         )}
                                                         {isSuspicious && (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-yellow-100 text-yellow-800 font-bold rounded border border-yellow-300">
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-400 font-bold rounded border border-amber-500/30">
                                                                 SUSPICIOUS
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-gray-400 font-mono">
+                                                    <p className="text-xs text-[var(--ui-text-muted)] font-mono">
                                                         {custPhone || custContact || "N/A"}
                                                     </p>
                                                 </div>
@@ -435,12 +435,12 @@ const OrderTable = ({
                                         })()}
                                     </td>
                                     {/* Amount */}
-                                    <td className="px-6 py-4 font-semibold text-gray-800">
+                                    <td className="px-6 py-4 font-semibold text-[var(--ui-text)]">
                                         ৳{Number(data.totalAmount || 0).toFixed(2)}
                                     </td>
                                     {/* Payment Status */}
                                     <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit ${data.paymentStatus === "Paid" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                        <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit ${data.paymentStatus === "Paid" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
                                             {data.paymentStatus}
                                         </span>
                                     </td>
@@ -451,7 +451,7 @@ const OrderTable = ({
                                         </span>
                                     </td>
                                     {/* Date */}
-                                    <td className="px-6 py-4 font-medium text-gray-500 text-sm">
+                                    <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)] text-sm">
                                         {formatPrettyDateWithTime(
                                             data?.createdAt || (data as any)?.created_at || (data as any)?.date || (data as any)?.updatedAt
                                         )}
@@ -463,7 +463,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleViewDetail(data)}
                                                 title="View Detail"
-                                                className="border border-gray-300 text-gray-700 hover:text-orange-500 hover:border-orange-400 hover:bg-orange-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
                                             >
                                                 <FiEye className="w-4 h-4" />
                                             </button>
@@ -471,7 +471,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleChat(data)}
                                                 title="Chat with Customer"
-                                                className="border border-gray-300 text-gray-700 hover:text-orange-500 hover:border-orange-400 hover:bg-orange-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
                                             >
                                                 <FiMessageSquare className="w-4 h-4" />
                                             </button>
@@ -479,7 +479,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleOpenBlockModal(data)}
                                                 title="Block Customer / Add to Blacklist"
-                                                className="border border-red-200 text-red-600 hover:text-red-700 hover:border-red-400 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
                                             >
                                                 <FiShield className="w-4 h-4" />
                                             </button>
@@ -487,7 +487,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleOpenDeleteModal(data)}
                                                 title="Delete Order"
-                                                className="border border-red-200 text-red-600 hover:text-red-700 hover:border-red-400 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
                                             >
                                                 <FiTrash2 className="w-4 h-4" />
                                             </button>
@@ -497,7 +497,7 @@ const OrderTable = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic">
+                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic text-[var(--ui-text-muted)]">
                                     <EmptyState
                                         title="No orders found."
                                         description="Try adjusting filters or check back later!"
@@ -531,14 +531,14 @@ const OrderTable = ({
 
             {/* Quick Block Modal */}
             {isBlockModalOpen && selectedBlockOrder && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl space-y-4 border border-gray-200">
-                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                            <FiShield className="w-5 h-5 text-red-600" />
-                            <h3 className="text-lg font-bold text-gray-900">Block Customer</h3>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                    <div className="bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-[var(--ui-border)]">
+                        <div className="flex items-center gap-2 pb-2 border-b border-[var(--ui-border)]">
+                            <FiShield className="w-5 h-5 text-red-500" />
+                            <h3 className="text-lg font-bold text-[var(--ui-text)]">Block Customer</h3>
                         </div>
 
-                        <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-red-800 space-y-1">
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-xs text-red-400 space-y-1">
                             <p className="font-semibold">Customer Information:</p>
                             <p><strong>Name:</strong> {getDisplayCustomerName(selectedBlockOrder)}</p>
                             <p><strong>Phone:</strong> {getDisplayCustomerContact(selectedBlockOrder) || 'N/A'}</p>
@@ -548,13 +548,13 @@ const OrderTable = ({
 
                         <form onSubmit={handleConfirmBlock} className="space-y-3 text-left">
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                <label className="block text-xs font-bold text-[var(--ui-text-muted)] mb-1">
                                     Enforcement Severity
                                 </label>
                                 <select
                                     value={blockSeverity}
                                     onChange={(e) => setBlockSeverity(e.target.value as any)}
-                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                    className="w-full border border-[var(--ui-border)] rounded-lg p-2 text-xs bg-[var(--ui-surface)] text-[var(--ui-text)] focus:ring-1 focus:ring-red-500 outline-none"
                                 >
                                     <option value="HARD_BLOCK">HARD BLOCK (Refuse Checkout & Fraud Prevention)</option>
                                     <option value="SUSPICIOUS_FLAG">SUSPICIOUS FLAG (Allow Checkout + Force Manual Review)</option>
@@ -562,13 +562,13 @@ const OrderTable = ({
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                <label className="block text-xs font-bold text-[var(--ui-text-muted)] mb-1">
                                     Reason Code
                                 </label>
                                 <select
                                     value={blockReason}
                                     onChange={(e) => setBlockReason(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-1 focus:ring-red-500 outline-none"
+                                    className="w-full border border-[var(--ui-border)] rounded-lg p-2 text-xs bg-[var(--ui-surface)] text-[var(--ui-text)] focus:ring-1 focus:ring-red-500 outline-none"
                                 >
                                     <option value="FRAUD_HISTORY">FRAUD_HISTORY (Repeated fake orders or fraud)</option>
                                     <option value="CHARGEBACK_RISK">CHARGEBACK_RISK (High chargeback / dispute risk)</option>
@@ -579,14 +579,14 @@ const OrderTable = ({
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 mb-1">
+                                <label className="block text-xs font-bold text-[var(--ui-text-muted)] mb-1">
                                     Admin Note / Reference
                                 </label>
                                 <textarea
                                     rows={2}
                                     value={blockNote}
                                     onChange={(e) => setBlockNote(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-1 focus:ring-red-500 outline-none resize-none"
+                                    className="w-full border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-lg p-2 text-xs focus:ring-1 focus:ring-red-500 outline-none resize-none"
                                     placeholder="Enter reason for blocking this customer..."
                                 />
                             </div>
@@ -598,7 +598,7 @@ const OrderTable = ({
                                         setIsBlockModalOpen(false);
                                         setSelectedBlockOrder(null);
                                     }}
-                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg cursor-pointer transition"
+                                    className="px-4 py-2 bg-[var(--ui-surface-muted)] hover:bg-[var(--ui-surface-sunken)] border border-[var(--ui-border)] text-[var(--ui-text)] font-semibold text-xs rounded-lg cursor-pointer transition"
                                 >
                                     Cancel
                                 </button>

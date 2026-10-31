@@ -554,15 +554,15 @@ const ProductCreation = () => {
                 <Button label="Back to Product" onClick={() => navigate("/products")} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" />
             </div>
 
-            <div className="mx-auto bg-white shadow rounded-lg">
+            <div className="mx-auto bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm rounded-lg transition-colors">
                 <div className="flex justify-between items-center px-4 sm:px-6 py-2 md:py-3">
-                    <div className="text-base font-bold text-[#212b36]">Product Information</div>
+                    <div className="text-base font-bold text-[var(--ui-text)]">Product Information</div>
                     <RiArrowDropDownLine
-                        className={`text-2xl sm:text-3xl cursor-pointer transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                        className={`text-2xl sm:text-3xl text-[var(--ui-text-muted)] cursor-pointer transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
                         onClick={() => setIsOpen(!isOpen)}
                     />
                 </div>
-                <hr className="border-gray-200 mb-4" />
+                <hr className="border-[var(--ui-border)] mb-4" />
 
                 {isOpen && (
                     <>
@@ -643,14 +643,14 @@ const ProductCreation = () => {
                                 />
 
                                 <div>
-                                     <p className="text-sm font-medium text-gray-700 w-full mb-1">Available Sizes & Stock Quantities</p>
+                                     <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Available Sizes & Stock Quantities</p>
                                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-2">
                                          {["S", "M", "L", "XL", "XXL"].map((size) => {
                                              const isChecked = selectedSizes.includes(size);
                                              const qty = sizeStockState[size] ?? 0;
                                              return (
-                                                 <div key={size} className={`p-3 border rounded-xl flex flex-col gap-2 transition ${isChecked ? "border-emerald-500 bg-emerald-50/40 shadow-xs" : "border-gray-200 bg-gray-50 opacity-60"}`}>
-                                                     <label className="flex items-center gap-2 cursor-pointer select-none font-bold text-sm text-gray-800">
+                                                 <div key={size} className={`p-3 border rounded-xl flex flex-col gap-2 transition ${isChecked ? "border-[var(--primary-color)] bg-[var(--primary-color-light)] shadow-xs" : "border-[var(--ui-border)] bg-[var(--ui-surface-muted)] opacity-60"}`}>
+                                                     <label className="flex items-center gap-2 cursor-pointer select-none font-bold text-sm text-[var(--ui-text)]">
                                                          <input
                                                              type="checkbox"
                                                              checked={isChecked}
@@ -661,13 +661,13 @@ const ProductCreation = () => {
                                                                      setSelectedSizes([...selectedSizes, size]);
                                                                  }
                                                              }}
-                                                             className="w-4 h-4 accent-emerald-600 border-gray-300 rounded cursor-pointer"
+                                                             className="w-4 h-4 accent-[var(--primary-color)] border-[var(--ui-border)] rounded cursor-pointer"
                                                          />
                                                          Size {size}
                                                      </label>
                                                      {isChecked && (
                                                          <div className="flex flex-col">
-                                                             <span className="text-[11px] text-gray-500 font-medium mb-1">Quantity:</span>
+                                                             <span className="text-[11px] text-[var(--ui-text-muted)] font-medium mb-1">Quantity:</span>
                                                              <input
                                                                  type="number"
                                                                  min="0"
@@ -677,7 +677,7 @@ const ProductCreation = () => {
                                                                      const val = raw === '' ? '' : (parseInt(raw, 10) >= 0 ? parseInt(raw, 10) : 0);
                                                                      setSizeStockState(prev => ({ ...prev, [size]: val as any }));
                                                                  }}
-                                                                 className="w-full px-2 py-1 text-sm font-bold border border-gray-300 rounded-lg bg-white focus:outline-none focus:border-emerald-500"
+                                                                 className="w-full px-2 py-1 text-sm font-bold border border-[var(--ui-border)] rounded-lg bg-[var(--ui-surface)] text-[var(--ui-text)] focus:outline-none focus:border-[var(--primary-color)]"
                                                                  placeholder="0"
                                                              />
                                                          </div>
@@ -689,7 +689,7 @@ const ProductCreation = () => {
                                  </div>
 
                                 <div className="">
-                                    <p className="text-sm font-medium text-gray-700 w-full mb-1">Product Summary</p>
+                                    <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Product Summary</p>
                                     <div className="space-y-2 ">
                                         {fields.map((field, index) => (
                                             <div key={index} className="flex items-center gap-2">
@@ -697,7 +697,7 @@ const ProductCreation = () => {
                                                     type="text"
                                                     value={field}
                                                     onChange={(e) => handleSummaryChange(index, e.target.value)}
-                                                    className="w-full h-10 focus:outline-none px-3 text-base border border-gray-200 rounded-lg focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
+                                                    className="w-full h-10 focus:outline-none px-3 text-base border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-lg focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                                 />
                                                 {index !== 0 && (
                                                     <button
@@ -725,30 +725,30 @@ const ProductCreation = () => {
             </div>
 
             <div className="mt-6 rounded-lg grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <div className="col-span-1 lg:col-span-3 bg-white pb-4">
-                    <div className="px-4 sm:px-4 py-3 border-b border-gray-200">
-                        <p className="text-base font-bold text-[#212b36]">
+                <div className="col-span-1 lg:col-span-3 bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg pb-4 shadow-sm">
+                    <div className="px-4 sm:px-4 py-3 border-b border-[var(--ui-border)]">
+                        <p className="text-base font-bold text-[var(--ui-text)]">
                             Featured Image
                         </p>
-                        <p className="">Add one featured image to show as the main thumbnail.</p>
+                        <p className="text-xs text-[var(--ui-text-muted)]">Add one featured image to show as the main thumbnail.</p>
                     </div>
                     <div className="px-8 py-2">
                         <ImageUpload value={fieldValues.featuredImage} onChange={handleFeaturedImageUpload} />
                     </div>
                 </div>
-                <div className="col-span-1 lg:col-span-3 bg-white pb-4">
-                    <div className="px-4 sm:px-4 py-3 border-b border-gray-200">
-                        <p className="text-base font-bold text-[#212b36]">
+                <div className="col-span-1 lg:col-span-3 bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg pb-4 shadow-sm">
+                    <div className="px-4 sm:px-4 py-3 border-b border-[var(--ui-border)]">
+                        <p className="text-base font-bold text-[var(--ui-text)]">
                             Product File
                         </p>
-                        <p className="">Add one featured image to show as the main thumbnail.</p>
+                        <p className="text-xs text-[var(--ui-text-muted)]">Add one featured image to show as the main thumbnail.</p>
                     </div>
                     <div className="px-8 py-2">
                         <FileUpload value={fieldValues.fileUrl} onChange={handleFileUpload} />
                     </div>
                 </div>
 
-                <div className="col-span-1 lg:col-span-6 bg-white">
+                <div className="col-span-1 lg:col-span-6 bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg shadow-sm">
                     <ProductImage value={productImages} onChange={handleProductImagesUpload} />
                 </div>
             </div>

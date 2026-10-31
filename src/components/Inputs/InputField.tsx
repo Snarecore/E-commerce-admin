@@ -45,18 +45,18 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={name} className="text-sm font-medium text-gray-700 block mb-1">
-          {label} {required && <span className="text-red-600">*</span>}
+        <label htmlFor={name} className="text-sm font-medium text-[var(--ui-text)] block mb-1">
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
 
       <div
         className={`flex items-center w-full transition-all duration-300 border rounded-lg px-2 h-[34px]
-          ${message ? "border-red-500" : "border-gray-200"}
-          bg-white text-black text-lg 
+          ${message ? "border-red-500" : "border-[var(--ui-border)] focus-within:border-[var(--primary-color)]"}
+          bg-[var(--ui-surface)] text-[var(--ui-text)] text-base 
           ${wrapperClass}`}
       >
-        {icon && <div className="pr-2">{icon}</div>}
+        {icon && <div className="pr-2 text-[var(--ui-text-muted)]">{icon}</div>}
 
         <input
           id={name}
@@ -68,7 +68,7 @@ const InputField: React.FC<InputFieldProps> = ({
           required={required}
           readOnly={readOnly}
           onChange={handleChange}
-          className={`w-full focus:outline-none placeholder:text-sm px-1.5 text-base
+          className={`w-full bg-transparent text-[var(--ui-text)] focus:outline-none placeholder:text-[var(--ui-text-muted)] placeholder:text-sm px-1.5 text-base
             ${inputClass}
             ${disabled ? "cursor-not-allowed opacity-50" : "cursor-text"}
           `}

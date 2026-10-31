@@ -46,9 +46,9 @@ const DropdownFilter: React.FC<DropdownFilterProps> = ({
 	return (
 		<div className="relative" ref={dropdownRef}>
 			<div
-				className={`border border-gray-200 px-3 py-2 rounded-md cursor-pointer flex justify-between items-center w-fit h-[34px] ${
+				className={`border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] px-3 py-2 rounded-md cursor-pointer flex justify-between items-center w-fit h-[34px] ${
 					isOpen
-						? "bg-[var(--color-primary)] text-white"
+						? "!bg-[var(--color-primary)] !text-white !border-[var(--color-primary)]"
 						: "hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in duration-300"
 				}`}
 				onClick={onToggle}
@@ -58,14 +58,14 @@ const DropdownFilter: React.FC<DropdownFilterProps> = ({
 			</div>
 
 			{isOpen && (
-				<div className="absolute left-0 right-0 mt-1 w-64 bg-white border border-gray-200 rounded-md z-50">
+				<div className="absolute left-0 right-0 mt-1 w-64 bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-xl rounded-md z-50 text-[var(--ui-text)]">
 					{options.map((option) => (
 						<div
 							key={option.value}
-							className={`px-4 py-2 cursor-pointer ${
+							className={`px-4 py-2 cursor-pointer transition-colors ${
 								selectedOption?.value === option.value
-									? "text-[var(--color-primary)] font-semibold rounded-sm"
-									: "hover:text-[var(--color-primary)]"
+									? "text-[var(--color-primary)] font-semibold rounded-sm bg-[var(--ui-surface-muted)]"
+									: "hover:bg-[var(--ui-surface-muted)] hover:text-[var(--color-primary)]"
 							}`}
 							onClick={() => onSelect(option)}
 						>

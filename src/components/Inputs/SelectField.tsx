@@ -52,36 +52,36 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChan
 	return (
 		<div className="flex flex-col items-center w-full">
 			<div ref={dropdownRef} className="relative w-full">
-				<label className="text-sm font-medium text-gray-700 mb-1 block">
+				<label className="text-sm font-medium text-[var(--ui-text)] mb-1 block">
 					{label}
-					{required && <span className="text-red-600 ml-1">*</span>}
+					{required && <span className="text-red-500 ml-1">*</span>}
 				</label>
 
 				<div
-					className={`border p-2 sm:p-3 h-[34px] rounded-lg cursor-pointer bg-white flex justify-between items-center w-full text-black transition-all duration-300 text-base px-2 py-2 active:bg-gray-50 touch-manipulation
-            ${openDropdown ? "border-[var(--primary-color)] ring-1 ring-[var(--primary-color)]" : "border-gray-200"}
+					className={`border p-2 sm:p-3 h-[34px] rounded-lg cursor-pointer bg-[var(--ui-surface)] flex justify-between items-center w-full text-[var(--ui-text)] transition-all duration-300 text-base px-2 py-2 active:bg-[var(--ui-surface-muted)] touch-manipulation
+            ${openDropdown ? "border-[var(--primary-color)] ring-1 ring-[var(--primary-color)]" : "border-[var(--ui-border)]"}
             ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
 					onClick={() => !disabled && setOpenDropdown(!openDropdown)}
 				>
-					<span className={`truncate ${selectedOption ? 'text-black' : 'text-gray-400 text-sm'}`}>
+					<span className={`truncate ${selectedOption ? 'text-[var(--ui-text)]' : 'text-[var(--ui-text-muted)] text-sm'}`}>
 						{selectedOption ? selectedOption.label : placeholder}
 					</span>
-					<RiArrowDropDownLine className={`text-gray-500 text-lg flex-shrink-0 transition-transform duration-200 ${openDropdown ? 'rotate-180' : ''}`} />
+					<RiArrowDropDownLine className={`text-[var(--ui-text-muted)] text-lg flex-shrink-0 transition-transform duration-200 ${openDropdown ? 'rotate-180' : ''}`} />
 				</div>
 
 				{openDropdown && (
-					<div className={`absolute w-full ${showTop ? 'bottom-[60%] mt-0' : 'mt-1'} bg-white border border-gray-300 rounded-lg z-10 max-w-full shadow-lg`}>
-						<div className="p-1 sm:p-2 border-b border-gray-300">
+					<div className={`absolute w-full ${showTop ? 'bottom-[60%] mt-0' : 'mt-1'} bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] rounded-lg z-10 max-w-full shadow-xl`}>
+						<div className="p-1 sm:p-2 border-b border-[var(--ui-border)]">
 							<input
 								type="text"
 								placeholder=""
-								className="w-full h-8 sm:h-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] px-2 py-1 text-sm appearance-none"
+								className="w-full h-8 sm:h-10 bg-[var(--ui-surface)] text-[var(--ui-text)] border border-[var(--ui-border)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] px-2 py-1 text-sm appearance-none"
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
 							/>
 						</div>
 
-						<div className="text-gray-600 p-1 sm:p-2 font-semibold text-xs sm:text-sm">Select</div>
+						<div className="text-[var(--ui-text-muted)] p-1 sm:p-2 font-semibold text-xs sm:text-sm">Select</div>
 
 						<ul className="max-h-36 sm:max-h-48 overflow-y-auto w-full">
 							{filteredOptions.length > 0 ? (
@@ -90,7 +90,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChan
 										key={index}
 										className={`p-1 sm:p-2 hover:bg-[var(--primary-color)] hover:text-white active:bg-[var(--primary-color-dark)] active:text-white focus:bg-[var(--primary-color)] focus:text-white cursor-pointer w-full text-sm truncate transition-colors duration-150 touch-manipulation ${selectedOption && selectedOption.value === option.value
 											? "bg-[var(--primary-color-light)] text-[var(--primary-color)] font-medium"
-											: "text-black"
+											: "text-[var(--ui-text)]"
 											}`}
 										onClick={() => handleSelect(option)}
 									>

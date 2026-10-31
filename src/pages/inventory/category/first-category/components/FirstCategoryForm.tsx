@@ -177,8 +177,8 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 		>
 			<div className="space-y-4">
 				<div>
-					<h3 className="block text-sm font-medium text-gray-700">Banner Image:
-						<span className="text-xs text-gray-500 ml-1">(Recommended Size: 1920x192 PX)</span>
+					<h3 className="block text-sm font-medium text-[var(--ui-text)]">Banner Image:
+						<span className="text-xs text-[var(--ui-text-muted)] ml-1">(Recommended Size: 1920x192 PX)</span>
 					</h3>
 					{/* <ImageUpload value={fieldValues.bannerImage} onChange={handleImageUpload} /> */}
 					<ImageUpload
@@ -194,8 +194,8 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 				</div>
 
 				<div>
-					<h3 className="block text-sm font-medium text-gray-700">Category Icon/Image:
-						<span className="text-xs text-gray-500 ml-1">(Recommended Size: 150x150 PX)</span>
+					<h3 className="block text-sm font-medium text-[var(--ui-text)]">Category Icon/Image:
+						<span className="text-xs text-[var(--ui-text-muted)] ml-1">(Recommended Size: 150x150 PX)</span>
 					</h3>
 					<ImageUpload
 						value={

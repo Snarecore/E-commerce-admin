@@ -19,12 +19,12 @@ const TablePagination = ({
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
 	return (
-		<div className="flex flex-col items-end gap-4 bg-white px-4 py-1 sm:px-6 mt-3 cursor-pointer">
+		<div className="flex flex-col items-end gap-4 bg-[var(--ui-surface)] px-4 py-1 sm:px-6 mt-3 cursor-pointer">
 			<nav className="isolate inline-flex gap-2 rounded-md" aria-label="Pagination">
 				<button
 					onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
 					disabled={currentPage === 1}
-					className={`relative inline-flex items-center justify-center w-6 h-6 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${currentPage === 1 ? 'cursor-not-allowed' : 'cursor-pointer'
+					className={`relative inline-flex items-center justify-center w-6 h-6 text-[var(--ui-text-muted)] ring-1 ring-inset ring-[var(--ui-border)] hover:bg-[var(--ui-surface-muted)] focus:z-20 focus:outline-offset-0 ${currentPage === 1 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 						}`}
 				>
 					<span className="sr-only">Previous</span>
@@ -39,7 +39,7 @@ const TablePagination = ({
 						onClick={() => onPageChange(index + 1)}
 						className={`relative inline-flex items-center justify-center w-6 h-6 text-sm font-semibold cursor-pointer ${currentPage === index + 1
 								? 'z-10 bg-[var(--color-primary)] text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]'
-								: 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0'
+								: 'text-[var(--ui-text)] ring-1 ring-inset ring-[var(--ui-border)] hover:bg-[var(--ui-surface-muted)] focus:outline-offset-0'
 							}`}
 					>
 						{index + 1}
@@ -49,7 +49,7 @@ const TablePagination = ({
 				<button
 					onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
 					disabled={currentPage === totalPages}
-					className={`relative inline-flex items-center justify-center w-6 h-6 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${currentPage === totalPages ? 'cursor-not-allowed' : 'cursor-pointer'
+					className={`relative inline-flex items-center justify-center w-6 h-6 text-[var(--ui-text-muted)] ring-1 ring-inset ring-[var(--ui-border)] hover:bg-[var(--ui-surface-muted)] focus:z-20 focus:outline-offset-0 ${currentPage === totalPages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
 						}`}
 				>
 					<span className="sr-only">Next</span>

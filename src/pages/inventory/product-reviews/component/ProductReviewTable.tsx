@@ -153,19 +153,19 @@ const ProductReviewTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-white rounded-lg border border-gray-200">
+        <div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
             <div className="mt-4 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
-                    <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-sm border-b border-gray-200">
+                    <thead className="bg-[var(--ui-surface-muted)]">
+                        <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left text-[#000000e0]">
+                                <th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
                                     {label}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+                    <tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
                         {dataList?.length > 0 ? (
                             dataList.map((data, index) => {
                                 const fullText = getReviewText(data);
@@ -173,21 +173,21 @@ const ProductReviewTable = ({
                                 return (
                                     <tr
                                         key={data.id}
-                                        className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
+                                        className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                     >
-                                        <td className="px-6 py-4 font-medium text-gray-800">{index + 1}</td>
+                                        <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">{index + 1}</td>
                                         <td className="px-6 py-4 flex items-center gap-2">
-                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-10 h-10 rounded-md object-cover border border-gray-200" />
-                                            <span className="font-semibold text-gray-800">{data?.product?.name}</span>
+                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-10 h-10 rounded-md object-cover border border-[var(--ui-border)]" />
+                                            <span className="font-semibold text-[var(--ui-text)]">{data?.product?.name}</span>
                                         </td>
 
-                                        <td className="px-6 py-4">{data?.user?.name || "Anonymous"}</td>
+                                        <td className="px-6 py-4 text-[var(--ui-text)]">{data?.user?.name || "Anonymous"}</td>
                                         <td className="px-6 py-4">
                                             <button
                                                 type="button"
                                                 onClick={() => openViewModal(data)}
                                                 title="Click to view full comment"
-                                                className="max-w-[360px] text-left text-gray-700 hover:underline focus:underline focus:outline-none break-words cursor-pointer"
+                                                className="max-w-[360px] text-left text-[var(--ui-text)] hover:text-[var(--primary-color)] hover:underline focus:underline focus:outline-none break-words cursor-pointer"
                                             >
                                                 {preview}
                                             </button>
@@ -195,11 +195,11 @@ const ProductReviewTable = ({
 
                                         <td className="px-6 py-4">
                                             {data.isApproved ? (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                                     Approved
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
                                                     Pending
                                                 </span>
                                             )}
@@ -210,22 +210,22 @@ const ProductReviewTable = ({
                                                 {!data.isApproved && (
                                                     <button
                                                         onClick={() => handleToggleStatus(data, true)}
-                                                        className="border border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer px-2.5 py-1.5 rounded-md transition duration-300 flex items-center gap-1 text-xs font-semibold"
+                                                        className="border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer px-2.5 py-1.5 rounded-md transition duration-200 flex items-center gap-1 text-xs font-semibold"
                                                         title="Approve Comment"
                                                     >
-                                                        <FiCheck className="text-sm text-emerald-600" /> Approve
+                                                        <FiCheck className="text-sm text-emerald-400" /> Approve
                                                     </button>
                                                 )}
                                                 <button
                                                     onClick={() => openCommentViewModal(data)}
-                                                    className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300"
+                                                    className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
                                                     title="View Replies"
                                                 >
                                                     <FiEye />
                                                 </button>
                                                 <button
                                                     onClick={() => openDeleteModal(data)}
-                                                    className="border border-gray-300 text-gray-700 hover:text-red-600 hover:bg-red-50 cursor-pointer p-2 rounded-md transition duration-300"
+                                                    className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
                                                     title="Delete"
                                                 >
                                                     <FiTrash2 />
@@ -237,7 +237,7 @@ const ProductReviewTable = ({
                             })
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic">
+                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic text-[var(--ui-text-muted)]">
                                     <EmptyState title="No products review yet!" description="" />
                                 </td>
                             </tr>
@@ -268,29 +268,29 @@ const ProductReviewTable = ({
                 ) : (
                     <div className="space-y-4">
                         {/* Product & User Header Info */}
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-3 p-3 bg-[var(--ui-surface-muted)] rounded-xl border border-[var(--ui-border)]">
                             {viewReview?.product?.featuredImage && (
                                 <img
                                     src={viewReview.product.featuredImage}
                                     alt={viewReview?.product?.name ?? "Product image"}
-                                    className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                                    className="w-12 h-12 rounded-lg object-cover border border-[var(--ui-border)]"
                                 />
                             )}
                             <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-bold text-gray-900 truncate">
+                                <h4 className="text-sm font-bold text-[var(--ui-text)] truncate">
                                     {viewReview?.product?.name ?? "—"}
                                 </h4>
-                                <p className="text-xs text-gray-500 truncate">
-                                    Posted by: <strong className="text-gray-700">{viewReview?.user?.name || "Anonymous"}</strong> ({viewReview?.user?.email || "No email"})
+                                <p className="text-xs text-[var(--ui-text-muted)] truncate">
+                                    Posted by: <strong className="text-[var(--ui-text)]">{viewReview?.user?.name || "Anonymous"}</strong> ({viewReview?.user?.email || "No email"})
                                 </p>
                             </div>
                             <div>
                                 {viewReview?.isApproved ? (
-                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                         Approved
                                     </span>
                                 ) : (
-                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
                                         Pending
                                     </span>
                                 )}
@@ -299,20 +299,20 @@ const ProductReviewTable = ({
 
                         {/* Full Comment Text */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-bold text-[var(--ui-text-muted)] uppercase tracking-wider mb-1.5">
                                 Comment Body
                             </label>
-                            <div className="p-4 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 whitespace-pre-wrap leading-relaxed shadow-inner max-h-60 overflow-y-auto">
+                            <div className="p-4 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] text-sm text-[var(--ui-text)] whitespace-pre-wrap leading-relaxed shadow-inner max-h-60 overflow-y-auto">
                                 {viewReview?.body || "—"}
                             </div>
                         </div>
 
                         {/* Modal Action Buttons */}
-                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
+                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--ui-border)]">
                             <button
                                 type="button"
                                 onClick={closeViewModal}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-gray-700 border-gray-200 hover:bg-gray-100 text-xs font-semibold transition cursor-pointer"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-[var(--ui-text)] border-[var(--ui-border)] hover:bg-[var(--ui-surface-muted)] text-xs font-semibold transition cursor-pointer"
                             >
                                 Close
                             </button>
@@ -348,9 +348,9 @@ const ProductReviewTable = ({
                     <div className="p-6 text-center text-gray-500">Loading…</div>
                 ) : (
                     <div className="">
-                        <table className="w-full border border-gray-200 rounded-lg overflow-hidden shadow-md">
-                            <thead className="bg-gray-100">
-                                <tr className="text-gray-700 text-sm font-semibold">
+                        <table className="w-full border border-[var(--ui-border)] rounded-lg overflow-hidden shadow-md">
+                            <thead className="bg-[var(--ui-surface-muted)]">
+                                <tr className="text-[var(--ui-text)] text-sm font-semibold">
                                     <th className="px-6 py-3 text-left">Sl</th>
                                     <th className="px-6 py-3 text-left">Comment</th>
                                     <th className="px-6 py-3 text-left">Type</th>
@@ -358,15 +358,15 @@ const ProductReviewTable = ({
                                 </tr>
                             </thead>
 
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)]">
                                 {/* Main comment row (no delete button here) */}
-                                <tr className="hover:bg-gray-50 transition duration-200">
-                                    <td className="px-6 py-4 font-medium text-gray-800">1</td>
-                                    <td className="px-6 py-4 text-gray-700 max-w-[300px]">
+                                <tr className="hover:bg-[var(--ui-surface-muted)] transition duration-200">
+                                    <td className="px-6 py-4 font-medium text-[var(--ui-text)]">1</td>
+                                    <td className="px-6 py-4 text-[var(--ui-text)] max-w-[300px]">
                                         {commentViewReview?.body}
                                     </td>
-                                    <td className="px-6 py-4 text-gray-500 italic">Parent</td>
-                                    <td className="px-6 py-4 text-gray-400 italic">—</td>
+                                    <td className="px-6 py-4 text-[var(--ui-text-muted)] italic">Parent</td>
+                                    <td className="px-6 py-4 text-[var(--ui-text-muted)] italic">—</td>
                                 </tr>
 
                                 {/* Replies (full width rows with delete) */}
@@ -374,19 +374,19 @@ const ProductReviewTable = ({
                                     (commentViewReview as any).replies.map((reply: any, idx: number) => (
                                         <tr
                                             key={reply.id ?? idx}
-                                            className="hover:bg-gray-50 transition duration-200 bg-gray-50"
+                                            className="hover:bg-[var(--ui-surface-muted)] transition duration-200 bg-[var(--ui-surface-muted)]/50"
                                         >
-                                            <td className="px-6 py-4 font-medium text-gray-800">
+                                            <td className="px-6 py-4 font-medium text-[var(--ui-text)]">
                                                 1.{idx + 1}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-700 max-w-[300px]">
-                                                <span className="text-gray-500 mr-2">↳</span>
+                                            <td className="px-6 py-4 text-[var(--ui-text)] max-w-[300px]">
+                                                <span className="text-[var(--ui-text-muted)] mr-2">↳</span>
                                                 {reply.body ?? "—"}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-500">Reply</td>
+                                            <td className="px-6 py-4 text-[var(--ui-text-muted)]">Reply</td>
                                             <td className="px-6 py-4">
                                                 <button
-                                                    className="px-3 py-1 text-sm rounded-md border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition cursor-pointer"
+                                                    className="px-3 py-1 text-sm rounded-md border border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition cursor-pointer"
                                                     onClick={() => handleDeleteReply(reply.id)}
                                                 >
                                                     Delete
