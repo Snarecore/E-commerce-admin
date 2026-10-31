@@ -191,6 +191,13 @@ const menu = [
 				path: "/appearance",
 				subItems: [],
 			},
+			{
+				id: 101,
+				name: "Frontend Appearance",
+				icon: <MdStorefront />,
+				path: "/frontend-appearance",
+				subItems: [],
+			},
 		],
 	},
 	{
@@ -469,6 +476,14 @@ const Header = () => {
 								onClick={() => {
 									setShowUserDropdown(false);
 									navigate("/appearance");
+								}}
+							/>
+							<MenuItem
+								icon={<MdStorefront className="text-lg text-[var(--primary-color)]" />}
+								text="Frontend Appearance"
+								onClick={() => {
+									setShowUserDropdown(false);
+									navigate("/frontend-appearance");
 								}}
 							/>
 							<MenuItem

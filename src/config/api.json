@@ -28,6 +28,7 @@
             "policyTwelveUrl": "policy-twelve-cms"
         },
         "headerFooterCms": "header-footer-cms",
+        "storefrontTheme": "header-footer-cms/theme",
         "shopPageCms": "shop-page-cms",
         "faqUrl": "faq",
         "megaDiscountUrl": "setting/mega-discount"

@@ -144,7 +144,7 @@ const AppearanceSettingsContent: React.FC = () => {
           </h1>
           <p className="mt-0.5 max-w-2xl text-[13px] leading-relaxed text-[var(--ui-text-muted)]">
             {t(
-              'Controls the look of every form, button and table in the application. Settings apply instantly and are saved to this browser only — they do not affect other users.'
+              'Controls the look of every form, button and table in the dashboard. Settings apply instantly to this admin panel.'
             )}
           </p>
         </div>

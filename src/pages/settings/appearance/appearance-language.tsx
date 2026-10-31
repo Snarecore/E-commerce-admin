@@ -5,9 +5,11 @@ export type AppearanceLanguage = 'en' | 'bn'
 const LANGUAGE_STORAGE_KEY = 'bazaarbound-appearance-language'
 
 const BANGLA: Record<string, string> = {
-  Appearance: 'অ্যাপের চেহারা ও প্রদর্শন (Appearance)',
-  'Controls the look of every form, button and table in the application. Settings apply instantly and are saved to this browser only — they do not affect other users.':
-    'এখান থেকে পুরো অ্যাডমিন প্যানেলের ফর্ম, বাটন, টেবিল ও অন্যান্য অংশের ডিজাইন বদলাতে পারবেন। পরিবর্তন সঙ্গে সঙ্গেই কার্যকর হবে এবং শুধু এই ব্রাউজারেই সেভ থাকবে।',
+  Appearance: 'ড্যাশবোর্ড রূপ ও থিম (Admin Appearance)',
+  'Controls the look of every form, button and table in the dashboard. Settings apply instantly to this admin panel.':
+    'এডমিন প্যানেলের প্রতিটি ফর্ম, বাটন, টেবিল ও স্ক্রলবারের ডিজাইন ও থিম এখান থেকে নিয়ন্ত্রণ করুন।',
+  'Customize the storefront appearance, design system, theme colors, and layout presets in real-time.':
+    'এখান থেকে ফ্রন্টএন্ড স্টোরফ্রন্টের থিম কালার, ফন্ট ও ভিজ্যুয়াল স্টাইল রিয়েল-টাইমে সাজান।',
   'Reduce motion': 'অ্যানিমেশন কমান (Reduce motion)',
   'Reset to theme defaults': 'থিমের আগের সেটিংসে ফিরুন',
   'Restore defaults': 'সব ডিফল্টে রিসেট করুন',
@@ -153,6 +155,27 @@ const BANGLA: Record<string, string> = {
   'Confirm and Dispatch': 'নিশ্চিত ও প্রেরণ করুন',
   'Build your own theme, or paste the colours from a theme you own to convert it. Only colour values are read — no CSS or assets are copied.':
     'আপনার ব্র্যান্ডের রঙের সাথে মিলিয়ে নতুন থিম তৈরি করুন, অথবা লোগো আপলোড করে স্বয়ংক্রিয়ভাবে থিম জেনারেট করুন।',
+  Storefront: 'স্টোরফ্রন্ট (Website)',
+  'Storefront (Website)': 'স্টোরফ্রন্ট শোরুম',
+  'Real-time customer storefront preview': 'কাস্টমারদের ওয়েবসাইট শোরুমের লাইভ প্রিভিউ',
+  'Special Eid Collection 2026 - Flat 20% Off | Code: EID26': '✨ স্পেশাল ঈদ কালেকশন ২০২৬ - ফ্ল্যাট ২০% ছাড়! কোড: EID26',
+  'Fashion Time': 'ফ্যাশন টাইম',
+  'Search sarees, panjabis...': 'শাড়ি, পাঞ্জাবি বা অন্য পোশাক খুঁজুন...',
+  All: 'সবগুলো',
+  Panjabi: 'পাঞ্জাবি',
+  Kurti: 'কুর্তি',
+  Saree: 'শাড়ি',
+  Kids: 'কিডস',
+  'Embroidered Georgette Saree': 'এমব্রয়ডারি জর্জেট শাড়ি',
+  'Royal Semi-Silk Panjabi': 'রয়্যাল সেমি-সিল্ক পাঞ্জাবি',
+  'Add to Bag': 'ব্যাগে যোগ করুন',
+  BESTSELLER: 'সেরা বিক্রয়',
+  '-20% OFF': '-২০% ছাড়',
+  'Free Delivery ৳ 1,500+': '৳ ১,৫০০+ অর্ডারে ফ্রি ডেলিভারি',
+  '7 Days Return': '৭ দিনে সহজ রিটার্ন',
+  '100% Original': '১০০% অরিজিনাল পণ্য',
+  'Publish to Storefront': 'স্টোরফ্রন্টে পাবলিশ করুন',
+  'Storefront theme synchronized!': 'স্টোরফ্রন্ট থিম সফলভাবে সিঙ্ক হয়েছে!',
 }
 
 interface AppearanceLanguageContextValue {

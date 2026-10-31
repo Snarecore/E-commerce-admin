@@ -232,6 +232,13 @@ const menu = [
 				path: "/appearance",
 				subItems: [],
 			},
+			{
+				id: 101,
+				name: "Frontend Appearance",
+				icon: <MdStorefront />,
+				path: "/frontend-appearance",
+				subItems: [],
+			},
 		],
 	},
 	{
