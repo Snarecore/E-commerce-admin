@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { TbListDetails, TbLayoutGrid, TbTablePlus, TbFileText, TbLayoutSidebarLeftCollapse } from "react-icons/tb";
+import { TbListDetails, TbLayoutGrid, TbTablePlus, TbFileText } from "react-icons/tb";
 import { BiCube } from "react-icons/bi";
 import { RiArrowDropRightLine, RiArrowDropDownLine, RiExchangeBoxFill, RiSeoFill } from "react-icons/ri";
 import { Link, useLocation, NavLink } from "react-router-dom";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
-import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdOutlinePalette } from "react-icons/md";
+import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdOutlinePalette, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FiShoppingCart, FiZap, FiShield } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
@@ -263,17 +263,21 @@ const Sidebar = () => {
 	const { unreadChatCount } = useUnreadChatCount();
 
 	useEffect(() => {
-		menu.forEach((section) => {
-			section.items.forEach((item) => {
-				if (
-					item.subItems.some((sub) => sub.path === location.pathname) ||
-					item.path === location.pathname
-				) {
-					setOpenSubMenu(item.id);
-				}
+		if (!isCollapsed) {
+			menu.forEach((section) => {
+				section.items.forEach((item) => {
+					if (
+						item.subItems.some((sub) => sub.path === location.pathname) ||
+						item.path === location.pathname
+					) {
+						setOpenSubMenu(item.id);
+					}
+				});
 			});
-		});
-	}, [location.pathname]);
+		} else {
+			setOpenSubMenu(null);
+		}
+	}, [location.pathname, isCollapsed]);
 
 	const toggleSubMenu = (id: number) => {
 		setOpenSubMenu(openSubMenu === id ? null : id);
@@ -286,50 +290,61 @@ const Sidebar = () => {
 	);
 
 	return (
-		<aside
-			className={`hidden lg:block min-h-screen border-r transition-all ease-in-out duration-300 z-30 select-none shadow-xs border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] text-[var(--ui-sidebar-text,var(--ui-text))] ${
-				isCollapsed ? "w-[68px]" : "w-63"
-			}`}
-		>
-			<div
-				className={`fixed top-0 left-0 h-16 z-20 flex items-center justify-between border-b px-3 py-1 transition-all ease-in-out duration-300 border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] ${
+		<>
+			{/* Floating Double Arrow Collapse Button (styled after cash-boi-web) */}
+			<button
+				type="button"
+				onClick={() =>
+					setOverrides({
+						sidebarCollapse: isCollapsed ? 'expanded' : 'collapsed',
+					})
+				}
+				aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+				style={{ willChange: "left" }}
+				className={`hidden lg:flex items-center justify-center fixed top-4 z-[51] bg-[var(--primary-color)] hover:bg-[var(--primary-color-hover)] text-white rounded-full p-1.5 shadow-md hover:scale-105 active:scale-95 focus:outline-none -translate-x-1/2 transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer motion-reduce:transition-none ${
+					isCollapsed ? "left-[68px]" : "left-63"
+				}`}
+				title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+			>
+				{isCollapsed ? (
+					<MdKeyboardDoubleArrowRight size={16} />
+				) : (
+					<MdKeyboardDoubleArrowLeft size={16} />
+				)}
+			</button>
+
+			<aside
+				className={`hidden lg:block min-h-screen border-r transition-all ease-in-out duration-300 z-30 select-none shadow-xs border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] text-[var(--ui-sidebar-text,var(--ui-text))] ${
 					isCollapsed ? "w-[68px]" : "w-63"
 				}`}
 			>
-				<Link to={"/"} className="flex items-center justify-center flex-1 overflow-hidden">
-					{isCollapsed ? (
-						<span className="font-black text-xl text-[var(--primary-color)]">FT</span>
-					) : (
-						<img
-							src="/images/Admin-logo.png"
-							alt="Admin logo"
-							className="w-full h-12 object-contain"
-						/>
-					)}
-				</Link>
-
-				<button
-					type="button"
-					onClick={() =>
-						setOverrides({
-							sidebarCollapse: isCollapsed ? 'expanded' : 'collapsed',
-						})
-					}
-					className="p-1.5 rounded-lg text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:text-[var(--primary-color)] hover:bg-[var(--ui-sidebar-active-bg,var(--ui-surface-muted))] transition-colors cursor-pointer"
-					title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+				<div
+					className={`fixed top-0 left-0 h-16 z-20 flex items-center border-b px-2 transition-all ease-in-out duration-300 border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] ${
+						isCollapsed ? "w-[68px] justify-center" : "w-63 justify-start px-3"
+					}`}
 				>
-					<TbLayoutSidebarLeftCollapse
-						size={16}
-						className={`transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`}
-					/>
-				</button>
-			</div>
+					<Link to={"/"} className="flex items-center justify-center w-full overflow-hidden">
+						{isCollapsed ? (
+							<img
+								src="/images/Admin-logo.png"
+								alt="Admin logo"
+								className="h-8 w-8 object-contain"
+							/>
+						) : (
+							<img
+								src="/images/Admin-logo.png"
+								alt="Admin logo"
+								className="w-full h-12 object-contain"
+							/>
+						)}
+					</Link>
+				</div>
 
-			<div
-				className={`p-2 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
-					isCollapsed ? "w-[68px]" : "w-63"
-				} pr-1`}
-			>
+				<div
+					className={`p-2 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
+						isCollapsed ? "w-[68px]" : "w-63"
+					} pr-1`}
+				>
 				{menu.map((section) => (
 					<div key={section.sectionName} className="mb-2">
 						{isCollapsed ? (
@@ -366,7 +381,14 @@ const Sidebar = () => {
 												: "text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:bg-[var(--ui-sidebar-active-bg,var(--ui-surface-muted))] hover:text-[var(--ui-sidebar-text,var(--ui-text))]"
 										}`}
 										onClick={() => {
-											if (!isCollapsed) toggleSubMenu(item.id);
+											if (isCollapsed) {
+												setOverrides({ sidebarCollapse: 'expanded' });
+												if (item.subItems.length > 0) {
+													setOpenSubMenu(item.id);
+												}
+											} else if (item.subItems.length > 0) {
+												toggleSubMenu(item.id);
+											}
 										}}
 									>
 										<div className="flex items-center gap-2.5 min-w-0">
@@ -428,6 +450,7 @@ const Sidebar = () => {
 				))}
 			</div>
 		</aside>
+	</>
 	);
 };
 
