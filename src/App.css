@@ -585,25 +585,30 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color, #fe9f43);
+  background-color: var(--primary-color, #fe9f43) !important;
   border-radius: 9999px;
   min-height: 36px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--primary-color-hover, #e08a2c);
+  background-color: var(--primary-color-hover, #e08a2c) !important;
 }
 
 [data-theme-mode="dark"] .custom-scrollbar::-webkit-scrollbar,
 [data-theme-mode="dark"] .custom-scrollbar::-webkit-scrollbar-track,
 .dark .custom-scrollbar::-webkit-scrollbar,
 .dark .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme-mode="dark"] .custom-scrollbar::-webkit-scrollbar-thumb,
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color, #fe9f43) !important;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -612,12 +617,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b3b3b3;
+  background: var(--primary-color, #fe9f43) !important;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color);
+  background: var(--primary-color-hover, #e08a2c) !important;
 }
 
 .menu-active > div {
@@ -672,13 +677,13 @@ input[type="number"] {
 
 .dark ::-webkit-scrollbar-thumb,
 [data-theme-mode="dark"] ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--primary-color, #fe9f43) !important;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover,
 [data-theme-mode="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color);
+  background: var(--primary-color-hover, #e08a2c) !important;
 }
 
 /* Tables in Dark Mode */
