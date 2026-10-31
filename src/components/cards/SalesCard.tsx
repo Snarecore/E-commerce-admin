@@ -10,7 +10,7 @@ interface SalesCardProps {
 
 const SalesCard = ({ bgColor, imageSrc, mainText, subText, icon }: SalesCardProps) => {
 	return (
-		<div className={`flex justify-between ${bgColor} px-[20px] py-8 rounded-lg border border-[#e6eaed]`}>
+		<div className={`flex justify-between ${bgColor} px-[20px] py-8 rounded-md border border-[#e6eaed]`}>
 			<div>
 				<img src={imageSrc} alt="sales-pic" />
 				<p className="text-white text-[20px] font-bold mt-2">{mainText}</p>

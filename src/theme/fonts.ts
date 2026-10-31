@@ -25,7 +25,7 @@ export const FONTS: Record<FontFamilyId, FontDefinition> = {
   nunito: {
     id: 'nunito',
     label: 'Nunito',
-    bestUse: 'Bazaarbound Default — warm & friendly e-commerce feel',
+    bestUse: 'Main Default — warm & friendly e-commerce feel',
     category: 'sans',
     source: 'google',
     stack: `'Nunito', ${SANS_TAIL}`,

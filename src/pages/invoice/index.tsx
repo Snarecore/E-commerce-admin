@@ -36,7 +36,7 @@ const InvoiceView = () => {
 						</div>
 						{/* <div className="text-right">
 							<p className="text-[#7A8086] text-xl font-bold">
-								Order ID: <span className="text-[#FE9F43] font-semibold">#{order.orderId}</span>
+								Order ID: <span className="text-[var(--primary-color)] font-semibold">#{order.orderId}</span>
 							</p>
 							<p className="text-sm font-medium">
 								<span className="text-[#7A8086]">Created At:</span>{" "}

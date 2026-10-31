@@ -27,7 +27,7 @@ const TextEditor = ({ value = '', onChange }: TextEditorProps) => {
     
 
     return (
-        <div className="w-full hover:cursor-pointer hover:border-[#fe9f43]">
+        <div className="w-full hover:cursor-pointer hover:border-[var(--primary-color)]">
             <label className="text-sm font-medium text-gray-700">
                 Description
             </label>

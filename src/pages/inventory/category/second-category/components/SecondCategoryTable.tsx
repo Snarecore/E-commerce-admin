@@ -125,10 +125,10 @@ const SecondCategoryTable = ({
 									</td>
 									<td className="px-6 py-4">
 										<div className="flex items-center gap-2">
-											<button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[#fe9f43] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+											<button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--primary-color)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
 												<FaEdit />
 											</button>
-											<button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[#fe9f43] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+											<button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--primary-color)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
 												<FiTrash2 />
 											</button>
 										</div>

@@ -21,6 +21,11 @@ import type {
 export const DEFAULT_FONT_FAMILY = 'nunito' as const
 export const DEFAULT_FONT_SCALE = 'md' as const
 
+export const getSystemPrefersDark = (): boolean => {
+  if (typeof window === 'undefined' || !window.matchMedia) return false
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
 export const DEFAULT_APPEARANCE: AppearanceState = {
   themeId: DEFAULT_THEME_ID,
   overrides: {},
@@ -30,10 +35,14 @@ export const DEFAULT_APPEARANCE: AppearanceState = {
  * Finds a theme by id across built-ins and custom themes,
  * safely falling back to the flagship default theme if unknown or deleted.
  */
-export const findTheme = (id: ThemeRef, customThemes: ThemePreset[] = []): ThemePreset =>
-  THEME_PRESETS[id as ThemeId] ??
-  customThemes.find((t) => t.id === id) ??
-  THEME_PRESETS[DEFAULT_THEME_ID]
+export const findTheme = (id: ThemeRef, customThemes: ThemePreset[] = []): ThemePreset => {
+  const normId = id === 'bazaarbound-amber' ? 'main-color' : id
+  return (
+    THEME_PRESETS[normId as ThemeId] ??
+    customThemes.find((t) => t.id === id) ??
+    THEME_PRESETS[DEFAULT_THEME_ID]
+  )
+}
 
 /** Merges defaults, preset, and overrides into a complete ResolvedAppearance. */
 export const resolveAppearance = (
@@ -43,10 +52,39 @@ export const resolveAppearance = (
   const preset = findTheme(state.themeId, customThemes)
   const o = state.overrides
 
+  const colorMode = o.colorMode ?? 'light'
+  let resolvedColorMode: 'light' | 'dark' = 'light'
+  if (colorMode === 'dark') {
+    resolvedColorMode = 'dark'
+  } else if (colorMode === 'light') {
+    resolvedColorMode = 'light'
+  } else {
+    resolvedColorMode = preset.palette.isDark || getSystemPrefersDark() ? 'dark' : 'light'
+  }
+
   const palette = { ...preset.palette }
   if (o.accent && isValidHex(o.accent)) {
     Object.assign(palette, deriveAccentRamp(o.accent))
   }
+
+  if (resolvedColorMode === 'dark' && !preset.palette.isDark) {
+    palette.surface = '#0f172a'
+    palette.surfaceMuted = '#1e293b'
+    palette.surfaceSunken = '#0b0f19'
+    palette.border = '#334155'
+    palette.borderStrong = '#475569'
+    palette.text = '#f8fafc'
+    palette.textMuted = '#cbd5e1'
+    palette.textSubtle = '#94a3b8'
+    palette.accentLight = `color-mix(in srgb, ${palette.accent} 16%, #0f172a)`
+    palette.accentMuted = `color-mix(in srgb, ${palette.accent} 28%, #1e293b)`
+    palette.accentHover = lighten(palette.accent, 0.1)
+    palette.isDark = true
+  }
+
+  const sidebarStyle = o.sidebarStyle ?? 'match'
+  const sidebarCollapse = o.sidebarCollapse ?? 'expanded'
+  const headerStyle = o.headerStyle ?? 'sticky'
 
   return {
     themeId: preset.id,
@@ -69,6 +107,11 @@ export const resolveAppearance = (
     dialogStyle: o.dialogStyle ?? 'standard',
     alertStyle: o.alertStyle ?? 'outlined',
     reduceMotion: o.reduceMotion ?? false,
+    colorMode,
+    resolvedColorMode,
+    sidebarStyle,
+    sidebarCollapse,
+    headerStyle,
     palette,
   }
 }
@@ -177,6 +220,48 @@ export const appearanceToCssVars = (r: ResolvedAppearance): Record<string, strin
 
     // --- Derived focus ring ---
     '--ui-focus-ring': `color-mix(in srgb, ${p.accent} 22%, transparent)`,
+
+    // --- Navigation & Chrome Tokens ---
+    '--ui-color-mode': r.colorMode,
+    '--ui-resolved-mode': r.resolvedColorMode,
+    '--ui-sidebar-style': r.sidebarStyle,
+    '--ui-sidebar-collapse': r.sidebarCollapse,
+    '--ui-sidebar-width': r.sidebarCollapse === 'collapsed' ? '68px' : '252px',
+    '--ui-sidebar-bg':
+      r.sidebarStyle === 'dark'
+        ? '#0f172a'
+        : r.sidebarStyle === 'accent'
+          ? (p.accentDark || '#011c3d')
+          : p.surface,
+    '--ui-sidebar-border':
+      r.sidebarStyle === 'dark'
+        ? '#1e293b'
+        : r.sidebarStyle === 'accent'
+          ? (p.accentDark || '#011c3d')
+          : p.border,
+    '--ui-sidebar-text':
+      r.sidebarStyle === 'dark'
+        ? '#f8fafc'
+        : r.sidebarStyle === 'accent'
+          ? '#ffffff'
+          : p.text,
+    '--ui-sidebar-text-muted':
+      r.sidebarStyle === 'dark'
+        ? '#94a3b8'
+        : r.sidebarStyle === 'accent'
+          ? 'rgba(255, 255, 255, 0.72)'
+          : p.textMuted,
+    '--ui-sidebar-active-bg':
+      r.sidebarStyle === 'dark'
+        ? 'rgba(255, 255, 255, 0.08)'
+        : r.sidebarStyle === 'accent'
+          ? 'rgba(255, 255, 255, 0.16)'
+          : p.accentLight,
+    '--ui-sidebar-active-text':
+      r.sidebarStyle === 'accent' ? '#ffffff' : p.accent,
+    '--ui-header-bg': p.surface,
+    '--ui-header-border': p.border,
+    '--ui-header-position': r.headerStyle === 'static' ? 'relative' : 'fixed',
   }
 }
 
@@ -198,9 +283,17 @@ export const applyAppearance = (
     }
   }
 
+  // Set dark class on html/body for Tailwind dark: variants
+  target.classList.toggle('dark', resolved.resolvedColorMode === 'dark')
+
   // Set data attributes for variant selector rules
   target.dataset.theme = resolved.themeId
   target.dataset.density = resolved.density
+  target.dataset.colorMode = resolved.colorMode
+  target.dataset.resolvedMode = resolved.resolvedColorMode
+  target.dataset.sidebarStyle = resolved.sidebarStyle
+  target.dataset.sidebarCollapse = resolved.sidebarCollapse
+  target.dataset.headerStyle = resolved.headerStyle
   target.dataset.fieldStyle = resolved.fieldStyle
   target.dataset.labelPlacement = resolved.labelPlacement
   target.dataset.labelCase = resolved.labelCase

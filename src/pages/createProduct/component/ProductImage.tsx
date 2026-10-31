@@ -47,7 +47,7 @@ const ProductImage: React.FC<ProductImageProps> = ({ value, onChange }) => {
 			<div className="flex flex-wrap gap-4 px-8 pb-2 pt-4">
 				<label
 					htmlFor={`${id}-multi-upload`}
-					className="w-[120px] h-[120px] flex items-center justify-center flex-col gap-2 border border-dashed border-[#e6eaed] text-sm rounded-md cursor-pointer hover:border-[#FE9F43] transition-all ease-in-out duration-300"
+					className="w-[120px] h-[120px] flex items-center justify-center flex-col gap-2 border border-dashed border-[#e6eaed] text-sm rounded-md cursor-pointer hover:border-[var(--primary-color)] transition-all ease-in-out duration-300"
 				>
 					<IoCloudUploadOutline size={20} />
 					<p className="font-semibold text-center">Upload Images</p>

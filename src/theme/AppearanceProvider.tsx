@@ -39,6 +39,10 @@ const VALID_OVERRIDE_KEYS = new Set<keyof AppearanceOverrides>([
   'dialogStyle',
   'alertStyle',
   'reduceMotion',
+  'colorMode',
+  'sidebarStyle',
+  'sidebarCollapse',
+  'headerStyle',
 ])
 
 const sanitizeAppearanceOverrides = (value: unknown): AppearanceOverrides => {
@@ -152,6 +156,26 @@ const sanitizeAppearanceOverrides = (value: unknown): AppearanceOverrides => {
           result.reduceMotion = next
         }
         break
+      case 'colorMode':
+        if (next === 'light' || next === 'dark' || next === 'system') {
+          result.colorMode = next
+        }
+        break
+      case 'sidebarStyle':
+        if (next === 'match' || next === 'dark' || next === 'accent') {
+          result.sidebarStyle = next
+        }
+        break
+      case 'sidebarCollapse':
+        if (next === 'expanded' || next === 'collapsed') {
+          result.sidebarCollapse = next
+        }
+        break
+      case 'headerStyle':
+        if (next === 'sticky' || next === 'static') {
+          result.headerStyle = next
+        }
+        break
     }
   }
 
@@ -187,8 +211,24 @@ export const AppearanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [customThemes, setCustomThemes] = useState<ThemePreset[]>(() =>
     typeof window === 'undefined' ? [] : loadCustomThemes()
   )
+  const [systemDark, setSystemDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return false
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
 
-  const resolved = useMemo(() => resolveAppearance(state, customThemes), [state, customThemes])
+  // Watch OS dark mode preference changes live
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const resolved = useMemo(
+    () => resolveAppearance(state, customThemes),
+    [state, customThemes, systemDark]
+  )
   const activeTheme = useMemo(
     () => findTheme(state.themeId, customThemes),
     [state.themeId, customThemes]

@@ -14,15 +14,15 @@ const WelcomeCard = () => {
 	};
 
 	return (
-		<div className="flex items-center flex-wrap justify-between bg-[#fff] p-[15px] rounded-md space-y-4 lg:space-y-0">
+		<div className="flex items-center flex-wrap justify-between bg-[var(--ui-surface)] p-[18px] rounded-md border border-[var(--ui-border)] shadow-sm space-y-4 lg:space-y-0 transition-colors duration-200">
 			<div className="flex items-center gap-2">
 				<img src="./images/hi.svg" alt="" />
 				<p>
 					{" "}
-					<span className="text-[#212b36] text-[20px] font-bold">
+					<span className="text-[var(--ui-text)] text-[20px] font-bold">
 						Hi John Smilga,
 					</span>{" "}
-					<span className="text-[#646b72] font-medium text-[16px]">
+					<span className="text-[var(--ui-text-muted)] font-medium text-[16px]">
 						here's what's happening with your store tody.
 					</span>
 				</p>
@@ -30,7 +30,7 @@ const WelcomeCard = () => {
 
 			<div className="flex items-center gap-4">
 				<DateRangePicker onDateChange={handleDateChange} />
-				<div className="bg-white border border-gray-200 p-2 rounded-md">
+				<div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] p-2 rounded-md transition-colors">
 					<FiRefreshCcw className="cursor-pointer" />
 				</div>
 			</div>

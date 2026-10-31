@@ -568,23 +568,37 @@ body {
 /* ============================================================================
    Custom Scrollbars & Existing Utility Styles (Preserved & Enhanced)
    ========================================================================== */
+.custom-scrollbar {
+  overflow-y: scroll !important;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
-  height: 10px;
+  height: 6px;
+  display: block !important;
+  background-color: #f1f5f9;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--ui-surface-sunken, #f1f1f1);
-  border-radius: 10px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 10px;
+  background-color: var(--primary-color, #fe9f43);
+  border-radius: 9999px;
+  min-height: 36px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color-hover);
+  background-color: var(--primary-color-hover, #e08a2c);
+}
+
+[data-theme-mode="dark"] .custom-scrollbar::-webkit-scrollbar,
+[data-theme-mode="dark"] .custom-scrollbar::-webkit-scrollbar-track,
+.dark .custom-scrollbar::-webkit-scrollbar,
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 ::-webkit-scrollbar {

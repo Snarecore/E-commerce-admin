@@ -11,6 +11,8 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { FiGrid } from "react-icons/fi";
+import { useAppearance } from "../../theme";
+import { hexToRgb } from "../../theme/color";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend);
 
@@ -31,9 +33,11 @@ const hoverLine = {
       const y = active[0].element.y;
       if (x == null || y == null) return;
 
+      const strokeColor = chart.data?.datasets?.[0]?.borderColor || "#FE9F43";
+
       ctx.save();
       ctx.setLineDash([4, 6]);
-      ctx.strokeStyle = "#FE9F43";
+      ctx.strokeStyle = strokeColor;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x, chartArea.bottom);
@@ -57,10 +61,15 @@ export default function MonthlyReportsLine({
   title = "Customer Reports by Month",
   values = DEFAULT_VALUES,
   label = "Monthly Activity",
-  lineColor = "#FE9F43",
-  pointBorder = "#FE9F43",
+  lineColor,
+  pointBorder,
 }: MonthlyReportsLineProps) {
   const chartRef = useRef(null);
+  const { resolved } = useAppearance();
+
+  const effectiveLineColor = lineColor && lineColor !== "#FE9F43" ? lineColor : resolved.palette.accent;
+  const effectivePointBorder = pointBorder && pointBorder !== "#FE9F43" ? pointBorder : resolved.palette.accent;
+  const isDark = resolved.palette.isDark;
 
   const chartValues = Array.isArray(values) && values.length === 12 ? values : DEFAULT_VALUES;
 
@@ -72,30 +81,31 @@ export default function MonthlyReportsLine({
           label,
           data: chartValues,
           tension: 0.35,
-          borderColor: lineColor,
+          borderColor: effectiveLineColor,
           borderWidth: 4,
           pointRadius: 5,
-          pointHoverRadius: 5,
+          pointHoverRadius: 6,
           pointBorderWidth: 3,
           pointHoverBorderWidth: 3,
-          pointBackgroundColor: "#ffffff",
-          pointBorderColor: pointBorder,
-          pointHoverBackgroundColor: "#ffffff",
-          pointHoverBorderColor: pointBorder,
+          pointBackgroundColor: resolved.palette.surface,
+          pointBorderColor: effectivePointBorder,
+          pointHoverBackgroundColor: resolved.palette.surface,
+          pointHoverBorderColor: effectivePointBorder,
           fill: true,
           backgroundColor: (ctx: any) => {
             const chart = ctx.chart;
             const { ctx: c, chartArea } = chart;
-            if (!chartArea) return "rgba(254,159,67,0.15)";
+            const { r, g, b } = hexToRgb(effectiveLineColor);
+            if (!chartArea) return `rgba(${r},${g},${b},0.15)`;
             const grad = c.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            grad.addColorStop(0, "rgba(254,159,67,0.05)");
-            grad.addColorStop(1, "rgba(254,159,67,0.3)");
+            grad.addColorStop(0, `rgba(${r},${g},${b},0.02)`);
+            grad.addColorStop(1, `rgba(${r},${g},${b},0.3)`);
             return grad;
           },
         },
       ],
     }),
-    [chartValues, label, lineColor, pointBorder]
+    [chartValues, label, effectiveLineColor, effectivePointBorder, resolved.palette.surface]
   );
 
   const options = useMemo(
@@ -108,9 +118,11 @@ export default function MonthlyReportsLine({
         tooltip: {
           enabled: true,
           displayColors: false,
-          backgroundColor: "#111827",
+          backgroundColor: isDark ? "#1e293b" : "#111827",
           titleColor: "#D1D5DB",
           bodyColor: "#FFFFFF",
+          borderColor: resolved.palette.border,
+          borderWidth: 1,
           cornerRadius: 8,
           padding: 12,
           callbacks: {
@@ -123,15 +135,15 @@ export default function MonthlyReportsLine({
       scales: {
         x: {
           grid: { display: false },
-          ticks: { color: "#6B7280", font: { size: 12 } },
+          ticks: { color: resolved.palette.textMuted, font: { size: 12 } },
         },
         y: {
           beginAtZero: true,
           grid: {
-            color: "rgba(17,24,39,0.06)",
+            color: isDark ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.06)",
           },
           ticks: {
-            color: "#9CA3AF",
+            color: resolved.palette.textMuted,
             font: { size: 12 },
             callback: (v: any) => v,
           },
@@ -139,19 +151,25 @@ export default function MonthlyReportsLine({
         },
       },
     }),
-    [chartValues, label]
+    [chartValues, label, isDark, resolved.palette.border, resolved.palette.textMuted]
   );
 
   return (
-    <div className="w-full rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+    <div className="w-full rounded-md bg-[var(--ui-surface)] p-6 shadow-sm border border-[var(--ui-border)] transition-colors duration-200">
       <div className="flex items-center gap-3 mb-4">
-        <span className="bg-orange-50 text-[#FE9F43] p-2 rounded-full">
+        <span
+          className="p-2 rounded-full transition-colors"
+          style={{
+            backgroundColor: "var(--primary-color-light)",
+            color: "var(--primary-color)",
+          }}
+        >
           <FiGrid size={20} />
         </span>
-        <p className="text-2xl font-bold text-gray-800">{title}</p>
+        <p className="text-2xl font-bold text-[var(--ui-text)]">{title}</p>
       </div>
 
-      <div className="border-b border-gray-200 mb-6"></div>
+      <div className="border-b border-[var(--ui-border)] mb-6"></div>
 
       <div className="relative h-[320px]">
         <Line ref={chartRef} data={data} options={options} plugins={[hoverLine]} />

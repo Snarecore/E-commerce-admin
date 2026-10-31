@@ -20,14 +20,14 @@ interface RecentTransactionsProps {
 
 const RecentTransactions = ({ transactions = [] }: RecentTransactionsProps) => {
 	return (
-		<div className="bg-white p-5 rounded-lg border border-gray-200">
+		<div className="bg-[var(--ui-surface)] p-5 rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
 			{/* Header Section */}
-			<div className="flex justify-between items-center pb-3 border-b border-gray-200">
-				<h2 className="text-lg font-semibold text-gray-800">
+			<div className="flex justify-between items-center pb-3 border-b border-[var(--ui-border)]">
+				<h2 className="text-lg font-semibold text-[var(--ui-text)]">
 					Recent Transactions
 				</h2>
-				<div className="border border-[#e6eaed] rounded-md py-[4px] px-[8px]">
-					<Link to="/orders" className="text-sm hover:underline text-[12px]">
+				<div className="border border-[var(--ui-border)] rounded-md py-[4px] px-[8px] hover:border-[var(--primary-color)] transition-colors">
+					<Link to="/orders" className="text-sm hover:underline text-[12px] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)]">
 						View All
 					</Link>
 				</div>
@@ -38,7 +38,7 @@ const RecentTransactions = ({ transactions = [] }: RecentTransactionsProps) => {
 				<table className="w-full text-left border-collapse min-w-[600px]">
 					{/* Table Headers */}
 					<thead>
-						<tr className="text-[14px] text-[#1b2850] font-medium bg-[#F9FAFB]">
+						<tr className="text-[14px] text-[var(--ui-text-muted)] font-medium bg-[var(--ui-surface-muted)]">
 							<th className="p-3">#</th>
 							<th className="p-3">Order Details</th>
 							<th className="p-3">Payment</th>
@@ -51,7 +51,7 @@ const RecentTransactions = ({ transactions = [] }: RecentTransactionsProps) => {
 					<tbody>
 						{transactions.length === 0 ? (
 							<tr>
-								<td colSpan={5} className="p-6 text-center text-sm text-gray-400">
+								<td colSpan={5} className="p-6 text-center text-sm text-[var(--ui-text-muted)] opacity-60">
 									No recent transactions recorded yet.
 								</td>
 							</tr>
@@ -59,39 +59,39 @@ const RecentTransactions = ({ transactions = [] }: RecentTransactionsProps) => {
 							transactions.map((transaction, index) => (
 								<tr
 									key={transaction.id}
-									className="border-b border-gray-100 last:border-none text-gray-700"
+									className="border-b border-[var(--ui-border)] last:border-none text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition-colors"
 								>
 									{/* Serial Number */}
-									<td className="p-3 text-sm text-gray-500">{index + 1}</td>
+									<td className="p-3 text-sm text-[var(--ui-text-muted)]">{index + 1}</td>
 
 									{/* Order Details */}
 									<td className="p-3 flex items-center gap-3">
 										<img
 											src={transaction.image || "./images/products/product1.png"}
 											alt={transaction.name}
-											className="w-10 h-10 rounded-md object-cover bg-gray-50"
+											className="w-10 h-10 rounded-md object-cover bg-gray-50 border border-[var(--ui-border)]"
 											onError={(e) => {
 												(e.currentTarget as HTMLImageElement).src = "./images/products/product1.png";
 											}}
 										/>
 										<div>
-											<p className="text-[14px] text-[#212b36] font-bold hover:text-[#fe9f43] transition-all ease-in duration-300 cursor-pointer">
+											<p className="text-[14px] text-[var(--ui-text)] font-bold hover:text-[var(--primary-color)] transition-all ease-in duration-300 cursor-pointer">
 												{transaction.name}
 											</p>
-											<p className="text-[14px] text-gray-500 flex items-center">
-												<GoClock className="text-[#646B72] text-[14px] mr-1" />
+											<p className="text-[14px] text-[var(--ui-text-muted)] flex items-center">
+												<GoClock className="text-[var(--ui-text-muted)] text-[14px] mr-1" />
 												{transaction.time}
 											</p>
 										</div>
 									</td>
 
 									{/* Payment Method */}
-									<td className="p-3 text-sm text-gray-500">
+									<td className="p-3 text-sm text-[var(--ui-text-muted)]">
 										<div className="flex flex-col">
-											<p className="text-[14px] text-[#092c4c] font-medium">
+											<p className="text-[14px] text-[var(--ui-text)] font-medium">
 												{transaction.payment}
 											</p>
-											<p className="text-[14px] text-[#3677F1]">
+											<p className="text-[14px] text-[var(--primary-color)]">
 												{transaction.serialNumber}
 											</p>
 										</div>

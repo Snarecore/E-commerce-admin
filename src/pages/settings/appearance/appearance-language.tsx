@@ -145,7 +145,8 @@ const BANGLA: Record<string, string> = {
   'Subtle Button': 'সাবটল বাটন',
   'Ghost Button': 'ঘোস্ট বাটন',
   'Danger Button': 'ডিলিট বাটন',
-  'Confirm order #BB-9042?': 'অর্ডার #BB-9042 নিশ্চিত করবেন?',
+  'Main Color (Amber)': 'প্রধান কালার (অ্যাম্বার)',
+  'Confirm order #FT-9042?': 'অর্ডার #FT-9042 নিশ্চিত করবেন?',
   'This order will be moved to the packing and dispatch queue. Customer will be notified via SMS.':
     'এই অর্ডারটি প্যাকিং ও ডেলিভারি লাইনে স্থানান্তরিত হবে। গ্রাহককে এসএমএস পাঠানো হবে।',
   'Cancel order': 'অর্ডার বাতিল',

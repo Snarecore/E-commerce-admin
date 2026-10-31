@@ -157,7 +157,7 @@ const HeaderFooterCmsForm = () => {
                             name="bannerText"
                             value={fieldValues.bannerText}
                             onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                             required
                         />
                     </div>

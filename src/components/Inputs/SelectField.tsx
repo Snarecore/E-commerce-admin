@@ -59,7 +59,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChan
 
 				<div
 					className={`border p-2 sm:p-3 h-[34px] rounded-lg cursor-pointer bg-white flex justify-between items-center w-full text-black transition-all duration-300 text-base px-2 py-2 active:bg-gray-50 touch-manipulation
-            ${openDropdown ? "border-[#fe9f43] ring-[#fe9f43]" : "border-gray-200"}
+            ${openDropdown ? "border-[var(--primary-color)] ring-1 ring-[var(--primary-color)]" : "border-gray-200"}
             ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
 					onClick={() => !disabled && setOpenDropdown(!openDropdown)}
 				>
@@ -70,12 +70,12 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChan
 				</div>
 
 				{openDropdown && (
-					<div className={`absolute w-full ${showTop ? 'bottom-[60%] mt-0' : 'mt-1'} bg-white border border-gray-300 rounded-lg z-10 max-w-full`}>
+					<div className={`absolute w-full ${showTop ? 'bottom-[60%] mt-0' : 'mt-1'} bg-white border border-gray-300 rounded-lg z-10 max-w-full shadow-lg`}>
 						<div className="p-1 sm:p-2 border-b border-gray-300">
 							<input
 								type="text"
 								placeholder=""
-								className="w-full h-8 sm:h-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-[#fe9f43] focus:border-[#fe9f43] px-2 py-1 text-sm appearance-none"
+								className="w-full h-8 sm:h-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] px-2 py-1 text-sm appearance-none"
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
 							/>
@@ -88,8 +88,8 @@ const SelectInput: React.FC<SelectInputProps> = ({ label, value, options, onChan
 								filteredOptions.map((option, index) => (
 									<li
 										key={index}
-										className={`p-1 sm:p-2 hover:bg-[#fe9f43] hover:text-white active:bg-[#e08c3a] active:text-white focus:bg-[#fe9f43] focus:text-white cursor-pointer w-full text-sm truncate transition-colors duration-150 touch-manipulation ${selectedOption && selectedOption.value === option.value
-											? "bg-[#fff2e6] text-[#fe9f43] font-medium"
+										className={`p-1 sm:p-2 hover:bg-[var(--primary-color)] hover:text-white active:bg-[var(--primary-color-dark)] active:text-white focus:bg-[var(--primary-color)] focus:text-white cursor-pointer w-full text-sm truncate transition-colors duration-150 touch-manipulation ${selectedOption && selectedOption.value === option.value
+											? "bg-[var(--primary-color-light)] text-[var(--primary-color)] font-medium"
 											: "text-black"
 											}`}
 										onClick={() => handleSelect(option)}

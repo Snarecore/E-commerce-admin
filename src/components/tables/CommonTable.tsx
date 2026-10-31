@@ -26,18 +26,18 @@ const CommonTable = ({
 	};
 
 	return (
-		<div className="bg-white p-4 rounded-lg shadow-md cursor-pointer">
-			<div className="flex justify-between p-2">
-				<h2 className="text-lg font-semibold mb-4">{title}</h2>
-				<Link to={"/"} className="underline text-[#212B36] text-[13px] hover:text-[var(--color-primary)] transition-all ease-in duration-300">
+		<div className="bg-[var(--ui-surface)] p-5 rounded-md shadow-sm border border-[var(--ui-border)] transition-colors duration-200">
+			<div className="flex justify-between items-center pb-2">
+				<h2 className="text-lg font-semibold text-[var(--ui-text)]">{title}</h2>
+				<Link to={"/"} className="underline text-[var(--ui-text-muted)] text-[13px] hover:text-[var(--primary-color)] transition-all ease-in duration-300">
 					View All
 				</Link>
 			</div>
 
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto mt-2">
 				<table className="w-full min-w-[600px]">
 					<thead>
-						<tr>
+						<tr className="border-b border-[var(--ui-border)] text-[var(--ui-text-muted)] text-sm">
 							<th className="p-3 text-left">
 								<input type="checkbox" />
 							</th>
@@ -50,7 +50,7 @@ const CommonTable = ({
 					</thead>
 					<tbody>
 						{data.map((row, rowIndex) => (
-							<tr key={rowIndex} className="border-y border-gray-200">
+							<tr key={rowIndex} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition-colors">
 								<td className="p-3 text-left">
 									<input
 										type="checkbox"
@@ -59,21 +59,21 @@ const CommonTable = ({
 									/>
 								</td>
 								<td className="p-3 flex items-center gap-3">
-									<img src={row.image} alt={row.name} className="w-10 h-10 rounded-md" />
-									<span>{row.name}</span>
+									<img src={row.image} alt={row.name} className="w-10 h-10 rounded-md object-cover bg-gray-50 border border-[var(--ui-border)]" />
+									<span className="font-medium">{row.name}</span>
 								</td>
-								<td className="p-3">{row.sku}</td>
-								<td className="p-3">{formatDate(row.manufacturedDate)}</td>
-								<td className="p-3">{formatDate(row.expiredDate)}</td>
+								<td className="p-3 text-sm text-[var(--ui-text-muted)]">{row.sku}</td>
+								<td className="p-3 text-sm text-[var(--ui-text-muted)]">{formatDate(row.manufacturedDate)}</td>
+								<td className="p-3 text-sm text-[var(--ui-text-muted)]">{formatDate(row.expiredDate)}</td>
 								<td className="p-3 flex items-center gap-3">
 									{actionIcons &&
 										actionIcons.map((action, index) => (
 											<button
 												key={index}
-												className="border border-gray-200 w-10 h-10 rounded-xl flex items-center justify-center transition-all ease-in duration-300"
+												className="border border-[var(--ui-border)] w-10 h-10 rounded-xl flex items-center justify-center transition-all ease-in duration-300 hover:border-[var(--primary-color)]"
 												style={{ color: action.color || "gray" }}
 												onMouseEnter={(e) =>
-													(e.currentTarget.style.backgroundColor = action.hoverColor || "rgba(0, 0, 0, 0.1)")
+													(e.currentTarget.style.backgroundColor = action.hoverColor || "rgba(0, 0, 0, 0.05)")
 												}
 												onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
 												onClick={() => action.onClick(row)}

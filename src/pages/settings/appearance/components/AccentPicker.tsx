@@ -17,7 +17,7 @@ interface AccentPickerProps {
 }
 
 const BRAND_SWATCHES = [
-  { hex: '#fe9f43', name: 'Bazaarbound Amber' },
+  { hex: '#fe9f43', name: 'Main Color (Amber)' },
   { hex: '#e68a2c', name: 'Deep Amber' },
   { hex: '#1b2850', name: 'Midnight Navy' },
   { hex: '#be185d', name: 'Rose Boutique' },

@@ -16,8 +16,8 @@ interface FontPickerProps {
   onChange: (id: FontFamilyId) => void
 }
 
-const LATIN_SAMPLE = 'Bazaarbound Cloth Admin — ৳ 12,500.00'
-const BENGALI_SAMPLE = 'বাজারবাউন্ড পোশাক সম্ভার — চালান ১২,৫০০.০০ ৳'
+const LATIN_SAMPLE = 'Fashion Time Admin — ৳ 12,500.00'
+const BENGALI_SAMPLE = 'পোশাক সম্ভার — চালান ১২,৫০০.০০ ৳'
 
 const SOURCE_BADGE: Record<FontDefinition['source'], { label: string; tone: string }> = {
   system: { label: 'System (Instant)', tone: 'var(--ui-success)' },

@@ -83,7 +83,7 @@ const Dashboard = () => {
 				{/* Overview Cards */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full transition-all ease-in duration-300">
 					<OverViewCard
-						bgColor="bg-[var(--color-primary)]"
+						bgColor="bg-[var(--primary-color)]"
 						title={dashboardData?.totalProducts?.toString() || "0"}
 						subTitle="Total Products"
 					>

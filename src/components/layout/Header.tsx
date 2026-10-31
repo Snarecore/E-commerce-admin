@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { RiArrowDropDownLine, RiArrowDropRightLine, RiExchangeBoxFill, RiLogoutCircleLine, RiSeoFill } from "react-icons/ri";
 
-//@ts-ignore
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiSun, FiMoon, FiMonitor } from "react-icons/fi";
 import { TbLayoutGrid, TbListDetails, TbTablePlus } from "react-icons/tb";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -21,6 +20,7 @@ import { userAtom } from "../../store/user-store";
 import { IoShareSocialOutline } from "react-icons/io5";
 import AdminNotificationDropdown from "./AdminNotificationDropdown";
 import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
+import { useAppearance } from "../../theme";
 
 const MenuItem = ({
 	icon,
@@ -236,14 +236,23 @@ const Header = () => {
 	const setLogout = useSetAtom(logoutUserAtom);
 	const userData = useAtomValue(userAtom);
 	const { unreadChatCount } = useUnreadChatCount();
+	const { resolved, setOverrides } = useAppearance();
+	const isCollapsed = resolved.sidebarCollapse === 'collapsed';
+	const isStaticHeader = resolved.headerStyle === 'static';
 
 	const handleLogout = () => {
 		setLogout(() => navigate("/login"));
 	};
 
 	return (
-		<div className="lg:w-[calc(100%-252px)] w-full fixed z-50">
-			<div className="flex lg:hidden items-center justify-between px-4 py-2 bg-white transition-all ease-in-out duration-300">
+		<div
+			className={`w-full ${
+				isStaticHeader ? "relative" : "fixed top-0 right-0 z-40"
+			} transition-all duration-300 ease-in-out ${
+				isCollapsed ? "lg:w-[calc(100%-68px)]" : "lg:w-[calc(100%-252px)]"
+			}`}
+		>
+			<div className="flex lg:hidden items-center justify-between px-4 py-2 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] transition-all ease-in-out duration-300">
 				<GiHamburgerMenu
 					size={22}
 					className="text-[var(--color-primary)] cursor-pointer"
@@ -259,26 +268,24 @@ const Header = () => {
 				/>
 
 				{showMenuDropdown && (
-					<div className="absolute top-12 right-0 bg-white shadow-xl rounded-lg border border-gray-100 z-50 dropdown-menu p-2">
-						<div className="flex items-center gap-1 bg-gray-100 border-b border-gray-100 p-2 rounded-md mb-2">
+					<div className="absolute top-12 right-0 bg-[var(--ui-surface)] shadow-xl rounded-lg border border-[var(--ui-border)] z-50 dropdown-menu p-2">
+						<div className="flex items-center gap-1 bg-[var(--ui-surface-muted)] border-b border-[var(--ui-border)] p-2 rounded-md mb-2">
 							<img
 								src={userAvatar}
 								alt="user"
 								className="w-[45px] h-[45px] rounded-full border border-gray-200"
 							/>
 							<div>
-								<p className="text-[15px] font-semibold text-gray-800">
+								<p className="text-[15px] font-semibold text-[var(--ui-text)]">
 									{userData?.name}
 								</p>
-								<p className="text-[12px] text-gray-500 capitalize">{userData?.role}</p>
+								<p className="text-[12px] text-[var(--ui-text-muted)] capitalize">{userData?.role}</p>
 							</div>
 						</div>
-						{/* <MenuItem icon={<FiUser />} text="My Profile" />
-							<MenuItem icon={<CiSettings />} text="Settings" /> */}
 						<MenuItem
 							icon={<RiLogoutCircleLine />}
 							text="Logout"
-							className="text-red-500 font-medium hover:bg-[#e68a2c]"
+							className="text-red-500 font-medium hover:bg-red-50"
 							onClick={handleLogout}
 						/>
 					</div>
@@ -379,11 +386,36 @@ const Header = () => {
 				<div className="" onClick={() => setShowSidebar(true)}></div>
 			)}
 
-			<div className="flex justify-end items-center px-4 lg:py-1 bg-white border-b border-gray-200">
-				<div className="flex gap-3 items-center">
+			<div className="flex justify-end items-center px-4 lg:py-1 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] text-[var(--ui-text)]">
+				<div className="flex gap-2.5 items-center">
+					{/* Theme Mode Toggle (Light / Dark / System) */}
+					<button
+						type="button"
+						onClick={() => {
+							const nextMode =
+								resolved.colorMode === 'light'
+									? 'dark'
+									: resolved.colorMode === 'dark'
+										? 'system'
+										: 'light';
+							setOverrides({ colorMode: nextMode });
+						}}
+						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						title={`Mode: ${resolved.colorMode} (${resolved.resolvedColorMode})`}
+						aria-label="Toggle theme mode"
+					>
+						{resolved.colorMode === 'dark' ? (
+							<FiMoon className="text-xl sm:text-2xl text-[var(--primary-color)]" />
+						) : resolved.colorMode === 'system' ? (
+							<FiMonitor className="text-xl sm:text-2xl text-[var(--primary-color)]" />
+						) : (
+							<FiSun className="text-xl sm:text-2xl text-amber-500" />
+						)}
+					</button>
+
 					<NavLink
 						to="/chat"
-						className="relative p-2 text-gray-600 hover:text-[var(--color-primary)] hover:bg-gray-100 rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
 						title="Customer Messages"
 						aria-label="Customer Messages"
 					>
@@ -399,7 +431,7 @@ const Header = () => {
 
 					<NavLink
 						to="/appearance"
-						className="relative p-2 text-gray-600 hover:text-[var(--color-primary)] hover:bg-gray-100 rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
 						title="Appearance Settings"
 						aria-label="Appearance Settings"
 					>
@@ -407,7 +439,7 @@ const Header = () => {
 					</NavLink>
 
 					<div
-						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors relative"
+						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-[var(--ui-surface-muted)] p-2 rounded-lg transition-colors relative"
 						onClick={() => setShowUserDropdown(!showUserDropdown)}>
 						<img
 							src={userAvatar}
@@ -417,18 +449,18 @@ const Header = () => {
 					</div>
 
 					{showUserDropdown && (
-						<div ref={dropdownRef} className="absolute top-16.5 right-0 bg-white shadow-xl rounded-xl border border-gray-100 p-2">
-							<div className="flex items-center gap-1 bg-gray-100 border-b border-gray-100 p-2 rounded-md mb-2">
+						<div ref={dropdownRef} className="absolute top-16.5 right-0 bg-[var(--ui-surface)] shadow-xl rounded-xl border border-[var(--ui-border)] p-2 text-[var(--ui-text)]">
+							<div className="flex items-center gap-1 bg-[var(--ui-surface-muted)] border-b border-[var(--ui-border)] p-2 rounded-md mb-2">
 								<img
 									src={userAvatar}
 									alt="user"
 									className="w-[45px] h-[45px] rounded-full border border-gray-200"
 								/>
 								<div>
-									<p className="text-[15px] font-semibold text-gray-800">
+									<p className="text-[15px] font-semibold text-[var(--ui-text)]">
 										{userData?.name}
 									</p>
-									<p className="text-[12px] text-gray-500 capitalize">{userData?.role}</p>
+									<p className="text-[12px] text-[var(--ui-text-muted)] capitalize">{userData?.role}</p>
 								</div>
 							</div>
 							<MenuItem

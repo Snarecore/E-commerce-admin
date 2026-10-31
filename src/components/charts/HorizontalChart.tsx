@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { FiGrid } from "react-icons/fi";
+import { useAppearance } from "../../theme";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -27,7 +28,7 @@ const valueLabels = {
 
       ctx.save();
       ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
-      ctx.fillStyle = pluginOptions?.color || "#1f2544";
+      ctx.fillStyle = pluginOptions?.color || "#6b7280";
 
       meta.data.forEach((bar: any, i: number) => {
         if (!bar) return;
@@ -58,9 +59,12 @@ interface HorizontalChartProps {
 export default function NewAgentsBar({
   title = "New Registered Customers",
   dataValues = DEFAULT_DATA,
-  barColor = "#FE9F43",
-  cardBg = "#ffffff",
+  barColor,
+  cardBg,
 }: HorizontalChartProps) {
+  const { resolved } = useAppearance();
+  const effectiveBarColor = barColor && barColor !== "#FE9F43" ? barColor : resolved.palette.accent;
+
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1024
   );
@@ -85,7 +89,7 @@ export default function NewAgentsBar({
       datasets: [
         {
           data: values,
-          backgroundColor: barColor,
+          backgroundColor: effectiveBarColor,
           borderRadius: {
             topRight: windowWidth < 768 ? 6 : 10,
             bottomRight: windowWidth < 768 ? 6 : 10,
@@ -98,7 +102,7 @@ export default function NewAgentsBar({
         },
       ],
     }),
-    [values, barColor, windowWidth]
+    [values, effectiveBarColor, windowWidth]
   );
 
   const options = useMemo(
@@ -117,7 +121,7 @@ export default function NewAgentsBar({
       plugins: {
         legend: { display: false },
         tooltip: { enabled: false },
-        valueLabelsHorizontal: { color: "#1f2544" },
+        valueLabelsHorizontal: { color: resolved.palette.text },
       },
       scales: {
         x: {
@@ -129,7 +133,7 @@ export default function NewAgentsBar({
         y: {
           grid: { display: false },
           ticks: {
-            color: "#6b7280",
+            color: resolved.palette.textMuted,
             font: {
               size: windowWidth < 768 ? 10 : 12,
             },
@@ -138,22 +142,28 @@ export default function NewAgentsBar({
         },
       },
     }),
-    [suggestedMax, windowWidth]
+    [suggestedMax, windowWidth, resolved.palette.text, resolved.palette.textMuted]
   );
 
   return (
     <div
-      className="w-full rounded-2xl shadow-sm border border-gray-100 p-6"
-      style={{ background: cardBg }}
+      className="w-full rounded-md shadow-sm border border-[var(--ui-border)] bg-[var(--ui-surface)] p-6 transition-colors duration-200"
+      style={cardBg && cardBg !== "#ffffff" ? { background: cardBg } : undefined}
     >
       <div className="flex items-center gap-3 mb-4">
-        <span className="bg-orange-50 text-[#FE9F43] p-2 rounded-full">
+        <span
+          className="p-2 rounded-full transition-colors"
+          style={{
+            backgroundColor: "var(--primary-color-light)",
+            color: "var(--primary-color)",
+          }}
+        >
           <FiGrid size={20} />
         </span>
-        <p className="text-2xl font-bold text-gray-800">{title}</p>
+        <p className="text-2xl font-bold text-[var(--ui-text)]">{title}</p>
       </div>
 
-      <div className="border-b border-gray-200 mb-6"></div>
+      <div className="border-b border-[var(--ui-border)] mb-6"></div>
 
       <div className="relative w-full h-[320px]">
         <Bar data={data} options={options} plugins={[valueLabels]} />

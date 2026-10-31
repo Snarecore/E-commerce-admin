@@ -14,6 +14,7 @@
 				if (raw) {
 					var state = JSON.parse(raw);
 					if (state.themeId) document.documentElement.dataset.theme = state.themeId;
+					var isDark = false;
 					if (state.overrides) {
 						if (state.overrides.accent) {
 							document.documentElement.style.setProperty('--primary-color', state.overrides.accent);
@@ -21,6 +22,19 @@
 						}
 						if (state.overrides.density) document.documentElement.dataset.density = state.overrides.density;
 						if (state.overrides.fieldStyle) document.documentElement.dataset.fieldStyle = state.overrides.fieldStyle;
+						if (state.overrides.sidebarCollapse === 'collapsed') {
+							document.documentElement.style.setProperty('--ui-sidebar-width', '68px');
+							document.documentElement.dataset.sidebarCollapse = 'collapsed';
+						}
+						if (state.overrides.colorMode === 'dark') isDark = true;
+						else if (state.overrides.colorMode === 'system') {
+							isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+						}
+					}
+					if (state.themeId === 'graphite-dark') isDark = true;
+					if (isDark) {
+						document.documentElement.classList.add('dark');
+						document.documentElement.dataset.resolvedMode = 'dark';
 					}
 				}
 			} catch (_) {}

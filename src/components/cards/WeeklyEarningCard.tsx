@@ -10,17 +10,17 @@ const WeeklyEarningCard = ({ amount = 0, percentageChange = 0 }: WeeklyEarningCa
 	const isPositive = (percentageChange ?? 0) >= 0;
 
 	return (
-		<div className="flex items-center bg-white justify-between px-[20px] py-8 rounded-lg border border-[#e6eaed]">
+		<div className="flex items-center bg-[var(--ui-surface)] justify-between px-[20px] py-8 rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
 			<div>
-				<p className="text-[16px] text-[#fe9f43] font-medium pb-[16px]">Weekly Earning</p>
-				<p className="text-[20px] text-[#212b36] font-bold">৳{numericAmount.toLocaleString()}</p>
+				<p className="text-[16px] text-[var(--primary-color)] font-medium pb-[16px]">Weekly Earning</p>
+				<p className="text-[20px] text-[var(--ui-text)] font-bold">৳{numericAmount.toLocaleString()}</p>
 				<div className="flex items-center mt-2 gap-1">
 					{isPositive ? (
 						<IoIosArrowUp className="text-[#3eb780]" />
 					) : (
 						<IoIosArrowDown className="text-red-500" />
 					)}
-					<p className="text-[14px] text-[#646b72]">
+					<p className="text-[14px] text-[var(--ui-text-muted)]">
 						<span className={`${isPositive ? 'text-[#3eb780]' : 'text-red-500'} font-bold`}>
 							{" "}{Math.abs(percentageChange || 0)}%
 						</span>{" "}

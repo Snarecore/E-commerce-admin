@@ -10,6 +10,7 @@
  */
 
 export type ThemeId =
+  | 'main-color'
   | 'bazaarbound-amber'
   | 'corporate-navy'
   | 'emerald-shop'
@@ -39,6 +40,10 @@ export type ValidationStyleId = 'outlined' | 'soft' | 'callout'
 export type TableRowStyleId = 'plain' | 'striped'
 export type DialogStyleId = 'standard' | 'outlined' | 'accent'
 export type AlertStyleId = 'outlined' | 'soft' | 'solid'
+export type ColorModeId = 'light' | 'dark' | 'system'
+export type SidebarStyleId = 'match' | 'dark' | 'accent'
+export type SidebarCollapseId = 'expanded' | 'collapsed'
+export type HeaderStyleId = 'sticky' | 'static'
 
 export type FontFamilyId =
   // Default project font & Web sans-serif
@@ -152,6 +157,10 @@ export interface AppearanceOverrides {
   dialogStyle?: DialogStyleId
   alertStyle?: AlertStyleId
   reduceMotion?: boolean
+  colorMode?: ColorModeId
+  sidebarStyle?: SidebarStyleId
+  sidebarCollapse?: SidebarCollapseId
+  headerStyle?: HeaderStyleId
 }
 
 export interface AppearanceState {
@@ -181,6 +190,11 @@ export interface ResolvedAppearance {
   dialogStyle: DialogStyleId
   alertStyle: AlertStyleId
   reduceMotion: boolean
+  colorMode: ColorModeId
+  resolvedColorMode: 'light' | 'dark'
+  sidebarStyle: SidebarStyleId
+  sidebarCollapse: SidebarCollapseId
+  headerStyle: HeaderStyleId
   palette: ThemePalette
 }
 

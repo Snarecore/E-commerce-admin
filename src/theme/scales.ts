@@ -2,6 +2,7 @@ import type {
   AlertStyleId,
   BorderWidthId,
   ButtonStyleId,
+  ColorModeId,
   ContentWidthId,
   DensityId,
   DialogStyleId,
@@ -9,12 +10,15 @@ import type {
   FocusStyleId,
   FontFamilyId,
   FontScaleId,
+  HeaderStyleId,
   LabelCaseId,
   LabelPlacementId,
   RadiusId,
   RequiredStyleId,
   ScaleOption,
   ShadowId,
+  SidebarCollapseId,
+  SidebarStyleId,
   TableDensityId,
   TableRowStyleId,
   ValidationStyleId,
@@ -346,3 +350,27 @@ export const FONT_FAMILY_SCALE: Record<FontFamilyId, FontFamilyToken> = {
     stack: `'Courier New', Courier, ui-monospace, monospace, ${BN_FALLBACK}`,
   },
 }
+
+/* ---------------- Theme Mode scale ---------------- */
+export const COLOR_MODE_OPTIONS: ScaleOption<ColorModeId>[] = [
+  { id: 'light', label: 'Light mode', hint: 'Crisp daylight surfaces with high legibility' },
+  { id: 'dark', label: 'Dark mode', hint: 'Low-glare charcoal surfaces for late-night workflows' },
+  { id: 'system', label: 'System (Auto)', hint: 'Synchronize automatically with your device OS settings' },
+]
+
+/* ---------------- Navigation & Sidebar options ---------------- */
+export const SIDEBAR_STYLE_OPTIONS: ScaleOption<SidebarStyleId>[] = [
+  { id: 'match', label: 'Matching surface', hint: 'Clean unified background matching active theme' },
+  { id: 'dark', label: 'Contrast dark', hint: 'Classic authoritative deep navy/slate sidebar' },
+  { id: 'accent', label: 'Brand tinted', hint: 'Distinguished brand-accent tinted sidebar' },
+]
+
+export const SIDEBAR_COLLAPSE_OPTIONS: ScaleOption<SidebarCollapseId>[] = [
+  { id: 'expanded', label: 'Full width (252px)', hint: 'Standard complete labels and section headers' },
+  { id: 'collapsed', label: 'Compact mini (68px)', hint: 'Icon-only view maximizing dashboard canvas' },
+]
+
+export const HEADER_STYLE_OPTIONS: ScaleOption<HeaderStyleId>[] = [
+  { id: 'sticky', label: 'Sticky fixed', hint: 'Header remains pinned to top while scrolling' },
+  { id: 'static', label: 'Scroll with page', hint: 'Header moves naturally with page content' },
+]

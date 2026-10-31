@@ -231,7 +231,7 @@ export const LivePreview: React.FC = () => {
             <div className="flex items-center gap-2">
               <FiCreditCard className="text-[var(--primary-color)]" />
               <h4 className="text-sm font-bold text-[var(--ui-text)]">
-                {t('Confirm order #BB-9042?')}
+                {t('Confirm order #FT-9042?')}
               </h4>
             </div>
           </div>

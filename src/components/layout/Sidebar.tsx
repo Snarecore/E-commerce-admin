@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TbListDetails, TbLayoutGrid, TbTablePlus, TbFileText } from "react-icons/tb";
+import { TbListDetails, TbLayoutGrid, TbTablePlus, TbFileText, TbLayoutSidebarLeftCollapse } from "react-icons/tb";
 import { BiCube } from "react-icons/bi";
 import { RiArrowDropRightLine, RiArrowDropDownLine, RiExchangeBoxFill, RiSeoFill } from "react-icons/ri";
 import { Link, useLocation, NavLink } from "react-router-dom";
@@ -10,6 +10,7 @@ import { FiShoppingCart, FiZap, FiShield } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
+import { useAppearance } from "../../theme";
 // import { FaQuestion, FaStore, FaUser } from "react-icons/fa";
 
 const menu = [
@@ -255,6 +256,8 @@ const menu = [
 ];
 
 const Sidebar = () => {
+	const { resolved, setOverrides } = useAppearance();
+	const isCollapsed = resolved.sidebarCollapse === 'collapsed';
 	const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
 	const location = useLocation();
 	const { unreadChatCount } = useUnreadChatCount();
@@ -283,21 +286,59 @@ const Sidebar = () => {
 	);
 
 	return (
-		<div className="hidden lg:block w-63 min-h-screen bg-white shadow-md p-2 transition-all ease-in duration-300 border-r border-gray-200">
-			<Link to={"/"} className="fixed top-0 left-0 w-63 h-16 z-20 flex items-center justify-center bg-white border-b border-gray-200 px-2 py-1">
-				<img
-					src="/images/Admin-logo.png"
-					alt="Admin logo"
-					className="w-full h-14 object-contain"
-				/>
-			</Link>
+		<aside
+			className={`hidden lg:block min-h-screen border-r transition-all ease-in-out duration-300 z-30 select-none shadow-xs border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] text-[var(--ui-sidebar-text,var(--ui-text))] ${
+				isCollapsed ? "w-[68px]" : "w-63"
+			}`}
+		>
+			<div
+				className={`fixed top-0 left-0 h-16 z-20 flex items-center justify-between border-b px-3 py-1 transition-all ease-in-out duration-300 border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] ${
+					isCollapsed ? "w-[68px]" : "w-63"
+				}`}
+			>
+				<Link to={"/"} className="flex items-center justify-center flex-1 overflow-hidden">
+					{isCollapsed ? (
+						<span className="font-black text-xl text-[var(--primary-color)]">FT</span>
+					) : (
+						<img
+							src="/images/Admin-logo.png"
+							alt="Admin logo"
+							className="w-full h-12 object-contain"
+						/>
+					)}
+				</Link>
 
-			<div className="p-2 mt-16 max-h-[90vh] fixed w-61 overflow-hidden hover:overflow-y-auto custom-scrollbar">
+				<button
+					type="button"
+					onClick={() =>
+						setOverrides({
+							sidebarCollapse: isCollapsed ? 'expanded' : 'collapsed',
+						})
+					}
+					className="p-1.5 rounded-lg text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:text-[var(--primary-color)] hover:bg-[var(--ui-sidebar-active-bg,var(--ui-surface-muted))] transition-colors cursor-pointer"
+					title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+				>
+					<TbLayoutSidebarLeftCollapse
+						size={16}
+						className={`transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`}
+					/>
+				</button>
+			</div>
+
+			<div
+				className={`p-2 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
+					isCollapsed ? "w-[68px]" : "w-63"
+				} pr-1`}
+			>
 				{menu.map((section) => (
-					<div key={section.sectionName} className="p-2 mb-2">
-						<p className="text-[12px] text-[#092c4c] font-bold mb-2">
-							{section.sectionName}
-						</p>
+					<div key={section.sectionName} className="mb-2">
+						{isCollapsed ? (
+							<div className="h-px w-8 mx-auto my-2.5 bg-[var(--ui-sidebar-border,var(--ui-border))]/60" />
+						) : (
+							<p className="text-[11px] uppercase tracking-wider text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] font-bold mb-1.5 px-2">
+								{section.sectionName}
+							</p>
+						)}
 
 						{section.items.map((item) => {
 							const isParentActive = item.subItems.some(
@@ -311,69 +352,72 @@ const Sidebar = () => {
 								: (isItemActive && !isAnySubmenuActive);
 
 							return (
-								<div key={item.id}>
+								<div key={item.id} className="relative group">
 									<NavLink
-										to={item.subItems.length > 0 ? "#" : item.path}
-										className={`w-[200px] group px-[12px] py-[8px] flex items-center justify-between cursor-pointer rounded-md transition-all mb-[2px] 
-											${shouldShowActive
-												? "bg-[#FFF7F0] text-[var(--color-primary)]"
-												: "hover:bg-gray-100"
-											}`}
-										onClick={() => toggleSubMenu(item.id)}
+										to={item.subItems.length > 0 && !isCollapsed ? "#" : item.path}
+										title={isCollapsed ? item.name : undefined}
+										className={`flex items-center cursor-pointer rounded-lg transition-colors mb-1 ${
+											isCollapsed
+												? "justify-center w-11 h-11 mx-auto p-0"
+												: "justify-between px-3 py-2 w-full"
+										} ${
+											shouldShowActive
+												? "bg-[var(--ui-sidebar-active-bg,var(--primary-color-light))] text-[var(--ui-sidebar-active-text,var(--primary-color))] font-semibold shadow-2xs"
+												: "text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:bg-[var(--ui-sidebar-active-bg,var(--ui-surface-muted))] hover:text-[var(--ui-sidebar-text,var(--ui-text))]"
+										}`}
+										onClick={() => {
+											if (!isCollapsed) toggleSubMenu(item.id);
+										}}
 									>
-										<div className="flex items-center gap-2">
-											<span
-												className={`text-[18px] transition-all ${shouldShowActive
-													? "text-[var(--color-primary)]"
-													: "text-[#5b6670] group-hover:text-[var(--color-primary)]"
-													}`}
-											>
+										<div className="flex items-center gap-2.5 min-w-0">
+											<span className="text-[18px] shrink-0">
 												{item.icon}
 											</span>
-											<span
-												className={`text-[14px] font-medium transition-all ${shouldShowActive
-													? "text-[var(--color-primary)]"
-													: "text-[#5b6670] group-hover:text-[var(--color-primary)]"
-													}`}
-											>
-												{item.name}
-											</span>
+											{!isCollapsed && (
+												<span className="text-[13px] font-medium truncate">
+													{item.name}
+												</span>
+											)}
 										</div>
 
-										{item.name === "Chat" && unreadChatCount > 0 && (
+										{!isCollapsed && item.name === "Chat" && unreadChatCount > 0 && (
 											<span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-xs animate-pulse">
 												{unreadChatCount > 9 ? "9+" : unreadChatCount}
 											</span>
 										)}
 
-										{item.subItems.length > 0 && (
-											<span className="text-xl bg-gray-100 rounded-full">
+										{!isCollapsed && item.subItems.length > 0 && (
+											<span className="text-lg opacity-70">
 												{isOpen ? (
-													<RiArrowDropDownLine className="text-[var(--color-primary)]" />
+													<RiArrowDropDownLine className="text-[var(--primary-color)]" />
 												) : (
-													<RiArrowDropRightLine className="text-gray-600" />
+													<RiArrowDropRightLine />
 												)}
 											</span>
 										)}
 									</NavLink>
 
-									{item.subItems.length > 0 && isOpen && (
-										<ul>
+									{/* Submenu for Expanded View */}
+									{!isCollapsed && item.subItems.length > 0 && isOpen && (
+										<ul className="pl-6 pr-1 py-1 space-y-0.5 border-l-2 border-[var(--ui-border)]/60 ml-4 mb-1">
 											{item.subItems.map((subItem) => (
-												<NavLink
-													key={subItem.id}
-													to={subItem.path}
-													className={({ isActive }) =>
-														`block w-[200px] rounded-md group pl-4 py-2.5 p-2 cursor-pointer text-[13px] transition-all 
-														hover:bg-gray-100 hover:text-[var(--color-primary)] 
-														${isActive ? "text-[var(--color-primary)] font-medium" : "text-[#646b72]"}`
-													}
-												>
-													<span className="flex justify-start items-center gap-2">
-														<GoDotFill className="text-[10px]" />
-														{subItem.name}
-													</span>
-												</NavLink>
+												<li key={subItem.id}>
+													<NavLink
+														to={subItem.path}
+														className={({ isActive }) =>
+															`block rounded-md px-2.5 py-1.5 text-[12px] transition-colors ${
+																isActive
+																	? "text-[var(--primary-color)] font-semibold bg-[var(--primary-color-light)]"
+																	: "text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:text-[var(--ui-sidebar-text,var(--ui-text))] hover:bg-[var(--ui-surface-muted)]"
+															}`
+														}
+													>
+														<span className="flex items-center gap-2">
+															<GoDotFill className="text-[8px] opacity-70" />
+															<span className="truncate">{subItem.name}</span>
+														</span>
+													</NavLink>
+												</li>
 											))}
 										</ul>
 									)}
@@ -383,7 +427,7 @@ const Sidebar = () => {
 					</div>
 				))}
 			</div>
-		</div>
+		</aside>
 	);
 };
 

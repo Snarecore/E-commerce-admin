@@ -2,14 +2,44 @@ import type { ThemeId, ThemePreset } from './types'
 
 export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   /* --------------------------------------------------------------------------
-     Official Bazaarbound Amber — The Flagship Shipped Default.
+     Main Brand Color (Amber) — The Flagship Shipped Default.
      Uses the brand's original warm amber/orange accent (#fe9f43) paired with
      deep navy typography (#1b2850) and crisp clean surfaces.
      ----------------------------------------------------------------------- */
+  'main-color': {
+    id: 'main-color',
+    name: 'Main Color (Amber)',
+    description: 'Signature warm brand amber accent, deep navy typography, and clean e-commerce surfaces.',
+    palette: {
+      accent: '#fe9f43',
+      accentHover: '#e68a2c',
+      accentLight: '#fff8f2',
+      accentDark: '#b86014',
+      accentMuted: '#fde6d2',
+      accentSecondary: '#1b2850',
+      surface: '#ffffff',
+      surfaceMuted: '#fafbfc',
+      surfaceSunken: '#f3f4f6',
+      border: '#e5e7eb',
+      borderStrong: '#cbd5e1',
+      text: '#1b2850',
+      textMuted: '#4b5563',
+      textSubtle: '#6b7280',
+    },
+    defaults: {
+      density: 'default',
+      radius: 'md',
+      borderWidth: 'hairline',
+      shadow: 'subtle',
+      tableDensity: 'default',
+      fieldStyle: 'outlined',
+    },
+  },
+
   'bazaarbound-amber': {
-    id: 'bazaarbound-amber',
-    name: 'Bazaarbound Amber',
-    description: 'Signature warm amber accent, deep navy typography, and clean e-commerce surfaces.',
+    id: 'main-color',
+    name: 'Main Color (Amber)',
+    description: 'Signature warm brand amber accent, deep navy typography, and clean e-commerce surfaces.',
     palette: {
       accent: '#fe9f43',
       accentHover: '#e68a2c',
@@ -337,6 +367,18 @@ export const THEME_PRESETS: Record<ThemeId, ThemePreset> = {
   },
 }
 
-export const THEME_LIST: ThemePreset[] = Object.values(THEME_PRESETS)
+export const THEME_LIST: ThemePreset[] = [
+  THEME_PRESETS['main-color'],
+  THEME_PRESETS['corporate-navy'],
+  THEME_PRESETS['rose-boutique'],
+  THEME_PRESETS['emerald-shop'],
+  THEME_PRESETS['indigo-luxe'],
+  THEME_PRESETS['slate-neutral'],
+  THEME_PRESETS['teal-modern'],
+  THEME_PRESETS['redwood-warm'],
+  THEME_PRESETS['graphite-dark'],
+  THEME_PRESETS['contrast-mono'],
+  THEME_PRESETS['sandstone'],
+]
 
-export const DEFAULT_THEME_ID: ThemeId = 'bazaarbound-amber'
+export const DEFAULT_THEME_ID: ThemeId = 'main-color'

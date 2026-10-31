@@ -148,7 +148,7 @@ const HomePageCmsForm = () => {
                                     name="categorySectionTitle"
                                     value={fieldValues.categorySectionTitle}
                                     onChange={handleChange}
-                                    className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                    className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                     required
                                 />
                             </div>
@@ -174,7 +174,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionOneTitle"
                                 value={fieldValues.productSectionOneTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -187,7 +187,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionOneFontColor"
                                 value={fieldValues.productSectionOneFontColor}
                                 onChange={handleChange}
-                                className="w-full bg-white p-2 border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full bg-white p-2 border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -200,7 +200,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionOneBackgroundColor"
                                 value={fieldValues.productSectionOneBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -225,7 +225,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionTwoTitle"
                                 value={fieldValues.productSectionTwoTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -238,7 +238,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionTwoFontColor"
                                 value={fieldValues.productSectionTwoFontColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -251,7 +251,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionTwoBackgroundColor"
                                 value={fieldValues.productSectionTwoBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -276,7 +276,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionThreeTitle"
                                 value={fieldValues.productSectionThreeTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -289,7 +289,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionThreeFontColor"
                                 value={fieldValues.productSectionThreeFontColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -302,7 +302,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionThreeBackgroundColor"
                                 value={fieldValues.productSectionThreeBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -327,7 +327,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFourTitle"
                                 value={fieldValues.productSectionFourTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -340,7 +340,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFourFontColor"
                                 value={fieldValues.productSectionFourFontColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -353,7 +353,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFourBackgroundColor"
                                 value={fieldValues.productSectionFourBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -378,7 +378,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFiveTitle"
                                 value={fieldValues.productSectionFiveTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -391,7 +391,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFiveFontColor"
                                 value={fieldValues.productSectionFiveFontColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -404,7 +404,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionFiveBackgroundColor"
                                 value={fieldValues.productSectionFiveBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -429,7 +429,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionSixTitle"
                                 value={fieldValues.productSectionSixTitle}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -442,7 +442,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionSixFontColor"
                                 value={fieldValues.productSectionSixFontColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -455,7 +455,7 @@ const HomePageCmsForm = () => {
                                 name="productSectionSixBackgroundColor"
                                 value={fieldValues.productSectionSixBackgroundColor}
                                 onChange={handleChange}
-                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                                className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                                 required
                             />
                         </div>
@@ -485,7 +485,7 @@ const HomePageCmsForm = () => {
                             name="bannerImageLink"
                             value={fieldValues.bannerImageLink}
                             onChange={handleChange}
-                            className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[#FE9F43] focus:outline-none"
+                            className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none"
                             required
                         />
                     </div>
@@ -495,7 +495,7 @@ const HomePageCmsForm = () => {
                     <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
                         Cancel
                     </button>
-                    <button onClick={handleSubmitForm} className="px-4 py-2 bg-[#FE9F43] text-white rounded-md hover:bg-[#e68a2c] cursor-pointer">
+                    <button onClick={handleSubmitForm} className="px-3.5 py-1.5 bg-[var(--primary-color)] text-white rounded-md hover:bg-[var(--primary-hover-color)] cursor-pointer transition-colors">
                         Save
                     </button>
                 </div>

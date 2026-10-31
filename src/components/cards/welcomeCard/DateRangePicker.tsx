@@ -69,7 +69,7 @@ const DateRangePicker = ({ onDateChange, initialStartDate, initialEndDate }: Dat
 	return (
 		<div className="relative w-fit" ref={dropdownRef}>
 			<div
-				className="flex items-center border border-gray-300 bg-white text-black rounded-md px-3 py-1.5 cursor-pointer"
+				className="flex items-center border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-md px-3.5 py-1.5 cursor-pointer hover:border-[var(--primary-color)] transition-colors"
 				onClick={() => setShowDropdown(!showDropdown)}
 				role="button"
 				tabIndex={0}
@@ -81,24 +81,24 @@ const DateRangePicker = ({ onDateChange, initialStartDate, initialEndDate }: Dat
 					}
 				}}
 			>
-				<FaCalendarAlt className="text-gray-500" />
-				<span className="ml-2 text-gray-700 text-sm">
+				<FaCalendarAlt className="text-[var(--primary-color)]" />
+				<span className="ml-2 text-[var(--ui-text)] text-sm">
 					{`${formatDate(selectedRange.startDate)} - ${formatDate(selectedRange.endDate)}`}
 				</span>
 			</div>
 
 			{showDropdown && (
 				<div
-					className="absolute top-10 left-0 w-full bg-white border border-gray-200 shadow-lg rounded-md z-50"
+					className="absolute top-10 left-0 w-full bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-lg rounded-md z-50 overflow-hidden"
 					role="listbox"
 				>
 					{dateRanges.map((range) => (
 						<div
 							key={range.label}
-							className={`px-4 py-2 text-sm cursor-pointer ${range.startDate.toDateString() === selectedRange.startDate.toDateString() &&
+							className={`px-4 py-2 text-sm cursor-pointer transition-colors ${range.startDate.toDateString() === selectedRange.startDate.toDateString() &&
 									range.endDate.toDateString() === selectedRange.endDate.toDateString()
-									? "bg-[#FE9F43] text-white font-semibold"
-									: "text-gray-700 hover:bg-gray-100"
+									? "bg-[var(--primary-color)] text-white font-semibold"
+									: "text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)]"
 								}`}
 							onClick={() => handleDateSelection(range)}
 							role="option"

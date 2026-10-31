@@ -36,7 +36,7 @@ const SalesDashboard = () => {
 	const transactionsData = (dashboardData?.recentOrders?.data || dashboardData?.recentOrders || []).map((order: any, idx: number) => {
 		const isCompleted = order.status === "Completed" || order.status === "Delivered";
 		const isFailed = order.status === "Failed" || order.status === "Rejected" || order.status === "Cancelled";
-		const statusBg = isCompleted ? "#3EB780" : isFailed ? "#EF4444" : "#FE9F43";
+		const statusBg = isCompleted ? "#3EB780" : isFailed ? "#EF4444" : "var(--primary-color)";
 
 		return {
 			id: order.id || idx,
@@ -67,7 +67,7 @@ const SalesDashboard = () => {
 				{/* Sales Cards */}
 				<div className="col-span-12 sm:col-span-12 md:col-span-6 xl:col-span-3">
 					<SalesCard
-						bgColor="bg-[#FE9F43]"
+						bgColor="bg-[var(--primary-color)]"
 						imageSrc="./images/total-sales.svg"
 						mainText={String(dashboardData?.totalOrders ?? (isLoading ? "..." : 0))}
 						subText="Total Orders Placed"
@@ -77,7 +77,7 @@ const SalesDashboard = () => {
 
 				<div className="col-span-12 sm:col-span-12 md:col-span-6 xl:col-span-3">
 					<SalesCard
-						bgColor="bg-[#092C4C]"
+						bgColor="bg-[var(--secondary-color)]"
 						imageSrc="./images/total-sales.svg"
 						mainText={String(dashboardData?.totalProducts ?? (isLoading ? "..." : 0))}
 						subText="Total Active Products"

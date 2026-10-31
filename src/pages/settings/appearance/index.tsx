@@ -3,17 +3,21 @@ import {
   ALERT_STYLE_OPTIONS,
   BORDER_WIDTH_OPTIONS,
   BUTTON_STYLE_OPTIONS,
+  COLOR_MODE_OPTIONS,
   CONTENT_WIDTH_OPTIONS,
   DENSITY_OPTIONS,
   DIALOG_STYLE_OPTIONS,
   FIELD_STYLE_OPTIONS,
   FOCUS_STYLE_OPTIONS,
   FONT_SCALE_OPTIONS,
+  HEADER_STYLE_OPTIONS,
   LABEL_CASE_OPTIONS,
   LABEL_PLACEMENT_OPTIONS,
   RADIUS_OPTIONS,
   REQUIRED_STYLE_OPTIONS,
   SHADOW_OPTIONS,
+  SIDEBAR_COLLAPSE_OPTIONS,
+  SIDEBAR_STYLE_OPTIONS,
   TABLE_DENSITY_OPTIONS,
   TABLE_ROW_STYLE_OPTIONS,
   VALIDATION_STYLE_OPTIONS,
@@ -40,7 +44,9 @@ import {
   FiBookmark,
   FiRotateCcw,
   FiActivity,
+  FiSun,
 } from 'react-icons/fi'
+import { TbLayoutSidebarLeftCollapse } from 'react-icons/tb'
 import { MdOutlinePalette } from 'react-icons/md'
 
 interface SectionCardProps {
@@ -99,6 +105,10 @@ const AppearanceSettingsContent: React.FC = () => {
   const { language, setLanguage, t } = useAppearanceLanguage()
 
   const configurationOptions: Record<string, readonly { id: string; label: string }[]> = {
+    'Color mode': COLOR_MODE_OPTIONS,
+    'Sidebar style': SIDEBAR_STYLE_OPTIONS,
+    'Sidebar width': SIDEBAR_COLLAPSE_OPTIONS,
+    'Header behavior': HEADER_STYLE_OPTIONS,
     Density: DENSITY_OPTIONS,
     'Font size': FONT_SCALE_OPTIONS,
     'Content width': CONTENT_WIDTH_OPTIONS,
@@ -213,6 +223,31 @@ const AppearanceSettingsContent: React.FC = () => {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         {/* Left Column: Settings Sections */}
         <div className="flex flex-col gap-6">
+          {/* Theme Color Mode */}
+          <SectionCard
+            icon={<FiSun size={17} />}
+            title={t('Color mode')}
+            description={t(
+              'Switch between daylight surfaces, low-glare dark mode, or automatic synchronization with your OS preference.'
+            )}
+            badge={
+              <span className="text-xs font-bold capitalize text-[var(--primary-color)] bg-[var(--primary-color-light)] px-3 py-1 rounded-full border border-[var(--primary-color)]/20 shadow-2xs">
+                {resolved.colorMode === 'system'
+                  ? `${t('System')} (${resolved.resolvedColorMode})`
+                  : t(resolved.colorMode === 'dark' ? 'Dark' : 'Light')}
+              </span>
+            }
+          >
+            <OptionCards
+              legend={t('Appearance mode')}
+              options={COLOR_MODE_OPTIONS}
+              value={resolved.colorMode}
+              isInherited={o.colorMode === undefined}
+              columns={3}
+              onChange={(colorMode) => setOverrides({ colorMode })}
+            />
+          </SectionCard>
+
           {/* Theme Presets */}
           <SectionCard
             icon={<MdOutlinePalette size={18} />}
@@ -273,6 +308,44 @@ const AppearanceSettingsContent: React.FC = () => {
                 columns={4}
                 onChange={(fontScale) => setOverrides({ fontScale })}
               />
+            </div>
+          </SectionCard>
+
+          {/* Navigation & Layout */}
+          <SectionCard
+            icon={<TbLayoutSidebarLeftCollapse size={18} />}
+            title={t('Navigation & layout')}
+            description={t(
+              'Customize sidebar tone, compact icon-only view to maximize canvas, and top bar scrolling behavior.'
+            )}
+          >
+            <div className="flex flex-col gap-5">
+              <OptionCards
+                legend={t('Sidebar tone & surface')}
+                options={SIDEBAR_STYLE_OPTIONS}
+                value={resolved.sidebarStyle}
+                isInherited={o.sidebarStyle === undefined}
+                columns={3}
+                onChange={(sidebarStyle) => setOverrides({ sidebarStyle })}
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <OptionCards
+                  legend={t('Sidebar width')}
+                  options={SIDEBAR_COLLAPSE_OPTIONS}
+                  value={resolved.sidebarCollapse}
+                  isInherited={o.sidebarCollapse === undefined}
+                  columns={2}
+                  onChange={(sidebarCollapse) => setOverrides({ sidebarCollapse })}
+                />
+                <OptionCards
+                  legend={t('Header behavior')}
+                  options={HEADER_STYLE_OPTIONS}
+                  value={resolved.headerStyle}
+                  isInherited={o.headerStyle === undefined}
+                  columns={2}
+                  onChange={(headerStyle) => setOverrides({ headerStyle })}
+                />
+              </div>
             </div>
           </SectionCard>
 
@@ -490,6 +563,9 @@ const AppearanceSettingsContent: React.FC = () => {
             <dl className="mt-3.5 grid grid-cols-2 gap-x-3 gap-y-2 text-[12px]">
               {[
                 ['Theme', preset.name],
+                ['Color mode', resolved.colorMode],
+                ['Sidebar style', resolved.sidebarStyle],
+                ['Sidebar width', resolved.sidebarCollapse],
                 ['Density', resolved.density],
                 ['Font', resolved.fontFamily],
                 ['Font size', resolved.fontScale],
