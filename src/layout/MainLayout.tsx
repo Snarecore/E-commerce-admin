@@ -11,7 +11,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 			<Sidebar />
 			<div className="flex flex-col flex-1 transition-all duration-300 ease-in-out">
 				<Header />
-				<main className="p-6 flex-1 mt-17 bg-[#F6F6F6] h-screen">
+				<main className="p-6 flex-1 mt-17 bg-[var(--ui-surface-sunken,#f6f6f6)] min-h-screen overflow-y-auto">
 					{children}
 				</main>
 			</div>

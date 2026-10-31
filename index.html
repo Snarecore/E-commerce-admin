@@ -6,6 +6,26 @@
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Fashion Time Admin</title>
+	<script>
+		/* Pre-hydrate appearance tokens immediately before HTML parse to guarantee 0ms FOUC */
+		(function () {
+			try {
+				var raw = localStorage.getItem('bazaarbound-appearance');
+				if (raw) {
+					var state = JSON.parse(raw);
+					if (state.themeId) document.documentElement.dataset.theme = state.themeId;
+					if (state.overrides) {
+						if (state.overrides.accent) {
+							document.documentElement.style.setProperty('--primary-color', state.overrides.accent);
+							document.documentElement.style.setProperty('--color-primary', state.overrides.accent);
+						}
+						if (state.overrides.density) document.documentElement.dataset.density = state.overrides.density;
+						if (state.overrides.fieldStyle) document.documentElement.dataset.fieldStyle = state.overrides.fieldStyle;
+					}
+				}
+			} catch (_) {}
+		})();
+	</script>
 </head>
 
 <body>

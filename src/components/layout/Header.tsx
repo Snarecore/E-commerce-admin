@@ -13,7 +13,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { BiCube } from "react-icons/bi";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
-import { MdAdminPanelSettings, MdContactPage, MdStorefront } from "react-icons/md";
+import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdOutlinePalette } from "react-icons/md";
 import { useSetAtom } from "jotai";
 import { logoutUserAtom } from "../../store/user-store";
 import { useAtomValue } from "jotai";
@@ -182,6 +182,13 @@ const menu = [
 				name: "Social Links",
 				icon: <IoShareSocialOutline />,
 				path: "/social-link",
+				subItems: [],
+			},
+			{
+				id: 100,
+				name: "Appearance",
+				icon: <MdOutlinePalette />,
+				path: "/appearance",
 				subItems: [],
 			},
 		],
@@ -390,6 +397,15 @@ const Header = () => {
 
 					<AdminNotificationDropdown />
 
+					<NavLink
+						to="/appearance"
+						className="relative p-2 text-gray-600 hover:text-[var(--color-primary)] hover:bg-gray-100 rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						title="Appearance Settings"
+						aria-label="Appearance Settings"
+					>
+						<MdOutlinePalette className="text-xl sm:text-2xl" />
+					</NavLink>
+
 					<div
 						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors relative"
 						onClick={() => setShowUserDropdown(!showUserDropdown)}>
@@ -415,8 +431,14 @@ const Header = () => {
 									<p className="text-[12px] text-gray-500 capitalize">{userData?.role}</p>
 								</div>
 							</div>
-							{/* <MenuItem icon={<FiUser />} text="My Profile" />
-							<MenuItem icon={<CiSettings />} text="Settings" /> */}
+							<MenuItem
+								icon={<MdOutlinePalette className="text-lg text-[var(--primary-color)]" />}
+								text="Appearance"
+								onClick={() => {
+									setShowUserDropdown(false);
+									navigate("/appearance");
+								}}
+							/>
 							<MenuItem
 								icon={<RiLogoutCircleLine />}
 								text="Logout"

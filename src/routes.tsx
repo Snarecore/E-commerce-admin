@@ -59,6 +59,7 @@ const MegaDiscountPage  = lazy(() => import("./pages/settings/mega-discount"));
 const AuditLogs         = lazy(() => import("./pages/audit-logs"));
 const ProfitReportPage  = lazy(() => import("./pages/reports/profit"));
 const BlacklistPage     = lazy(() => import("./pages/settings/blacklist/BlacklistPage"));
+const AppearanceSettings = lazy(() => import("./pages/settings/appearance"));
 
 const PageLoader = () => (
 	<div className="flex items-center justify-center min-h-screen">
@@ -356,6 +357,16 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<Faq />
+							</RoleProtectedRoute>} />
+					<Route path="/appearance"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<AppearanceSettings />
+							</RoleProtectedRoute>} />
+					<Route path="/settings/appearance"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<AppearanceSettings />
 							</RoleProtectedRoute>} />
 				</Route>
 				<Route path="*" element={<Navigate to="/" replace />} />
