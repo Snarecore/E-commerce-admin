@@ -47,7 +47,8 @@ export const findTheme = (id: ThemeRef, customThemes: ThemePreset[] = []): Theme
 /** Merges defaults, preset, and overrides into a complete ResolvedAppearance. */
 export const resolveAppearance = (
   state: AppearanceState,
-  customThemes: ThemePreset[] = []
+  customThemes: ThemePreset[] = [],
+  systemDark?: boolean
 ): ResolvedAppearance => {
   const preset = findTheme(state.themeId, customThemes)
   const o = state.overrides
@@ -59,7 +60,8 @@ export const resolveAppearance = (
   } else if (colorMode === 'light') {
     resolvedColorMode = 'light'
   } else {
-    resolvedColorMode = preset.palette.isDark || getSystemPrefersDark() ? 'dark' : 'light'
+    const isSysDark = systemDark !== undefined ? systemDark : getSystemPrefersDark()
+    resolvedColorMode = preset.palette.isDark || isSysDark ? 'dark' : 'light'
   }
 
   const palette = { ...preset.palette }
@@ -266,7 +268,7 @@ export const appearanceToCssVars = (r: ResolvedAppearance): Record<string, strin
 }
 
 // Micro-cache to eliminate redundant DOM writes
-let lastAppliedVars: Record<string, string> = {}
+const lastAppliedVars: Record<string, string> = {}
 
 /** Writes the calculated tokens onto the document root. */
 export const applyAppearance = (

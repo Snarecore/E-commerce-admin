@@ -226,7 +226,7 @@ export const AppearanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [])
 
   const resolved = useMemo(
-    () => resolveAppearance(state, customThemes),
+    () => resolveAppearance(state, customThemes, systemDark),
     [state, customThemes, systemDark]
   )
   const activeTheme = useMemo(

@@ -20,6 +20,7 @@ import { MdStorefront, MdOutlinePalette } from 'react-icons/md'
 import { useAPI } from '../../../hooks/useApi'
 import apiConfig from '../../../config/api.json'
 import { showSuccessToast, showErrorToast } from '../../../utils/toast-utils'
+import { getAccessibleTextColor } from '../../../utils/color-contrast'
 
 export interface StorefrontThemeConfig {
   primaryColor: string
@@ -79,26 +80,19 @@ const RADIUS_MAP: Record<StorefrontThemeConfig['borderRadius'], string> = {
   pill: '9999px',
 }
 
-const STORAGE_KEY = 'storefront-theme'
-const PRIMARY_KEY = 'storefront-primary-color'
-
 const FrontendAppearance: React.FC = () => {
   const { fetchData, postMutation } = useAPI()
   const [isSaving, setIsSaving] = useState(false)
   const [, setIsLoading] = useState(true)
 
-  const [config, setConfig] = useState<StorefrontThemeConfig>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) return { ...DEFAULT_CONFIG, ...JSON.parse(saved) }
-    } catch {}
-    return DEFAULT_CONFIG
-  })
+  const [config, setConfig] = useState<StorefrontThemeConfig>(DEFAULT_CONFIG)
 
   const [activeCategory, setActiveCategory] = useState<string>('All')
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop')
   const [publishedToast, setPublishedToast] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<'theme' | 'banner' | 'typography'>('theme')
+
+  const fgColor = getAccessibleTextColor(config.primaryColor)
 
   // 1. Fetch saved theme from database on mount
   useEffect(() => {
@@ -125,7 +119,7 @@ const FrontendAppearance: React.FC = () => {
           }
         }
       } catch (err) {
-        // Fallback to local storage or defaults gracefully
+        // Keep defaults if database call fails
       } finally {
         if (isMounted) setIsLoading(false)
       }
@@ -141,11 +135,10 @@ const FrontendAppearance: React.FC = () => {
     setConfig((prev) => ({ ...prev, ...patch }))
   }
 
-  // 2. Save directly to Database & sync locally
+  // 2. Save directly into TiDB Database
   const handlePublish = async () => {
     setIsSaving(true)
     try {
-      // Save directly into TiDB database via Backend API
       await postMutation.mutateAsync({
         url: apiConfig.setting.storefrontTheme,
         body: {
@@ -154,11 +147,6 @@ const FrontendAppearance: React.FC = () => {
           themeConfig: config,
         },
       })
-
-      // Also cache to local storage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
-      localStorage.setItem(PRIMARY_KEY, config.primaryColor)
-      window.dispatchEvent(new Event('storage'))
 
       showSuccessToast('Storefront theme saved to database & published to all customers!')
       setPublishedToast(true)
@@ -708,8 +696,8 @@ const FrontendAppearance: React.FC = () => {
                   <div className="relative p-1.5 rounded-md hover:bg-gray-100 cursor-pointer text-gray-800">
                     <FiShoppingBag size={14} />
                     <span
-                      className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full text-white text-[9px] font-black flex items-center justify-center"
-                      style={{ backgroundColor: config.primaryColor }}
+                      className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full text-[9px] font-black flex items-center justify-center shadow-xs"
+                      style={{ backgroundColor: config.primaryColor, color: fgColor }}
                     >
                       2
                     </span>
@@ -729,7 +717,7 @@ const FrontendAppearance: React.FC = () => {
                       className="px-2.5 py-1 rounded-full text-[10px] font-bold cursor-pointer transition-all shrink-0"
                       style={{
                         backgroundColor: isActive ? config.primaryColor : '#E5E7EB',
-                        color: isActive ? '#FFFFFF' : '#4B5563',
+                        color: isActive ? fgColor : '#4B5563',
                         borderRadius: RADIUS_MAP[config.borderRadius],
                       }}
                     >
@@ -790,9 +778,10 @@ const FrontendAppearance: React.FC = () => {
 
                   <button
                     type="button"
-                    className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1.5 text-white text-[10px] font-bold shadow-xs transition-transform active:scale-95 cursor-pointer"
+                    className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-bold shadow-xs transition-transform active:scale-95 cursor-pointer"
                     style={{
                       backgroundColor: config.primaryColor,
+                      color: fgColor,
                       borderRadius: RADIUS_MAP[config.borderRadius],
                     }}
                   >
@@ -847,9 +836,10 @@ const FrontendAppearance: React.FC = () => {
 
                   <button
                     type="button"
-                    className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1.5 text-white text-[10px] font-bold shadow-xs transition-transform active:scale-95 cursor-pointer"
+                    className="mt-2.5 w-full flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-bold shadow-xs transition-transform active:scale-95 cursor-pointer"
                     style={{
                       backgroundColor: config.primaryColor,
+                      color: fgColor,
                       borderRadius: RADIUS_MAP[config.borderRadius],
                     }}
                   >
