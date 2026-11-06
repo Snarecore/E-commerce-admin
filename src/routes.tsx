@@ -29,6 +29,7 @@ const ContactPageCMS    = lazy(() => import("./pages/settings/contact-us/contact
 const HomePageCMS       = lazy(() => import("./pages/settings/home/page-cms"));
 const Orders            = lazy(() => import("./pages/orders"));
 const OrderDetail       = lazy(() => import("./pages/orders/components/OrderDetail"));
+const PaymentsPage      = lazy(() => import("./pages/payments"));
 const Admins            = lazy(() => import("./pages/people/admin"));
 const Users             = lazy(() => import("./pages/people/user"));
 const InvoiceView       = lazy(() => import("./pages/invoice"));
@@ -202,6 +203,11 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<Orders />
+							</RoleProtectedRoute>} />
+					<Route path="/payments"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<PaymentsPage />
 							</RoleProtectedRoute>} />
 					<Route path="/coupons"
 						element={

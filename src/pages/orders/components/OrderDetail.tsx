@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiMessageSquare, FiPrinter, FiShield, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiMessageSquare, FiPrinter, FiShield, FiTrash2, FiCopy, FiAlertTriangle, FiCreditCard } from "react-icons/fi";
 import toast from "react-hot-toast";
 import DeleteModal from "../../../components/modals/DeleteModal";
 import { useAPI } from "../../../hooks/useApi";
@@ -18,7 +18,7 @@ const OrderDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams<{ id: string }>();
-    const { fetchData, handleApiMutation, patchMutation, handleDeleteAPI } = useAPI();
+    const { fetchData, handleApiMutation, postMutation, patchMutation, handleDeleteAPI } = useAPI();
 
     const [order, setOrder] = useState<any>(location.state?.orderData || null);
     const [isLoading, setIsLoading] = useState(!location.state?.orderData);
@@ -36,6 +36,32 @@ const OrderDetail = () => {
         }
     };
     const [selectedStatus, setSelectedStatus] = useState<string>("");
+
+    const copyToClipboard = (text: string, label: string) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        toast.success(`${label} copied to clipboard!`);
+    };
+
+    const handleAdminReview = async (paymentId: string, action: "APPROVE" | "REJECT" | "HOLD") => {
+        try {
+            const res = await handleApiMutation({
+                mutation: postMutation,
+                url: `payments/admin/${paymentId}/review`,
+                body: { action, reason: `Action ${action} executed by Admin` },
+                requiredFields: [],
+                showSuccessMessage: true
+            });
+            if (res) {
+                const cleanId = (id || "").replace(/^#/, "").trim();
+                const updated = await fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` });
+                const parsed = parseOrderResponse(updated, cleanId);
+                if (parsed) setOrder(parsed);
+            }
+        } catch (err: any) {
+            toast.error(err?.message || "Failed to process review action");
+        }
+    };
 
     const parseOrderResponse = (res: any, cleanId: string) => {
         if (!res) return null;
@@ -540,32 +566,32 @@ const OrderDetail = () => {
                     );
                 })()}
 
-                    {/* Payment & Order Status */}
+                    {/* Payment & Gateway Audit Card */}
                     <div className="bg-white rounded-xl border border-gray-200 p-5">
-                        <h3 className="text-base font-semibold text-gray-800 mb-4">Payment & Status</h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                                <FiCreditCard className="text-orange-500" /> Payment & Gateway
+                            </h3>
+                            {(() => {
+                                const latestPay = order.payments && order.payments.length > 0 ? order.payments[0] : null;
+                                const method = (latestPay?.paymentMethod || order.paymentMethod || "COD").toUpperCase();
+                                if (method.includes("BKASH")) return <span className="text-[11px] font-bold bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full">bKash</span>;
+                                if (method.includes("NAGAD")) return <span className="text-[11px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Nagad</span>;
+                                if (method.includes("ROCKET")) return <span className="text-[11px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Rocket</span>;
+                                if (method.includes("STRIPE") || method.includes("ONLINE")) return <span className="text-[11px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Stripe Card</span>;
+                                return <span className="text-[11px] font-bold bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">{method}</span>;
+                            })()}
+                        </div>
+
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-500">Order ID</span>
                                 <span className="font-semibold text-orange-600">#{order.orderId}</span>
                             </div>
-                            {order.stripeSessionId && (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-500">Stripe Session</span>
-                                    <span className="font-mono text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded truncate max-w-[180px]" title={order.stripeSessionId}>
-                                        {order.stripeSessionId}
-                                    </span>
-                                </div>
-                            )}
-                            {order.paymentIntentId && (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-500">Payment Intent</span>
-                                    <span className="font-mono text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded truncate max-w-[180px]" title={order.paymentIntentId}>
-                                        {order.paymentIntentId}
-                                    </span>
-                                </div>
-                            )}
+
+                            {/* Payment Status & Order Status */}
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-500">Payment</span>
+                                <span className="text-gray-500">Payment Status</span>
                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${paymentStatusColor}`}>
                                     {order.paymentStatus}
                                 </span>
@@ -576,17 +602,160 @@ const OrderDetail = () => {
                                     {order.status}
                                 </span>
                             </div>
+
+                            {/* Gateway Metadata from latest payment */}
+                            {(() => {
+                                const latestPay = order.payments && order.payments.length > 0 ? order.payments[0] : null;
+                                if (!latestPay) return null;
+
+                                return (
+                                    <div className="pt-2 border-t border-gray-100 space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-500 text-xs">Gateway</span>
+                                            <span className="font-semibold text-xs text-gray-800">{latestPay.gateway}</span>
+                                        </div>
+                                        {latestPay.tranId && (
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-500 text-xs">SSL Tran ID</span>
+                                                <button
+                                                    onClick={() => copyToClipboard(latestPay.tranId, "SSL Tran ID")}
+                                                    className="flex items-center gap-1 font-mono text-xs text-gray-700 bg-gray-100 hover:bg-gray-200 px-2 py-0.5 rounded truncate max-w-[170px] cursor-pointer"
+                                                    title={latestPay.tranId}
+                                                >
+                                                    <span className="truncate">{latestPay.tranId}</span>
+                                                    <FiCopy className="w-3 h-3 text-gray-500 shrink-0" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        {latestPay.bankTranId && (
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-500 text-xs font-semibold text-pink-700">bKash/Nagad TrxID</span>
+                                                <button
+                                                    onClick={() => copyToClipboard(latestPay.bankTranId, "Bank/MFS TrxID")}
+                                                    className="flex items-center gap-1 font-mono text-xs text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-200 px-2 py-0.5 rounded truncate max-w-[170px] cursor-pointer"
+                                                    title={latestPay.bankTranId}
+                                                >
+                                                    <span className="truncate">{latestPay.bankTranId}</span>
+                                                    <FiCopy className="w-3 h-3 text-pink-600 shrink-0" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        {latestPay.valId && (
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-500 text-xs">Val ID</span>
+                                                <button
+                                                    onClick={() => copyToClipboard(latestPay.valId, "Validation ID")}
+                                                    className="flex items-center gap-1 font-mono text-xs text-gray-700 bg-gray-100 hover:bg-gray-200 px-2 py-0.5 rounded truncate max-w-[170px] cursor-pointer"
+                                                    title={latestPay.valId}
+                                                >
+                                                    <span className="truncate">{latestPay.valId}</span>
+                                                    <FiCopy className="w-3 h-3 text-gray-500 shrink-0" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        {latestPay.paidAt && (
+                                            <div className="flex justify-between items-center text-xs">
+                                                <span className="text-gray-500">Paid At</span>
+                                                <span className="text-gray-700">{formatDate(latestPay.paidAt)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+
+                            {/* Legacy Stripe identifiers */}
+                            {order.stripeSessionId && !order.payments?.length && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-500">Stripe Session</span>
+                                    <span className="font-mono text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded truncate max-w-[180px]" title={order.stripeSessionId}>
+                                        {order.stripeSessionId}
+                                    </span>
+                                </div>
+                            )}
+                            {order.paymentIntentId && !order.payments?.length && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-500">Payment Intent</span>
+                                    <span className="font-mono text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded truncate max-w-[180px]" title={order.paymentIntentId}>
+                                        {order.paymentIntentId}
+                                    </span>
+                                </div>
+                            )}
+
                             {(order.couponCode || Number(order.discountAmount) > 0) && (
                                 <div className="flex justify-between items-center bg-orange-50 p-2 rounded-lg border border-orange-200">
                                     <span className="text-xs font-semibold text-orange-800">Coupon ({order.couponCode || "Applied"})</span>
                                     <span className="font-bold text-xs text-orange-700">-৳{Number(order.discountAmount || 0).toFixed(2)}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">Total</span>
-                                <span className="font-bold text-gray-900">৳{order.totalAmount ?? "0.00"}</span>
+                            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                                <span className="text-gray-500 font-semibold">Total</span>
+                                <span className="font-bold text-base text-gray-900">৳{order.totalAmount ?? "0.00"}</span>
                             </div>
                         </div>
+
+                        {/* Admin Review Action Alert Box if flagged */}
+                        {(() => {
+                            const latestPay = order.payments && order.payments.length > 0 ? order.payments[0] : null;
+                            const isReview = order.paymentStatus === "Review Required" || latestPay?.needsAdminReview;
+                            if (!isReview || !latestPay) return null;
+
+                            return (
+                                <div className="mt-4 p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-2.5">
+                                    <div className="flex items-center gap-2 text-amber-800 font-bold text-xs">
+                                        <FiAlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                        Manual Review: {latestPay.adminReviewReason || "Fraud Risk / Late Payment"}
+                                    </div>
+                                    <p className="text-[11px] text-amber-700">
+                                        Verify with customer or gateway records before approving order fulfillment.
+                                    </p>
+                                    <div className="flex items-center gap-2 pt-1">
+                                        <button
+                                            onClick={() => handleAdminReview(latestPay.id, "APPROVE")}
+                                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-1.5 px-2 rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            Verify & Approve
+                                        </button>
+                                        <button
+                                            onClick={() => handleAdminReview(latestPay.id, "REJECT")}
+                                            className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-1.5 px-2 rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            Reject / Refund
+                                        </button>
+                                        <button
+                                            onClick={() => handleAdminReview(latestPay.id, "HOLD")}
+                                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-semibold py-1.5 px-2.5 rounded-lg transition-colors cursor-pointer"
+                                        >
+                                            Hold
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Multiple Payment Attempts Breakdown if > 1 attempts */}
+                        {order.payments && order.payments.length > 1 && (
+                            <div className="mt-4 pt-3 border-t border-gray-100">
+                                <span className="text-xs font-bold text-gray-700 block mb-2">
+                                    All Payment Attempts ({order.payments.length})
+                                </span>
+                                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                                    {order.payments.map((att: any, idx: number) => (
+                                        <div key={att.id || idx} className="text-xs p-2 bg-gray-50 rounded-lg flex items-center justify-between">
+                                            <div>
+                                                <span className="font-semibold text-gray-700">Attempt #{order.payments.length - idx}</span>
+                                                <span className="text-[10px] text-gray-500 block">{att.gateway} - {att.paymentMethod || "UNKNOWN"}</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${att.status === "PAID" ? "bg-emerald-100 text-emerald-800" : att.status === "FAILED" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>
+                                                    {att.status}
+                                                </span>
+                                                <span className="text-[10px] text-gray-500 block">৳{att.amount}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Update Status */}

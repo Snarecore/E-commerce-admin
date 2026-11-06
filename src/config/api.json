@@ -99,5 +99,9 @@
         "profitCategoriesUrl": "reports/profit/categories",
         "profitOrdersUrl": "reports/profit/orders",
         "profitExportUrl": "reports/profit/export"
+    },
+    "payments": {
+        "allUrl": "payments/admin/all",
+        "reviewUrl": "payments/admin"
     }
 }

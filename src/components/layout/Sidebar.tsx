@@ -6,7 +6,7 @@ import { Link, useLocation, NavLink } from "react-router-dom";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
 import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdOutlinePalette, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/md";
-import { FiShoppingCart, FiZap, FiShield } from "react-icons/fi";
+import { FiShoppingCart, FiZap, FiShield, FiCreditCard } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
@@ -74,6 +74,13 @@ const menu = [
 				name: "Orders",
 				icon: <FiShoppingCart />,
 				path: "/orders",
+				subItems: [],
+			},
+			{
+				id: 65,
+				name: "Payments",
+				icon: <FiCreditCard />,
+				path: "/payments",
 				subItems: [],
 			},
 			{

@@ -438,11 +438,22 @@ const OrderTable = ({
                                     <td className="px-6 py-4 font-semibold text-[var(--ui-text)]">
                                         ৳{Number(data.totalAmount || 0).toFixed(2)}
                                     </td>
-                                    {/* Payment Status */}
+                                    {/* Payment Status & Method */}
                                     <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit ${data.paymentStatus === "Paid" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
-                                            {data.paymentStatus}
-                                        </span>
+                                        <div className="flex flex-col gap-1">
+                                            <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit ${data.paymentStatus === "Paid" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
+                                                {data.paymentStatus}
+                                            </span>
+                                            {(() => {
+                                                const latestPay = (data as any).payments?.[0];
+                                                const method = (latestPay?.paymentMethod || (data as any).paymentMethod || "COD").toUpperCase();
+                                                if (method.includes("BKASH")) return <span className="text-[10px] font-bold text-pink-600 bg-pink-50 border border-pink-200 px-1.5 py-0.2 rounded w-fit">bKash</span>;
+                                                if (method.includes("NAGAD")) return <span className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded w-fit">Nagad</span>;
+                                                if (method.includes("ROCKET")) return <span className="text-[10px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded w-fit">Rocket</span>;
+                                                if (method.includes("ONLINE") || method.includes("STRIPE")) return <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.2 rounded w-fit">Stripe</span>;
+                                                return <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.2 rounded w-fit">{method}</span>;
+                                            })()}
+                                        </div>
                                     </td>
                                     {/* Order Status */}
                                     <td className="px-6 py-4">
