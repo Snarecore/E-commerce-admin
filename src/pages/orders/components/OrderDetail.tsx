@@ -411,7 +411,7 @@ const OrderDetail = () => {
                             </div>
                             <div>
                                 <p className="font-semibold text-gray-900">{getDisplayCustomerName(order)}</p>
-                                <p className="text-xs text-gray-500">{order.user?.email || order.customerEmail || order.email || "—"}</p>
+                                <p className="text-xs text-gray-500">{order.shippingAddress?.email || order.user?.email || order.customerEmail || order.email || "—"}</p>
                             </div>
                         </div>
                         <div className="space-y-2 text-sm">

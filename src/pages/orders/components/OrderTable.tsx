@@ -159,7 +159,7 @@ const OrderTable = ({
         if (!selectedBlockOrder) return;
         const name = getDisplayCustomerName(selectedBlockOrder);
         const contact = getDisplayCustomerContact(selectedBlockOrder);
-        const email = selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email;
+        const email = selectedBlockOrder.shippingAddress?.email || selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email;
         const phone = contact || selectedBlockOrder.user?.phone || selectedBlockOrder.phone;
 
         const newItem: Partial<IBlacklistItem> = {
@@ -553,7 +553,7 @@ const OrderTable = ({
                             <p className="font-semibold">Customer Information:</p>
                             <p><strong>Name:</strong> {getDisplayCustomerName(selectedBlockOrder)}</p>
                             <p><strong>Phone:</strong> {getDisplayCustomerContact(selectedBlockOrder) || 'N/A'}</p>
-                            <p><strong>Email:</strong> {selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email || 'N/A'}</p>
+                            <p><strong>Email:</strong> {selectedBlockOrder.shippingAddress?.email || selectedBlockOrder.user?.email || selectedBlockOrder.customerEmail || selectedBlockOrder.email || 'N/A'}</p>
                             <p><strong>Order ID:</strong> #{selectedBlockOrder.orderId || selectedBlockOrder.id}</p>
                         </div>
 
