@@ -14,11 +14,14 @@ import {
     FiShield,
     FiTrendingUp,
     FiExternalLink,
-    FiRotateCcw
+    FiRotateCcw,
+    FiFileText,
+    FiActivity
 } from "react-icons/fi";
 import { useAPI } from "../../hooks/useApi";
 import { paymentQueryKey } from "../../config/query-key";
 import { format } from "date-fns";
+import { showErrorToast, showSuccessToast } from "../../utils/toast-utils";
 
 export default function PaymentsPage() {
     const { usePaginatedQuery, postMutation, handleApiMutation } = useAPI();
@@ -28,23 +31,41 @@ export default function PaymentsPage() {
     const [search, setSearch] = useState<string>("");
     const [selectedGateway, setSelectedGateway] = useState<string>("ALL");
     const [selectedMethod, setSelectedMethod] = useState<string>("ALL");
+    const [selectedAuditAction, setSelectedAuditAction] = useState<string>("ALL");
 
     // Copy feedback state
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
-    // Modal details state
+    // Modal details states
     const [activePayment, setActivePayment] = useState<any | null>(null);
     const [reviewModalPayment, setReviewModalPayment] = useState<any | null>(null);
     const [reviewReason, setReviewReason] = useState<string>("");
 
+    // Initiate Refund Modal states
+    const [refundModalPayment, setRefundModalPayment] = useState<any | null>(null);
+    const [refundType, setRefundType] = useState<"FULL" | "PARTIAL">("FULL");
+    const [refundAmount, setRefundAmount] = useState<string>("");
+    const [refundReasonCategory, setRefundReasonCategory] = useState<string>("Customer Return");
+    const [customRefundReason, setCustomRefundReason] = useState<string>("");
+    const [refundIdempotencyKey, setRefundIdempotencyKey] = useState<string>("");
+    const [isSubmittingRefund, setIsSubmittingRefund] = useState<boolean>(false);
+
+    // Payment-Specific Audit History Drawer state
+    const [auditDrawerPayment, setAuditDrawerPayment] = useState<any | null>(null);
+
+    // Metadata details preview modal state
+    const [metadataModalItem, setMetadataModalItem] = useState<any | null>(null);
+
     // Build URL query string
     const isRefundTab = activeTab === "REFUNDS";
+    const isAuditTab = activeTab === "AUDIT";
+
     const params = new URLSearchParams();
     params.append("page", String(page));
     params.append("limit", "15");
     if (search.trim()) params.append("search", search.trim());
 
-    if (!isRefundTab) {
+    if (!isRefundTab && !isAuditTab) {
         if (selectedGateway !== "ALL") params.append("gateway", selectedGateway);
         if (selectedMethod !== "ALL") params.append("paymentMethod", selectedMethod);
         if (activeTab === "PAID") params.append("status", "PAID");
@@ -53,9 +74,16 @@ export default function PaymentsPage() {
         if (activeTab === "REVIEW") params.append("needsAdminReview", "true");
     }
 
-    const apiUrl = isRefundTab
-        ? `payments/admin/refunds?${params.toString()}`
-        : `payments/admin/all?${params.toString()}`;
+    if (isAuditTab && selectedAuditAction !== "ALL") {
+        params.append("action", selectedAuditAction);
+    }
+
+    let apiUrl = `payments/admin/all?${params.toString()}`;
+    if (isRefundTab) {
+        apiUrl = `payments/admin/refunds?${params.toString()}`;
+    } else if (isAuditTab) {
+        apiUrl = `payments/admin/audit-logs?${params.toString()}`;
+    }
 
     const {
         data: itemsList,
@@ -66,8 +94,18 @@ export default function PaymentsPage() {
         refetch,
     } = usePaginatedQuery<any>({
         url: apiUrl,
-        queryKey: [paymentQueryKey, activeTab, String(page), search, selectedGateway, selectedMethod],
+        queryKey: [paymentQueryKey, activeTab, String(page), search, selectedGateway, selectedMethod, selectedAuditAction],
         enabled: true,
+    });
+
+    // Query for payment-specific audit drawer
+    const {
+        data: drawerAuditLogs,
+        isLoading: isDrawerLoading
+    } = usePaginatedQuery<any>({
+        url: auditDrawerPayment ? `payments/admin/audit-logs?paymentId=${auditDrawerPayment.id}&limit=50` : "",
+        queryKey: ["payment-audit-drawer", auditDrawerPayment?.id],
+        enabled: !!auditDrawerPayment,
     });
 
     const metrics = (response as any)?.metrics || {
@@ -102,7 +140,7 @@ export default function PaymentsPage() {
             setReviewReason("");
             refetch();
         } catch {
-            // Error handled by useAPI
+            // Handled by useAPI
         }
     };
 
@@ -117,7 +155,79 @@ export default function PaymentsPage() {
             });
             refetch();
         } catch {
-            // Error handled by useAPI
+            // Handled by useAPI
+        }
+    };
+
+    // Calculate refundable balance helper
+    const calculateRefundableBalance = (payment: any) => {
+        if (!payment) return { alreadyRefunded: 0, remaining: 0 };
+        const originalAmount = Number(payment.amount || 0);
+        const alreadyRefunded = (payment.refunds || [])
+            .filter((r: any) => r.status === "SUCCEEDED")
+            .reduce((sum: number, r: any) => sum + Number(r.amount || 0), 0);
+        const remaining = Math.max(0, originalAmount - alreadyRefunded);
+        return { alreadyRefunded, remaining };
+    };
+
+    // Open Initiate Refund Modal
+    const handleOpenRefundModal = (payment: any) => {
+        setRefundModalPayment(payment);
+        setRefundType("FULL");
+        const { remaining } = calculateRefundableBalance(payment);
+        setRefundAmount(remaining.toFixed(2));
+        setRefundReasonCategory("Customer Return");
+        setCustomRefundReason("");
+        // Generate stable idempotency key for this modal session
+        setRefundIdempotencyKey(`ref_init_${payment.id}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
+    };
+
+    // Handle Submit Refund
+    const handleSubmitRefund = async () => {
+        if (!refundModalPayment || isSubmittingRefund) return;
+
+        const { remaining } = calculateRefundableBalance(refundModalPayment);
+        const requested = Number(refundAmount);
+
+        if (isNaN(requested) || requested <= 0) {
+            showErrorToast("Please enter a valid positive refund amount.");
+            return;
+        }
+
+        if (requested > remaining) {
+            showErrorToast(`Refund amount (৳${requested.toFixed(2)}) exceeds remaining refundable balance (৳${remaining.toFixed(2)}).`);
+            return;
+        }
+
+        const finalReason = refundReasonCategory === "Other" ? customRefundReason.trim() : refundReasonCategory;
+        if (!finalReason) {
+            showErrorToast("Please specify a reason for the refund.");
+            return;
+        }
+
+        setIsSubmittingRefund(true);
+        try {
+            const res: any = await handleApiMutation({
+                mutation: postMutation,
+                url: "payments/admin/refunds/initiate",
+                body: {
+                    paymentId: refundModalPayment.id,
+                    amount: requested,
+                    reason: finalReason,
+                    idempotencyKey: refundIdempotencyKey
+                },
+                requiredFields: [],
+                showSuccessMessage: false,
+            });
+
+            const refundStatus = res?.refund?.status || "PENDING";
+            showSuccessToast(`Refund request submitted successfully. Status: ${refundStatus}.`);
+            setRefundModalPayment(null);
+            refetch();
+        } catch {
+            // Handled by useAPI
+        } finally {
+            setIsSubmittingRefund(false);
         }
     };
 
@@ -155,14 +265,21 @@ export default function PaymentsPage() {
         if (status === "PAID" || status === "SUCCEEDED") {
             return (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <FiCheckCircle className="text-emerald-500" /> {status}
+                    <FiCheckCircle className="text-emerald-500" /> {status === "SUCCEEDED" ? "Refund Completed" : "PAID"}
                 </span>
             );
         }
-        if (status === "PENDING" || status === "PROCESSING") {
+        if (status === "PROCESSING" || status === "PENDING") {
             return (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                    <FiClock className="text-amber-500" /> {status}
+                    <FiClock className="text-amber-500" /> {status === "PENDING" ? "Pending Settlement" : "Processing"}
+                </span>
+            );
+        }
+        if (status === "UNKNOWN") {
+            return (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <FiClock className="text-indigo-500" /> Awaiting Reconciliation
                 </span>
             );
         }
@@ -171,6 +288,28 @@ export default function PaymentsPage() {
                 <FiXCircle className="text-rose-500" /> {status}
             </span>
         );
+    };
+
+    const getAuditActionBadge = (action: string) => {
+        if (action === "ADMIN_INITIATE_REFUND") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">Refund Initiated</span>;
+        }
+        if (action === "ADMIN_REFUND_MARK_SUCCEEDED") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Refund Settled</span>;
+        }
+        if (action === "ADMIN_REFUND_MARK_FAILED") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Refund Declined</span>;
+        }
+        if (action === "ADMIN_PAYMENT_APPROVE") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Payment Approved</span>;
+        }
+        if (action === "ADMIN_PAYMENT_REJECT") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Payment Rejected</span>;
+        }
+        if (action === "ADMIN_PAYMENT_HOLD") {
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Payment On Hold</span>;
+        }
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-gray-100 text-gray-700 border border-gray-200">{action}</span>;
     };
 
     return (
@@ -265,6 +404,7 @@ export default function PaymentsPage() {
                             { key: "REVIEW", label: `Review Required (${metrics.reviewCount || 0})` },
                             { key: "FAILED", label: "Failed" },
                             { key: "REFUNDS", label: "Refunds Ledger" },
+                            { key: "AUDIT", label: "Audit Logs" },
                         ].map((tab) => (
                             <button
                                 key={tab.key}
@@ -283,7 +423,7 @@ export default function PaymentsPage() {
                         ))}
                     </div>
 
-                    {!isRefundTab && (
+                    {!isRefundTab && !isAuditTab && (
                         <div className="flex items-center gap-2">
                             <select
                                 value={selectedGateway}
@@ -319,6 +459,27 @@ export default function PaymentsPage() {
                             </select>
                         </div>
                     )}
+
+                    {isAuditTab && (
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={selectedAuditAction}
+                                onChange={(e) => {
+                                    setSelectedAuditAction(e.target.value);
+                                    setPage(1);
+                                }}
+                                className="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 text-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-gray-900"
+                            >
+                                <option value="ALL">All Actions</option>
+                                <option value="ADMIN_INITIATE_REFUND">Refund Initiated</option>
+                                <option value="ADMIN_REFUND_MARK_SUCCEEDED">Refund Settled</option>
+                                <option value="ADMIN_REFUND_MARK_FAILED">Refund Declined</option>
+                                <option value="ADMIN_PAYMENT_APPROVE">Payment Approved</option>
+                                <option value="ADMIN_PAYMENT_REJECT">Payment Rejected</option>
+                                <option value="ADMIN_PAYMENT_HOLD">Payment On Hold</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className="relative">
@@ -333,6 +494,8 @@ export default function PaymentsPage() {
                         placeholder={
                             isRefundTab
                                 ? "Search by Refund ID, Tran ID, or Order ID..."
+                                : isAuditTab
+                                ? "Search by Actor ID, Payment ID, Refund ID, or Reason..."
                                 : "Search by MFS TrxID, SSL Tran ID, Val ID, Order ID, or Customer Phone..."
                         }
                         className="w-full pl-10 pr-4 py-2 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition"
@@ -343,7 +506,91 @@ export default function PaymentsPage() {
             {/* Table */}
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    {isRefundTab ? (
+                    {isAuditTab ? (
+                        /* AUDIT TRAIL TABLE */
+                        <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 text-gray-500 font-semibold uppercase tracking-wider border-b border-gray-100 text-[11px]">
+                                    <th className="py-3 px-4">Date / Time</th>
+                                    <th className="py-3 px-4">Action</th>
+                                    <th className="py-3 px-4">Actor</th>
+                                    <th className="py-3 px-4">Target Payment / Refund</th>
+                                    <th className="py-3 px-4">State Transition</th>
+                                    <th className="py-3 px-4">Reason / Notes</th>
+                                    <th className="py-3 px-4 text-right">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan={7} className="py-12 text-center text-gray-400">
+                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2" />
+                                            <p>Loading immutable audit trail...</p>
+                                        </td>
+                                    </tr>
+                                ) : (!itemsList || itemsList.length === 0) ? (
+                                    <tr>
+                                        <td colSpan={7} className="py-12 text-center text-gray-400">
+                                            <FiFileText className="mx-auto text-4xl mb-2 text-gray-300" />
+                                            <p className="font-semibold text-gray-600">No audit logs found.</p>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    itemsList.map((log: any) => (
+                                        <tr key={log.id} className="hover:bg-gray-50/80 transition">
+                                            <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
+                                                <div className="font-medium text-gray-900">
+                                                    {log.createdAt ? format(new Date(log.createdAt), "dd MMM yyyy") : "-"}
+                                                </div>
+                                                <div className="text-[10px] text-gray-400">
+                                                    {log.createdAt ? format(new Date(log.createdAt), "hh:mm:ss a") : ""}
+                                                </div>
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                {getAuditActionBadge(log.action)}
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                <div className="font-semibold text-gray-800">{log.actorId}</div>
+                                                <div className="text-[10px] text-gray-400 capitalize">{log.actorRole || "admin"}</div>
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px] text-gray-600">
+                                                {log.refundId ? (
+                                                    <span className="text-purple-700 font-bold">{log.refundId}</span>
+                                                ) : log.paymentId ? (
+                                                    <span>{log.paymentId}</span>
+                                                ) : (
+                                                    "-"
+                                                )}
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                {log.previousState || log.newState ? (
+                                                    <span className="text-gray-700 font-medium">
+                                                        <span className="text-gray-400">{log.previousState || "INITIAL"}</span> → <strong className="text-gray-900">{log.newState}</strong>
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-400">-</span>
+                                                )}
+                                            </td>
+                                            <td className="py-3 px-4 text-gray-700 max-w-xs truncate">
+                                                {log.reason || "-"}
+                                            </td>
+                                            <td className="py-3 px-4 text-right whitespace-nowrap">
+                                                {log.metadata && (
+                                                    <button
+                                                        onClick={() => setMetadataModalItem(log)}
+                                                        className="px-2 py-1 text-[11px] font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition"
+                                                        title="View Metadata"
+                                                    >
+                                                        Metadata
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    ) : isRefundTab ? (
                         /* REFUNDS LEDGER TABLE */
                         <table className="w-full text-left text-xs border-collapse">
                             <thead>
@@ -462,6 +709,8 @@ export default function PaymentsPage() {
                                         const customerName = p.order?.shippingAddress?.name || p.order?.user?.name || "Guest";
                                         const customerPhone = p.order?.shippingAddress?.phone || p.order?.user?.phone || "-";
                                         const orderDisplayId = p.order?.orderId || p.orderId?.slice(0, 8);
+                                        const { remaining } = calculateRefundableBalance(p);
+                                        const isRefundable = p.status === "PAID" && remaining > 0;
 
                                         return (
                                             <tr key={p.id} className="hover:bg-gray-50/80 transition">
@@ -545,6 +794,24 @@ export default function PaymentsPage() {
                                                             <FiEye className="text-sm" />
                                                         </button>
 
+                                                        <button
+                                                            onClick={() => setAuditDrawerPayment(p)}
+                                                            className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                                            title="View Payment Audit History"
+                                                        >
+                                                            <FiActivity className="text-sm" />
+                                                        </button>
+
+                                                        {isRefundable && (
+                                                            <button
+                                                                onClick={() => handleOpenRefundModal(p)}
+                                                                className="px-2 py-1 text-[11px] font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-md transition flex items-center gap-1 shadow-xs"
+                                                                title="Initiate Partial or Full Refund"
+                                                            >
+                                                                <FiRotateCcw className="text-[10px]" /> Refund
+                                                            </button>
+                                                        )}
+
                                                         {p.needsAdminReview && (
                                                             <button
                                                                 onClick={() => setReviewModalPayment(p)}
@@ -588,6 +855,260 @@ export default function PaymentsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Initiate Refund Modal */}
+            {refundModalPayment && (() => {
+                const { alreadyRefunded, remaining } = calculateRefundableBalance(refundModalPayment);
+
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                        <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-gray-100">
+                            <div className="flex items-center justify-between border-b pb-3">
+                                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+                                    <FiRotateCcw className="text-purple-600" /> Initiate Payment Refund
+                                </h3>
+                                <button
+                                    onClick={() => setRefundModalPayment(null)}
+                                    className="text-gray-400 hover:text-gray-700 text-lg"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-100 text-xs space-y-1.5">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500">Transaction ID:</span>
+                                    <span className="font-mono font-bold text-gray-800">{refundModalPayment.tranId}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500">Original Amount:</span>
+                                    <span className="font-bold text-gray-900">৳{Number(refundModalPayment.amount || 0).toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500">Already Refunded:</span>
+                                    <span className="font-bold text-purple-700">৳{alreadyRefunded.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between border-t pt-1 border-purple-200/50">
+                                    <span className="font-semibold text-gray-700">Max Refundable:</span>
+                                    <span className="font-extrabold text-emerald-700">৳{remaining.toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            {/* Refund Type Toggle */}
+                            <div className="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-xl text-xs font-bold text-center">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setRefundType("FULL");
+                                        setRefundAmount(remaining.toFixed(2));
+                                    }}
+                                    className={`py-1.5 rounded-lg transition ${
+                                        refundType === "FULL" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                                    }`}
+                                >
+                                    Full Refund (৳{remaining.toFixed(2)})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setRefundType("PARTIAL");
+                                    }}
+                                    className={`py-1.5 rounded-lg transition ${
+                                        refundType === "PARTIAL" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                                    }`}
+                                >
+                                    Partial Refund
+                                </button>
+                            </div>
+
+                            {/* Amount Input */}
+                            <div>
+                                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                                    Refund Amount (৳ BDT):
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="1"
+                                    max={remaining}
+                                    disabled={refundType === "FULL"}
+                                    value={refundAmount}
+                                    onChange={(e) => setRefundAmount(e.target.value)}
+                                    className="w-full text-xs p-2.5 border border-gray-200 rounded-lg disabled:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-900 font-bold"
+                                />
+                            </div>
+
+                            {/* Reason Select */}
+                            <div>
+                                <label className="text-xs font-semibold text-gray-700 block mb-1">
+                                    Refund Reason:
+                                </label>
+                                <select
+                                    value={refundReasonCategory}
+                                    onChange={(e) => setRefundReasonCategory(e.target.value)}
+                                    className="w-full text-xs p-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                                >
+                                    <option value="Customer Return">Customer Return</option>
+                                    <option value="Out of Stock / Inventory Issue">Out of Stock / Inventory Issue</option>
+                                    <option value="Defective / Damaged Item">Defective / Damaged Item</option>
+                                    <option value="Duplicate Payment">Duplicate Payment</option>
+                                    <option value="Order Cancelled by Customer">Order Cancelled by Customer</option>
+                                    <option value="Other">Other (Custom Reason)</option>
+                                </select>
+                            </div>
+
+                            {refundReasonCategory === "Other" && (
+                                <div>
+                                    <label className="text-xs font-semibold text-gray-700 block mb-1">
+                                        Specify Reason:
+                                    </label>
+                                    <textarea
+                                        value={customRefundReason}
+                                        onChange={(e) => setCustomRefundReason(e.target.value)}
+                                        placeholder="Enter detailed reason for refund..."
+                                        rows={2}
+                                        className="w-full text-xs p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="pt-2 flex items-center justify-between border-t border-gray-100">
+                                <span className="text-[10px] text-gray-400 font-mono">
+                                    Idempotency Key: {refundIdempotencyKey.slice(0, 18)}...
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRefundModalPayment(null)}
+                                        disabled={isSubmittingRefund}
+                                        className="px-4 py-2 border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSubmitRefund}
+                                        disabled={isSubmittingRefund || remaining <= 0}
+                                        className="px-5 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5"
+                                    >
+                                        {isSubmittingRefund ? (
+                                            <>
+                                                <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                Submitting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiRotateCcw /> Submit Refund
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
+
+            {/* Payment-Specific Audit History Drawer / Modal */}
+            {auditDrawerPayment && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-xl border border-gray-100 max-h-[85vh] flex flex-col">
+                        <div className="flex items-center justify-between border-b pb-3">
+                            <div>
+                                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+                                    <FiActivity className="text-indigo-600" /> Payment Audit History
+                                </h3>
+                                <p className="text-xs text-gray-500 font-mono mt-0.5">
+                                    Tran ID: {auditDrawerPayment.tranId} | Amount: ৳{auditDrawerPayment.amount}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setAuditDrawerPayment(null)}
+                                className="text-gray-400 hover:text-gray-700 text-lg"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                            {isDrawerLoading ? (
+                                <div className="py-12 text-center text-gray-400">
+                                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2" />
+                                    <p className="text-xs">Loading audit trail...</p>
+                                </div>
+                            ) : (!drawerAuditLogs || drawerAuditLogs.length === 0) ? (
+                                <div className="py-12 text-center text-gray-400">
+                                    <FiFileText className="mx-auto text-4xl mb-2 text-gray-300" />
+                                    <p className="text-xs font-semibold text-gray-600">No audit records for this transaction yet.</p>
+                                </div>
+                            ) : (
+                                drawerAuditLogs.map((log: any) => (
+                                    <div key={log.id} className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 space-y-1.5 text-xs">
+                                        <div className="flex items-center justify-between">
+                                            {getAuditActionBadge(log.action)}
+                                            <span className="text-[11px] text-gray-400 font-mono">
+                                                {log.createdAt ? format(new Date(log.createdAt), "dd MMM yyyy, hh:mm:ss a") : "-"}
+                                            </span>
+                                        </div>
+                                        <div className="text-gray-600 flex items-center justify-between">
+                                            <span>Actor: <strong className="text-gray-800">{log.actorId}</strong> ({log.actorRole})</span>
+                                            {log.newState && (
+                                                <span className="font-mono text-[11px] text-gray-700">
+                                                    State: {log.previousState || "INITIAL"} → <strong className="text-gray-900">{log.newState}</strong>
+                                                </span>
+                                            )}
+                                        </div>
+                                        {log.reason && (
+                                            <p className="text-gray-700 bg-white p-2 rounded border border-gray-100 italic">
+                                                &quot;{log.reason}&quot;
+                                            </p>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="flex justify-end border-t pt-3">
+                            <button
+                                onClick={() => setAuditDrawerPayment(null)}
+                                className="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Metadata Preview Modal */}
+            {metadataModalItem && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-gray-100">
+                        <div className="flex items-center justify-between border-b pb-3">
+                            <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+                                <FiFileText className="text-gray-600" /> Audit Log Metadata
+                            </h3>
+                            <button
+                                onClick={() => setMetadataModalItem(null)}
+                                className="text-gray-400 hover:text-gray-700 text-lg"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="bg-gray-900 text-emerald-400 p-4 rounded-xl text-xs font-mono overflow-x-auto max-h-60">
+                            <pre>{JSON.stringify(metadataModalItem.metadata, null, 2)}</pre>
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setMetadataModalItem(null)}
+                                className="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Payment Details Drawer / Modal */}
             {activePayment && (
