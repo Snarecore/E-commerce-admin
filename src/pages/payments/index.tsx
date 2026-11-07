@@ -59,13 +59,61 @@ export default function PaymentsPage() {
     // Build URL query string
     const isRefundTab = activeTab === "REFUNDS";
     const isAuditTab = activeTab === "AUDIT";
+    const isDeadLetterTab = activeTab === "DEAD_LETTER";
+
+    const [reconcilingId, setReconcilingId] = useState<string | null>(null);
+    const [replayingEventId, setReplayingEventId] = useState<string | null>(null);
+
+    const handleReconcilePayment = async (paymentId: string) => {
+        setReconcilingId(paymentId);
+        try {
+            const res: any = await handleApiMutation({
+                mutation: postMutation,
+                url: `payments/admin/${paymentId}/reconcile`,
+                body: {},
+                requiredFields: [],
+                showSuccessMessage: false,
+            });
+            const msg = res?.message || res?.data?.message || "Reconciliation completed.";
+            if (res?.success || res?.statusCode === 200) {
+                showSuccessToast(msg);
+            } else {
+                showErrorToast(msg);
+            }
+            refetch();
+        } catch (err: any) {
+            showErrorToast(err?.message || "Reconciliation failed.");
+        } finally {
+            setReconcilingId(null);
+        }
+    };
+
+    const handleReplayOutboxEvent = async (eventId: string) => {
+        setReplayingEventId(eventId);
+        try {
+            const res: any = await handleApiMutation({
+                mutation: postMutation,
+                url: `payments/admin/outbox/${eventId}/replay`,
+                body: {},
+                requiredFields: [],
+                showSuccessMessage: false,
+            });
+            const msg = res?.message || res?.data?.message || "Outbox event re-queued.";
+            showSuccessToast(msg);
+            refetch();
+        } catch (err: any) {
+            showErrorToast(err?.message || "Failed to replay outbox event.");
+        } finally {
+            setReplayingEventId(null);
+        }
+    };
 
     const params = new URLSearchParams();
     params.append("page", String(page));
     params.append("limit", "15");
     if (search.trim()) params.append("search", search.trim());
 
-    if (!isRefundTab && !isAuditTab) {
+    if (!isRefundTab && !isAuditTab && !isDeadLetterTab) {
         if (selectedGateway !== "ALL") params.append("gateway", selectedGateway);
         if (selectedMethod !== "ALL") params.append("paymentMethod", selectedMethod);
         if (activeTab === "PAID") params.append("status", "PAID");
@@ -83,6 +131,8 @@ export default function PaymentsPage() {
         apiUrl = `payments/admin/refunds?${params.toString()}`;
     } else if (isAuditTab) {
         apiUrl = `payments/admin/audit-logs?${params.toString()}`;
+    } else if (isDeadLetterTab) {
+        apiUrl = `payments/admin/outbox/dead-letter?${params.toString()}`;
     }
 
     const {
@@ -405,6 +455,7 @@ export default function PaymentsPage() {
                             { key: "FAILED", label: "Failed" },
                             { key: "REFUNDS", label: "Refunds Ledger" },
                             { key: "AUDIT", label: "Audit Logs" },
+                            { key: "DEAD_LETTER", label: "Dead-Letter Outbox" },
                         ].map((tab) => (
                             <button
                                 key={tab.key}
@@ -672,6 +723,79 @@ export default function PaymentsPage() {
                                 )}
                             </tbody>
                         </table>
+                    ) : isDeadLetterTab ? (
+                        /* DEAD-LETTER OUTBOX TABLE */
+                        <table className="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 text-gray-500 font-semibold uppercase tracking-wider border-b border-gray-100 text-[11px]">
+                                    <th className="py-3 px-4">Event ID / Type</th>
+                                    <th className="py-3 px-4">Aggregate</th>
+                                    <th className="py-3 px-4">Attempts / Replays</th>
+                                    <th className="py-3 px-4">Failure Reason</th>
+                                    <th className="py-3 px-4">Last Updated</th>
+                                    <th className="py-3 px-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan={6} className="py-12 text-center text-gray-400">
+                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2" />
+                                            <p>Loading dead-letter outbox queue...</p>
+                                        </td>
+                                    </tr>
+                                ) : (!itemsList || itemsList.length === 0) ? (
+                                    <tr>
+                                        <td colSpan={6} className="py-12 text-center text-gray-400">
+                                            <FiShield className="mx-auto text-4xl mb-2 text-emerald-400" />
+                                            <p className="font-semibold text-gray-600">No dead-letter events found.</p>
+                                            <p className="text-xs text-gray-400">Transactional outbox is operating cleanly.</p>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    itemsList.map((e: any) => (
+                                        <tr key={e.id} className="hover:bg-gray-50/80 transition">
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                <div className="font-bold text-gray-900 font-mono text-[11px]">{e.id?.slice(0, 8)}...</div>
+                                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                    {e.eventType}
+                                                </span>
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                <span className="font-semibold text-gray-700">{e.aggregateType}: </span>
+                                                <span className="font-mono text-gray-600 text-[11px]">{e.aggregateId}</span>
+                                            </td>
+                                            <td className="py-3 px-4 whitespace-nowrap">
+                                                <span className="text-rose-600 font-bold">{e.retryCount} retries</span>
+                                                {Number(e.replayCount) > 0 && (
+                                                    <span className="text-purple-600 font-semibold text-[11px] block">
+                                                        ({e.replayCount} manual replay{e.replayCount > 1 ? "s" : ""})
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="py-3 px-4 text-gray-700 max-w-xs truncate" title={e.failureReason}>
+                                                <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-100 text-[11px]">
+                                                    {e.failureReason || "Maximum dispatch attempts reached"}
+                                                </span>
+                                            </td>
+                                            <td className="py-3 px-4 text-gray-600 whitespace-nowrap text-[11px]">
+                                                {e.updatedAt ? format(new Date(e.updatedAt), "dd MMM yyyy, hh:mm a") : "-"}
+                                            </td>
+                                            <td className="py-3 px-4 text-right whitespace-nowrap">
+                                                <button
+                                                    onClick={() => handleReplayOutboxEvent(e.id)}
+                                                    disabled={replayingEventId === e.id}
+                                                    className="px-3 py-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition shadow-xs flex items-center gap-1.5 ml-auto disabled:opacity-50"
+                                                >
+                                                    <FiRotateCcw className={replayingEventId === e.id ? "animate-spin" : ""} />
+                                                    Replay Event
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     ) : (
                         /* PAYMENTS TABLE */
                         <table className="w-full text-left text-xs border-collapse">
@@ -809,6 +933,17 @@ export default function PaymentsPage() {
                                                                 title="Initiate Partial or Full Refund"
                                                             >
                                                                 <FiRotateCcw className="text-[10px]" /> Refund
+                                                            </button>
+                                                        )}
+
+                                                        {(p.status === "PENDING" || p.needsAdminReview || p.status === "UNKNOWN") && (
+                                                            <button
+                                                                onClick={() => handleReconcilePayment(p.id)}
+                                                                disabled={reconcilingId === p.id}
+                                                                className="px-2 py-1 text-[11px] font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-md transition flex items-center gap-1 shadow-xs disabled:opacity-50"
+                                                                title="Verify & Reconcile with Gateway"
+                                                            >
+                                                                <FiRefreshCw className={`text-[10px] ${reconcilingId === p.id ? "animate-spin" : ""}`} /> Reconcile
                                                             </button>
                                                         )}
 
