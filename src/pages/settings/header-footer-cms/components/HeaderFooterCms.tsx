@@ -147,7 +147,7 @@ const HeaderFooterCmsForm = () => {
                         value={typeof fieldValues.headerLogo === 'string' ? fieldValues.headerLogo : URL.createObjectURL(fieldValues.headerLogo)}
                     />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Banner Text: <span className="text-red-500">*</span>
@@ -182,7 +182,7 @@ const HeaderFooterCmsForm = () => {
                         value={typeof fieldValues.footerLogo === 'string' ? fieldValues.footerLogo : URL.createObjectURL(fieldValues.footerLogo)}
                     />
                 </div>
-                <div className="grid grid-cols-1 gap-6 mb-8">
+                <div className="grid grid-cols-1 gap-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Footer Description: <span className="text-red-500">*</span>
@@ -197,7 +197,7 @@ const HeaderFooterCmsForm = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Copyright Text: <span className="text-red-500">*</span>
@@ -225,7 +225,7 @@ const HeaderFooterCmsForm = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Contact Phone: <span className="text-red-500">*</span>
@@ -253,7 +253,7 @@ const HeaderFooterCmsForm = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Footer Section Two Title: <span className="text-red-500">*</span>
@@ -281,7 +281,7 @@ const HeaderFooterCmsForm = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     {[{
                         title: "Footer Section Two",
                         section: footerSectionTwo,

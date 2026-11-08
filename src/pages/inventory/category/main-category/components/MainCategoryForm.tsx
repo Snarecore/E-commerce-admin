@@ -122,7 +122,7 @@ const MainCategoryForm = ({ isOpen, onClose, editData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
                 <div>
                     <h3 className="block text-sm font-medium text-[var(--ui-text)]">Image:
                     <span className="text-xs text-[var(--ui-text-muted)] ml-1">(Width: 80px)</span>

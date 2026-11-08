@@ -105,7 +105,7 @@ const QuickAdjustModal: React.FC<QuickAdjustModalProps> = ({ isOpen, onClose, pr
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-5 space-y-4 text-sm">
+                <form onSubmit={handleSubmit} className="p-5 space-y-3 text-sm">
                     {/* Size Selector (if variants exist) */}
                     {sizes.length > 0 && (
                         <div>

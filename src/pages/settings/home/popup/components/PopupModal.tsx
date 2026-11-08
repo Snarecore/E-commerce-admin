@@ -186,7 +186,7 @@ const PopupModal: React.FC<PopupModalProps> = ({
                 </>
             }
         >
-            <div className="space-y-4 text-sm text-left">
+            <div className="space-y-3 text-sm text-left">
                 {/* Image Upload */}
                 <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">

@@ -106,7 +106,7 @@ const FaqForm = ({ isOpen, onClose, editData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
                 
                 <div>
                     <InputField label="Question" type="text" name="question" value={fieldValues.question} required onChange={handleChange} />

@@ -92,7 +92,7 @@ const SocialLinksForm = ({ isOpen, onClose, editData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
                 <div>
                     <h3 className="block text-sm font-medium text-gray-700">Image (Recommended Size: 512*512 PX)</h3>
                     <ImageUpload

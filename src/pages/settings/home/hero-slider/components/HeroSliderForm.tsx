@@ -125,7 +125,7 @@ const HeroSliderForm = ({ isOpen, onClose, editData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
                 <div>
                     <h3 className="block text-sm font-medium text-gray-700">Image:
                         <span className="text-xs text-gray-500 ml-1">(Recommended Size: 1920x400 PX)</span>

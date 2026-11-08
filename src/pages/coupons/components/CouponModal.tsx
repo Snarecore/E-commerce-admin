@@ -97,7 +97,7 @@ const CouponModal: React.FC<CouponModalProps> = ({
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 text-sm text-left">
+                <form onSubmit={handleSubmit} className="space-y-3 text-sm text-left">
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1">
                             Coupon Code <span className="text-red-500">*</span>

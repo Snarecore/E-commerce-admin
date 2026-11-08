@@ -94,7 +94,7 @@ const CreateAdminForm = ({ isOpen, onClose, editData, fetchData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
                 <div>
                     <InputField label="Name" type="text"
                         name="name"

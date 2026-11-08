@@ -98,9 +98,9 @@ const ProductMetaForm = ({ isOpen, onClose, editData }: PageMetaFormProps) => {
                 </>
             }
         >
-            <div className="space-y-6">
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-4">
+                <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-3">
                         <InputField
                             label="Product Name"
                             type="text"

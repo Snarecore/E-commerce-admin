@@ -131,7 +131,7 @@ const HomePageCmsForm = () => {
     return (
         <div>
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-1 gap-6 mb-12 bg-gray-50 p-4 rounded-lg">
+                <div className="grid grid-cols-1 gap-3 mb-6 bg-gray-50 p-4 rounded-lg">
                     <div>
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Category
@@ -157,7 +157,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section One */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 bg-gray-50 p-4 rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-xl">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section One
@@ -208,7 +208,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section Two */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 bg-gray-50 p-4 rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-xl">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section Two
@@ -259,7 +259,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section Three */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 bg-gray-50 p-4 rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-xl">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section Three
@@ -310,7 +310,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section Four */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 bg-gray-50 p-4 rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-xl">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section Four
@@ -361,7 +361,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section Five */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 bg-gray-50 p-4 rounded-md">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-md">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section Five
@@ -412,7 +412,7 @@ const HomePageCmsForm = () => {
                 </div>
 
                 {/* Product Section Six */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-gray-50 p-4 rounded-md">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-6 bg-gray-50 p-4 rounded-md">
                     <div className="col-span-2">
                         <p className="text-xl font-bold flex items-center justify-between gap-2">
                             Product Section Six

@@ -206,7 +206,7 @@ const SecondCategoryForm = ({ isOpen, onClose, editData }: any) => {
 				</>
 			}
 		>
-			<div className="space-y-4">
+			<div className="space-y-3">
 				<div>
 					<p className="block text-sm font-medium text-[var(--ui-text)]">
 						Banner Image:

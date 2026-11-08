@@ -98,12 +98,12 @@ const PageMetaForm = ({ isOpen, onClose, editData }: PageMetaFormProps) => {
                 </>
             }
         >
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {/* Basic Information Section */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">Basic Information</h2>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 gap-6">
+                <div className="bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-700 mb-3">Basic Information</h2>
+                    <div className="space-y-3">
+                        <div className="grid grid-cols-1 gap-3">
                             <InputField
                                 label="Page"
                                 type="text"
@@ -113,7 +113,7 @@ const PageMetaForm = ({ isOpen, onClose, editData }: PageMetaFormProps) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 gap-3">
                             <InputField
                                 label="Meta Title"
                                 type="text"
@@ -123,21 +123,21 @@ const PageMetaForm = ({ isOpen, onClose, editData }: PageMetaFormProps) => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="grid grid-cols-1 gap-2">
-                            <p>Meta Description <span className="text-red-500 font-bold">*</span></p>
+                        <div className="grid grid-cols-1 gap-1.5">
+                            <p className="text-sm font-medium text-[var(--ui-text)]">Meta Description <span className="text-red-500 font-bold">*</span></p>
                             <textarea
                                 label="Meta Description"
                                 type="textarea"
                                 name="metaDescription"
                                 value={fieldValues.metaDescription}
                                 required
-                                rows={4}
+                                rows={3}
                                 // @ts-ignore
                                 onChange={handleChange}
-                                className="border border-gray-300 bg-white rounded-md p-2 text-justify"
+                                className="border border-gray-300 bg-white rounded-md p-2 text-sm"
                             />
                         </div>
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 gap-3">
                             <InputField
                                 label="Meta Keywords"
                                 type="text"

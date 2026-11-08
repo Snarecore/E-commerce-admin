@@ -103,7 +103,7 @@ const UserForm = ({ isOpen, onClose, editData }: any) => {
                 </>
             }
         >
-            <div className="space-y-4">
+            <div className="space-y-3">
 
                 <div>
                     <InputField label="Name" type="text" name="name" value={fieldValues.name} required onChange={handleChange} />

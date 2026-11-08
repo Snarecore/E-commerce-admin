@@ -175,7 +175,7 @@ const FirstCategoryForm = ({ isOpen, onClose, editData }: any) => {
 				</>
 			}
 		>
-			<div className="space-y-4">
+			<div className="space-y-3">
 				<div>
 					<h3 className="block text-sm font-medium text-[var(--ui-text)]">Banner Image:
 						<span className="text-xs text-[var(--ui-text-muted)] ml-1">(Recommended Size: 1920x192 PX)</span>

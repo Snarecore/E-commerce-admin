@@ -75,7 +75,7 @@ const PolicyNineForm = () => {
     return (
         <div>
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
                     <div>
                         <label className="block text-[14px] font-medium text-[#212b36] mb-1">
                             Page Title<span className="text-red-500">*</span>
@@ -90,7 +90,7 @@ const PolicyNineForm = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1  gap-6 mb-8">
+                <div className="grid grid-cols-1  gap-3 mb-5">
                     <TextEditor
                         value={fieldValues?.description}
                         onChange={(value) =>
