@@ -73,13 +73,13 @@ const UserTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-white rounded-lg border border-gray-200">
-            <div className="mt-4 w-full overflow-x-auto">
+        <div className="p-4 sm:p-5 bg-white rounded-lg border border-gray-200">
+            <div className="mt-3 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[900px]">
                     <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-sm border-b border-gray-200">
+                        <tr className="text-gray-600 text-[13px] border-b border-gray-200">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left text-[#000000e0]">
+                                <th key={key} className="px-4 py-2.5 text-left font-semibold text-[#000000e0]">
                                     {label}
                                 </th>
                             ))}
@@ -92,24 +92,24 @@ const UserTable = ({
                                     key={data.id}
                                     className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
                                 >
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-gray-800">
                                         {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-gray-800">
                                         {data.name}
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-gray-800">
                                         {data.email}
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-gray-800">
                                         {data.phone}
                                     </td>
                                     
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-1.5">
                                             <button
                                                 onClick={() => openDeleteModal(data)}
-                                                className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+                                                className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300">
                                                 <FiTrash2 />
                                             </button>
                                         </div>
@@ -120,7 +120,7 @@ const UserTable = ({
                             <tr>
                                 <td
                                     colSpan={tableHeaders.length}
-                                    className="px-6 py-4 text-center italic"
+                                    className="px-4 py-4 text-center italic"
                                 >
                                     <EmptyState title="No admin available" description="Can't find any admin? Invest more to the developers!" />
                                 </td>

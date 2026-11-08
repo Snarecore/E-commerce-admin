@@ -351,9 +351,9 @@ const ProductsTable = ({
 			<div className="mt-4 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[1300px] cursor-pointer">
 					<thead className="bg-[var(--ui-surface-muted)]">
-						<tr className="text-[14px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
+						<tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
 							{tableHeaders.map(({ key, label }) => (
-								<th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
+								<th key={key} className="px-4 py-2.5 text-left font-semibold text-[var(--ui-text)]">
 									<span>{label}</span>
 								</th>
 							))}
@@ -370,22 +370,22 @@ const ProductsTable = ({
 									key={data.id}
 									className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
 								>
-									<td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
+									<td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">
 										{(currentPageNumber - 1) * (dataLimit || 10) + index + 1}
 									</td>
 
-									<td className="px-6 py-4 flex items-center gap-2">
+									<td className="px-4 py-2.5 flex items-center gap-2">
 										<img
 											src={data.featuredImage}
 											alt={data.name}
-											className="w-10 h-10 rounded-md shadow-sm border border-[var(--ui-border)] object-cover"
+											className="w-9 h-9 rounded-md shadow-sm border border-[var(--ui-border)] object-cover"
 										/>
 										<span className="font-medium text-[var(--ui-text)]">
 											{data.name}
 										</span>
 									</td>
 
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5">
 										<div className="flex flex-col">
 											<span className="text-sm font-medium text-[var(--ui-text)]">
 												{data.mainCategoryName || <span className="text-[var(--ui-text-muted)] opacity-60 italic">No Category</span>}
@@ -398,8 +398,8 @@ const ProductsTable = ({
 										</div>
 									</td>
 
-									<td className="px-6 py-4 text-[var(--ui-text-muted)]">{data.sku}</td>
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5 text-[var(--ui-text-muted)]">{data.sku}</td>
+									<td className="px-4 py-2.5">
 										{(() => {
 											const basePrice = Number(data.price) || 0;
 											const dAmount = Number((data as any).discountAmount) || 0;
@@ -432,34 +432,34 @@ const ProductsTable = ({
 										})()}
 									</td>
 
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5">
 										{(() => {
 											const totalQty = data.totalStock !== undefined ? Number(data.totalStock) : (Number(data.quantity) || 0);
 											const status = data.stockStatus || (totalQty === 0 ? 'OUT_OF_STOCK' : totalQty <= Number(data.quantityAlert || 5) ? 'LOW_STOCK' : 'IN_STOCK');
 
 											if (status === 'OUT_OF_STOCK' || totalQty === 0) {
 												return (
-													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
+													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
 														Out of Stock
 													</span>
 												);
 											}
 											if (status === 'LOW_STOCK') {
 												return (
-													<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
 														Low Stock ({totalQty})
 													</span>
 												);
 											}
 											return (
-												<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+												<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
 													In Stock ({totalQty})
 												</span>
 											);
 										})()}
 									</td>
 
-									<td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+									<td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
 										<div className="flex items-center gap-2">
 											<label className="relative inline-flex items-center cursor-pointer">
 												<input
@@ -478,22 +478,22 @@ const ProductsTable = ({
 										</div>
 									</td>
 
-									<td className="px-6 py-4">
-										<div className="flex items-center gap-2">
+									<td className="px-4 py-2.5">
+										<div className="flex items-center gap-1.5">
 											<Link to={`/product-details/${data.id}`}
-												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors">
+												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors">
 												<FiEye />
 											</Link>
 											<Link
 												to="/edit-product"
 												state={{ editData: data }}
-												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors"
+												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors"
 											>
 												<FaEdit />
 											</Link>
 											<button
 												onClick={() => openDeleteModal(data)}
-												className="inline-flex items-center justify-center hover:bg-red-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 p-2 rounded-md cursor-pointer transition-colors"
+												className="inline-flex items-center justify-center hover:bg-red-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 p-1.5 rounded-md cursor-pointer transition-colors"
 											>
 												<FiTrash2 />
 											</button>
@@ -503,11 +503,11 @@ const ProductsTable = ({
 													setIsQuickAdjustOpen(true);
 												}}
 												title="Quick Adjust Stock"
-												className="inline-flex items-center justify-center hover:bg-emerald-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-emerald-600 p-2 rounded-md cursor-pointer transition-colors"
+												className="inline-flex items-center justify-center hover:bg-emerald-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-emerald-600 p-1.5 rounded-md cursor-pointer transition-colors"
 											>
 												<MdOutlineTune />
 											</button>
-											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors">
+											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors">
 												<FaEllipsisVertical />
 											</button>
 										</div>
@@ -516,7 +516,7 @@ const ProductsTable = ({
 							))
 						) : (
 							<tr>
-								<td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic">
+								<td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic">
 									<EmptyState title="No matching products. Try adjusting your filters." />
 								</td>
 							</tr>

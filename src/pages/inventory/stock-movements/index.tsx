@@ -120,49 +120,49 @@ const StockMovementsPage = () => {
             <div className="bg-[var(--ui-surface,#ffffff)] border border-[var(--ui-border,#e5e7eb)] rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-[var(--ui-surface-sunken,#f9fafb)] text-[var(--ui-text-muted)] text-xs uppercase border-b border-[var(--ui-border,#e5e7eb)]">
+                        <thead className="bg-[var(--ui-surface-sunken,#f9fafb)] text-[var(--ui-text-muted)] text-[11px] uppercase border-b border-[var(--ui-border,#e5e7eb)]">
                             <tr>
-                                <th className="px-4 py-3">Timestamp</th>
-                                <th className="px-4 py-3">SKU / Product ID</th>
-                                <th className="px-4 py-3">Variant</th>
-                                <th className="px-4 py-3">Movement Type</th>
-                                <th className="px-4 py-3 text-center">Change</th>
-                                <th className="px-4 py-3 text-center">On-Hand (Before → After)</th>
-                                <th className="px-4 py-3">Reference</th>
-                                <th className="px-4 py-3">Performed By</th>
+                                <th className="px-3.5 py-2.5">Timestamp</th>
+                                <th className="px-3.5 py-2.5">SKU / Product ID</th>
+                                <th className="px-3.5 py-2.5">Variant</th>
+                                <th className="px-3.5 py-2.5">Movement Type</th>
+                                <th className="px-3.5 py-2.5 text-center">Change</th>
+                                <th className="px-3.5 py-2.5 text-center">On-Hand (Before → After)</th>
+                                <th className="px-3.5 py-2.5">Reference</th>
+                                <th className="px-3.5 py-2.5">Performed By</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--ui-border,#e5e7eb)]">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={8} className="text-center py-12 text-[var(--ui-text-muted)]">
+                                    <td colSpan={8} className="text-center py-10 text-[var(--ui-text-muted)]">
                                         Loading ledger movements...
                                     </td>
                                 </tr>
                             ) : movements.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="text-center py-12 text-[var(--ui-text-muted)]">
+                                    <td colSpan={8} className="text-center py-10 text-[var(--ui-text-muted)]">
                                         No stock movements recorded yet.
                                     </td>
                                 </tr>
                             ) : (
                                 movements.map((m) => (
                                     <tr key={m.id} className="hover:bg-[var(--ui-surface-hover,#f9fafb)] transition-colors">
-                                        <td className="px-4 py-3 text-xs text-[var(--ui-text-muted)]">
+                                        <td className="px-3.5 py-2.5 text-xs text-[var(--ui-text-muted)]">
                                             {formatDate(m.createdAt)}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-3.5 py-2.5">
                                             <p className="font-medium text-xs text-[var(--ui-text)]">{m.sku || m.productId}</p>
                                         </td>
-                                        <td className="px-4 py-3 text-xs font-medium text-[var(--ui-text)]">
+                                        <td className="px-3.5 py-2.5 text-xs font-medium text-[var(--ui-text)]">
                                             {m.size || "Standard"}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-3.5 py-2.5">
                                             <span className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${getBadgeStyle(m.movementType)}`}>
                                                 {m.movementType}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-center font-bold">
+                                        <td className="px-3.5 py-2.5 text-center font-bold">
                                             <span
                                                 className={
                                                     m.quantityChange > 0
@@ -175,15 +175,15 @@ const StockMovementsPage = () => {
                                                 {m.quantityChange > 0 ? `+${m.quantityChange}` : m.quantityChange}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 text-center text-xs font-mono">
+                                        <td className="px-3.5 py-2.5 text-center text-xs font-mono">
                                             <span className="text-[var(--ui-text-muted)]">{m.onHandBefore}</span>
                                             {" → "}
                                             <span className="font-bold text-[var(--ui-text)]">{m.onHandAfter}</span>
                                         </td>
-                                        <td className="px-4 py-3 text-xs text-[var(--ui-text)] font-semibold">
+                                        <td className="px-3.5 py-2.5 text-xs text-[var(--ui-text)] font-semibold">
                                             {m.referenceId || m.referenceType}
                                         </td>
-                                        <td className="px-4 py-3 text-xs text-[var(--ui-text-muted)]">
+                                        <td className="px-3.5 py-2.5 text-xs text-[var(--ui-text-muted)]">
                                             {m.performedByName || m.performedBy || "System"}
                                         </td>
                                     </tr>

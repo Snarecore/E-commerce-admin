@@ -77,10 +77,10 @@
   --ui-shadow-popover: 0 16px 36px -12px rgba(15, 23, 42, 0.28), 0 4px 12px -6px rgba(15, 23, 42, 0.14);
 
   /* Tables */
-  --ui-table-row-h: 46px;
-  --ui-table-cell-px: 14px;
-  --ui-table-cell-py: 10px;
-  --ui-page-padding: 24px;
+  --ui-table-row-h: 40px;
+  --ui-table-cell-px: 13px;
+  --ui-table-cell-py: 9px;
+  --ui-page-padding: 20px;
 
   /* Focus ring */
   --ui-focus-ring: color-mix(in srgb, var(--primary-color) 22%, transparent);

@@ -346,7 +346,7 @@ const OrderTable = ({
                     <thead className="bg-[var(--ui-surface-muted)]">
                         <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
+                                <th key={key} className="px-4 py-3 text-left font-semibold text-[var(--ui-text)]">
                                     {label}
                                 </th>
                             ))}
@@ -360,7 +360,7 @@ const OrderTable = ({
                                     className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                 >
                                     {/* Product Image Thumbnail */}
-                                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                    <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
                                         {(() => {
                                             const imgUrl = getFirstProductImage(data);
                                             const itemCount = getProductItemCount(data);
@@ -369,7 +369,7 @@ const OrderTable = ({
 
                                             return (
                                                 <div
-                                                    className="relative group w-10 h-10 flex-shrink-0 cursor-pointer"
+                                                    className="relative group w-9 h-9 flex-shrink-0 cursor-pointer"
                                                     onClick={() => navigate(`/order-detail/${data.id}`)}
                                                     title={title}
                                                 >
@@ -377,7 +377,7 @@ const OrderTable = ({
                                                         <img
                                                             src={imgUrl}
                                                             alt={title}
-                                                            className="w-10 h-10 rounded-lg object-cover border border-[var(--ui-border)] shadow-xs bg-[var(--ui-surface-muted)] hover:scale-105 transition-transform duration-200"
+                                                            className="w-9 h-9 rounded-lg object-cover border border-[var(--ui-border)] shadow-xs bg-[var(--ui-surface-muted)] hover:scale-105 transition-transform duration-200"
                                                             onError={(e) => {
                                                                 (e.target as HTMLElement).style.display = "none";
                                                                 const fallback = (e.target as HTMLElement).nextElementSibling;
@@ -385,8 +385,8 @@ const OrderTable = ({
                                                             }}
                                                         />
                                                     ) : null}
-                                                    <div className={`w-10 h-10 rounded-lg bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] flex items-center justify-center text-[var(--ui-text-muted)] ${imgUrl ? 'hidden' : ''}`}>
-                                                        <FiPackage className="text-[var(--ui-text-muted)] text-lg" />
+                                                    <div className={`w-9 h-9 rounded-lg bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] flex items-center justify-center text-[var(--ui-text-muted)] ${imgUrl ? 'hidden' : ''}`}>
+                                                        <FiPackage className="text-[var(--ui-text-muted)] text-base" />
                                                     </div>
                                                     {itemCount > 1 && (
                                                         <span className="absolute -bottom-1 -right-1 bg-gray-900 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 shadow leading-none">
@@ -399,15 +399,15 @@ const OrderTable = ({
                                     </td>
 
                                     {/* Sl */}
-                                    <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">
                                         {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
                                     {/* Order ID */}
-                                    <td className="px-6 py-4 font-semibold text-[var(--primary-color)]">
+                                    <td className="px-4 py-2.5 font-semibold text-[var(--primary-color)]">
                                         #{data.orderId}
                                     </td>
                                     {/* Customer */}
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 py-2.5">
                                         {(() => {
                                             const custPhone = getDisplayCustomerPhone(data);
                                             const custContact = custPhone || getDisplayCustomerContact(data);
@@ -439,13 +439,13 @@ const OrderTable = ({
                                         })()}
                                     </td>
                                     {/* Amount */}
-                                    <td className="px-6 py-4 font-semibold text-[var(--ui-text)]">
+                                    <td className="px-4 py-2.5 font-semibold text-[var(--ui-text)]">
                                         ৳{Number(data.totalAmount || 0).toFixed(2)}
                                     </td>
                                     {/* Payment Status & Method */}
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 py-2.5">
                                         <div className="flex flex-col gap-1">
-                                            <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit ${
+                                            <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md flex items-center w-fit ${
                                                 data.paymentStatus === "Paid"
                                                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                                                     : data.paymentStatus === "Review Required"
@@ -468,51 +468,51 @@ const OrderTable = ({
                                         </div>
                                     </td>
                                     {/* Order Status */}
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit ${getStatusBadgeClass(data.status)}`}>
+                                    <td className="px-4 py-2.5">
+                                        <span className={`px-2.5 py-0.5 text-[11px] font-semibold rounded-md flex items-center w-fit ${getStatusBadgeClass(data.status)}`}>
                                             {data.status}
                                         </span>
                                     </td>
                                     {/* Date */}
-                                    <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)] text-sm">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] text-xs">
                                         {formatPrettyDateWithTime(
                                             data?.createdAt || (data as any)?.created_at || (data as any)?.date || (data as any)?.updatedAt
                                         )}
                                     </td>
                                     {/* Actions */}
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-1.5">
                                             {/* View Detail */}
                                             <button
                                                 onClick={() => handleViewDetail(data)}
                                                 title="View Detail"
-                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
+                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
-                                                <FiEye className="w-4 h-4" />
+                                                <FiEye className="w-3.5 h-3.5" />
                                             </button>
                                             {/* Chat */}
                                             <button
                                                 onClick={() => handleChat(data)}
                                                 title="Chat with Customer"
-                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
+                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
-                                                <FiMessageSquare className="w-4 h-4" />
+                                                <FiMessageSquare className="w-3.5 h-3.5" />
                                             </button>
                                             {/* Block Customer */}
                                             <button
                                                 onClick={() => handleOpenBlockModal(data)}
                                                 title="Block Customer / Add to Blacklist"
-                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
+                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
-                                                <FiShield className="w-4 h-4" />
+                                                <FiShield className="w-3.5 h-3.5" />
                                             </button>
                                             {/* Delete Order */}
                                             <button
                                                 onClick={() => handleOpenDeleteModal(data)}
                                                 title="Delete Order"
-                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
+                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
-                                                <FiTrash2 className="w-4 h-4" />
+                                                <FiTrash2 className="w-3.5 h-3.5" />
                                             </button>
                                         </div>
                                     </td>
@@ -520,7 +520,7 @@ const OrderTable = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic text-[var(--ui-text-muted)]">
+                                <td colSpan={tableHeaders.length} className="px-4 py-3 text-center italic text-[var(--ui-text-muted)]">
                                     <EmptyState
                                         title="No orders found."
                                         description="Try adjusting filters or check back later!"

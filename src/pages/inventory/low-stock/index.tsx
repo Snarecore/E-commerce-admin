@@ -218,19 +218,19 @@ const LowStockAlertsPage: React.FC = () => {
                     <table className="w-full text-left text-xs">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider">
-                                <th className="px-5 py-3.5">Product</th>
-                                <th className="px-4 py-3.5">Category</th>
-                                <th className="px-4 py-3.5 text-center">Alert Limit</th>
-                                <th className="px-4 py-3.5 text-center">Current Stock</th>
-                                <th className="px-4 py-3.5">Size Stock Breakdown</th>
-                                <th className="px-4 py-3.5 text-right">Unit Cost / Price</th>
-                                <th className="px-5 py-3.5 text-center">Action</th>
+                                <th className="px-3.5 py-2.5">Product</th>
+                                <th className="px-3 py-2.5">Category</th>
+                                <th className="px-3 py-2.5 text-center">Alert Limit</th>
+                                <th className="px-3 py-2.5 text-center">Current Stock</th>
+                                <th className="px-3 py-2.5">Size Stock Breakdown</th>
+                                <th className="px-3 py-2.5 text-right">Unit Cost / Price</th>
+                                <th className="px-3.5 py-2.5 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {isLoadingProducts ? (
                                 <tr>
-                                    <td colSpan={7} className="px-5 py-10 text-center text-gray-400">
+                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                                         <div className="flex items-center justify-center gap-2">
                                             <FiRefreshCw className="w-4 h-4 animate-spin text-orange-500" />
                                             <span>Loading low stock alerts...</span>
@@ -239,7 +239,7 @@ const LowStockAlertsPage: React.FC = () => {
                                 </tr>
                             ) : products.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-5 py-12 text-center text-gray-400 italic">
+                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-400 italic">
                                         🎉 No low stock or depleted items found. Inventory is healthy!
                                     </td>
                                 </tr>
@@ -257,16 +257,16 @@ const LowStockAlertsPage: React.FC = () => {
                                     return (
                                         <tr key={item.id} className="hover:bg-gray-50/80 transition-colors">
                                             {/* Product Info */}
-                                            <td className="px-5 py-3.5">
-                                                <div className="flex items-center gap-3">
+                                            <td className="px-3.5 py-2.5">
+                                                <div className="flex items-center gap-2.5">
                                                     {item.featuredImage ? (
                                                         <img
                                                             src={item.featuredImage}
                                                             alt={item.name}
-                                                            className="w-11 h-11 object-cover rounded-lg border border-gray-200 shrink-0"
+                                                            className="w-9 h-9 object-cover rounded-lg border border-gray-200 shrink-0"
                                                         />
                                                     ) : (
-                                                        <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 text-[10px]">
+                                                        <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 text-[10px]">
                                                             No Img
                                                         </div>
                                                     )}
@@ -282,19 +282,19 @@ const LowStockAlertsPage: React.FC = () => {
                                             </td>
 
                                             {/* Category */}
-                                            <td className="px-4 py-3.5 text-gray-600">
+                                            <td className="px-3 py-2.5 text-gray-600">
                                                 <span>{item.mainCategoryName || "General"}</span>
                                             </td>
 
                                             {/* Alert Limit */}
-                                            <td className="px-4 py-3.5 text-center text-gray-500 font-medium">
+                                            <td className="px-3 py-2.5 text-center text-gray-500 font-medium">
                                                 ≤ {threshold} pcs
                                             </td>
 
                                             {/* Current Stock */}
-                                            <td className="px-4 py-3.5 text-center">
+                                            <td className="px-3 py-2.5 text-center">
                                                 <span
-                                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${
                                                         isOOS
                                                             ? "bg-red-100 text-red-700 border border-red-200 animate-pulse"
                                                             : "bg-amber-100 text-amber-800 border border-amber-200"
@@ -305,7 +305,7 @@ const LowStockAlertsPage: React.FC = () => {
                                             </td>
 
                                             {/* Size Stock Breakdown */}
-                                            <td className="px-4 py-3.5">
+                                            <td className="px-3 py-2.5">
                                                 {sizeEntries.length > 0 ? (
                                                     <div className="flex flex-wrap gap-1 max-w-xs">
                                                         {sizeEntries.map(([size, count]) => {
@@ -332,7 +332,7 @@ const LowStockAlertsPage: React.FC = () => {
                                             </td>
 
                                             {/* Valuation */}
-                                            <td className="px-4 py-3.5 text-right">
+                                            <td className="px-3 py-2.5 text-right">
                                                 <div className="font-semibold text-gray-800">
                                                     ৳{Number(item.price || 0).toFixed(2)}
                                                 </div>
@@ -342,10 +342,10 @@ const LowStockAlertsPage: React.FC = () => {
                                             </td>
 
                                             {/* Action: Quick Adjust */}
-                                            <td className="px-5 py-3.5 text-center">
+                                            <td className="px-3.5 py-2.5 text-center">
                                                 <button
                                                     onClick={() => setAdjustingProduct(item)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 rounded-lg text-xs font-bold transition cursor-pointer"
+                                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 rounded-lg text-xs font-bold transition cursor-pointer"
                                                     title="Quickly restock or adjust stock"
                                                 >
                                                     <FiPlusCircle className="w-3.5 h-3.5 text-orange-600" />

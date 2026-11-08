@@ -166,21 +166,21 @@ const CouponsPage = () => {
                         <table className="w-full text-left text-xs text-gray-600">
                             <thead className="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold">
                                 <tr>
-                                    <th className="py-3.5 px-4">Coupon Code</th>
-                                    <th className="py-3.5 px-4">Discount</th>
-                                    <th className="py-3.5 px-4">Min Subtotal</th>
-                                    <th className="py-3.5 px-4">Validity Period</th>
-                                    <th className="py-3.5 px-4">Redemptions</th>
-                                    <th className="py-3.5 px-4">Active</th>
-                                    <th className="py-3.5 px-4 text-right">Actions</th>
+                                    <th className="py-2.5 px-3.5">Coupon Code</th>
+                                    <th className="py-2.5 px-3.5">Discount</th>
+                                    <th className="py-2.5 px-3.5">Min Subtotal</th>
+                                    <th className="py-2.5 px-3.5">Validity Period</th>
+                                    <th className="py-2.5 px-3.5">Redemptions</th>
+                                    <th className="py-2.5 px-3.5">Active</th>
+                                    <th className="py-2.5 px-3.5 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {coupons.map((coupon) => (
                                     <tr key={coupon.id} className="hover:bg-gray-50/60 transition">
-                                        <td className="py-3.5 px-4 font-mono font-bold text-gray-900">
+                                        <td className="py-2.5 px-3.5 font-mono font-bold text-gray-900">
                                             <div className="flex items-center gap-2">
-                                                <span className="bg-orange-50 text-orange-600 px-2.5 py-1 rounded-md border border-orange-200">
+                                                <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-md border border-orange-200">
                                                     {coupon.code}
                                                 </span>
                                                 <button
@@ -201,7 +201,7 @@ const CouponsPage = () => {
                                                 </p>
                                             )}
                                         </td>
-                                        <td className="py-3.5 px-4">
+                                        <td className="py-2.5 px-3.5">
                                             <span className="font-bold text-gray-800">
                                                 {getDiscountLabel(coupon)}
                                             </span>
@@ -211,10 +211,10 @@ const CouponsPage = () => {
                                                 </p>
                                             )}
                                         </td>
-                                        <td className="py-3.5 px-4 font-semibold text-gray-700">
+                                        <td className="py-2.5 px-3.5 font-semibold text-gray-700">
                                             {coupon.minOrderAmount > 0 ? `৳${coupon.minOrderAmount}` : "None"}
                                         </td>
-                                        <td className="py-3.5 px-4 text-[11px] text-gray-500">
+                                        <td className="py-2.5 px-3.5 text-[11px] text-gray-500">
                                             {coupon.startDate || coupon.endDate ? (
                                                 <div>
                                                     <p>From: {coupon.startDate ? new Date(coupon.startDate).toLocaleDateString() : "Any"}</p>
@@ -224,11 +224,11 @@ const CouponsPage = () => {
                                                 <span className="text-gray-400">Always Valid</span>
                                             )}
                                         </td>
-                                        <td className="py-3.5 px-4 font-medium text-gray-700">
+                                        <td className="py-2.5 px-3.5 font-medium text-gray-700">
                                             <span className="font-bold text-gray-900">{coupon.usageCount}</span> /{" "}
                                             {coupon.usageLimit ? coupon.usageLimit : "∞"}
                                         </td>
-                                        <td className="py-3.5 px-4">
+                                        <td className="py-2.5 px-3.5">
                                             <ToggleButton
                                                 label=""
                                                 name={`toggle-${coupon.id}`}
@@ -236,7 +236,7 @@ const CouponsPage = () => {
                                                 onChange={() => handleToggleActive(coupon)}
                                             />
                                         </td>
-                                        <td className="py-3.5 px-4 text-right">
+                                        <td className="py-2.5 px-3.5 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
                                                     onClick={() => {

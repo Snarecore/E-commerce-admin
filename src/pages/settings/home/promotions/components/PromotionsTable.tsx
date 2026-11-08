@@ -67,12 +67,12 @@ const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPag
 
     return (
         <div className="p-6 bg-white rounded-lg border border-gray-200">
-            <div className="mt-4 w-full overflow-x-auto">
+            <div className="mt-3 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-sm border-b border-gray-200">
+                        <tr className="text-gray-600 text-[13px] border-b border-gray-200">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left text-[#000000e0]">{label}</th>
+                                <th key={key} className="px-4 py-2.5 text-left font-semibold text-[#000000e0]">{label}</th>
                             ))}
                         </tr>
                     </thead>
@@ -80,30 +80,28 @@ const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPag
                         {dataList?.length > 0 ? (
                             dataList?.map((data, index) => (
                                 <tr key={data.id} className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300">
-                                    <td className="px-6 py-4 font-medium text-gray-800">{index + 1}</td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 py-2.5 font-medium text-gray-800">{index + 1}</td>
+                                    <td className="px-4 py-2.5">
                                         <img
                                             src={data.image}
                                             alt="image"
-                                            height={70}
-                                            width={70}
-                                            className="rounded-md shadow-sm border border-gray-200"
+                                            className="w-12 h-12 object-cover rounded-md shadow-sm border border-gray-200"
                                         />
                                     </td>
-                                    <td className="px-6 py-4 text-blue-500 hover:underline cursor-pointer p-4">
+                                    <td className="px-4 py-2.5 text-blue-500 hover:underline cursor-pointer">
                                         {data.link}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                    <td className="px-4 py-2.5">
+                                        <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                             {data.status ? "Active" : "Inactive"}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300">
                                                 <FaEdit />
                                             </button>
-                                            <button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-2 rounded-md transition duration-300">
+                                            <button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300">
                                                 <FiTrash2 />
                                             </button>
                                         </div>
@@ -112,7 +110,7 @@ const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPag
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic">
+                                <td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic">
                                     <EmptyState title="No promotions available" description="Click below to add your first promotion!" buttonText="+ Add New Promotion" onButtonClick={() => onEdit()} />
                                 </td>
                             </tr>

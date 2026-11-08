@@ -72,13 +72,13 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 	if (isLoading) return <TableSkeleton />;
 
 	return (
-		<div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
-			<div className="mt-4 w-full overflow-x-auto">
+		<div className="p-4 sm:p-5 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+			<div className="mt-3 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[900px] cursor-pointer">
 					<thead className="bg-[var(--ui-surface-muted)]">
-						<tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
+						<tr className="text-[var(--ui-text-muted)] text-[13px] border-b border-[var(--ui-border)]">
 							{tableHeaders.map(({ key, label }) => (
-								<th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
+								<th key={key} className="px-4 py-2.5 text-left font-semibold text-[var(--ui-text)]">
 									{label}
 								</th>
 							))}
@@ -88,42 +88,38 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 						{dataList?.length > 0 ? (
 							dataList?.map((data, index) => (
 								<tr key={data.id} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200">
-									<td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">
+									<td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">
 										{index + 1}
 									</td>
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5">
 										<img
 											src={data.image}
 											alt="image"
-											height={70}
-											width={70}
-											className="rounded-md p-1 hover:scale-105 transition-all ease-in-out duration-300"
+											className="w-12 h-12 object-cover rounded-md p-0.5 border border-[var(--ui-border)] hover:scale-105 transition-all ease-in-out duration-300"
 										/>
 									</td>
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5">
 										<img
 											src={data.bannerImage}
 											alt="banner image"
-											height={70}
-											width={96}
-											className="rounded-md shadow-sm border border-[var(--ui-border)] hover:scale-105 transition-all ease-in-out duration-300"
+											className="w-20 h-11 object-cover rounded-md shadow-sm border border-[var(--ui-border)] hover:scale-105 transition-all ease-in-out duration-300"
 										/>
 									</td>
-									<td className="px-6 py-4">{data.name}</td>
-									<td className="px-6 py-4">
+									<td className="px-4 py-2.5">{data.name}</td>
+									<td className="px-4 py-2.5">
 										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
 									</td>
-									<td className="px-6 py-4">
-										<span className={`px-3 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
+									<td className="px-4 py-2.5">
+										<span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
 											{data.status ? "Active" : "Inactive"}
 										</span>
 									</td>
-									<td className="px-6 py-4">
-										<div className="flex items-center gap-2">
-											<button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200">
+									<td className="px-4 py-2.5">
+										<div className="flex items-center gap-1.5">
+											<button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200">
 												<FaEdit />
 											</button>
-											<button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200">
+											<button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200">
 												<FiTrash2 />
 											</button>
 										</div>
@@ -132,7 +128,7 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 							))
 						) : (
 							<tr>
-								<td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic text-[var(--ui-text-muted)]">
+								<td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic text-[var(--ui-text-muted)]">
 									<EmptyState title="No category available" description="Click below to add your first category!" buttonText="+ Add New Category" onButtonClick={() => onEdit()} />
 								</td>
 							</tr>
