@@ -22,6 +22,7 @@ import { useAPI } from "../../hooks/useApi";
 import { paymentQueryKey } from "../../config/query-key";
 import { format } from "date-fns";
 import { showErrorToast, showSuccessToast } from "../../utils/toast-utils";
+import PageHeader from "../../components/cards/PageHeader";
 
 export default function PaymentsPage() {
     const { usePaginatedQuery, postMutation, handleApiMutation } = useAPI();
@@ -363,23 +364,19 @@ export default function PaymentsPage() {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                        <FiCreditCard className="text-emerald-600" /> Payments & Transactions
-                    </h1>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                        Centralized payment audit ledger, MFS transaction IDs, risk alerts, settlement verification, and refund management.
-                    </p>
-                </div>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+                <PageHeader
+                    headerTitle="Payments & Transactions"
+                    headerDescription="Centralized payment audit ledger, MFS transaction IDs, risk alerts, settlement verification, and refund management."
+                />
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => refetch()}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 text-gray-700 transition"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg shadow-sm hover:bg-[var(--ui-surface-muted)] text-[var(--ui-text)] transition cursor-pointer"
                     >
-                        <FiRefreshCw className={`text-gray-500 ${isLoading ? "animate-spin" : ""}`} /> Refresh
+                        <FiRefreshCw className={`text-[var(--ui-text-muted)] ${isLoading ? "animate-spin" : ""}`} /> Refresh
                     </button>
                 </div>
             </div>

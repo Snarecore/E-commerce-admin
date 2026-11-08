@@ -136,7 +136,7 @@ const PopupPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-col gap-6">
             <PageHeader
                 headerTitle="Popup Banner Management"
                 headerDescription="Create, schedule and manage promotional and announcement popups displayed to visitors."

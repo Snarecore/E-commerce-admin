@@ -135,7 +135,7 @@ const CouponsPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-col gap-6">
             <PageHeader
                 headerTitle="Coupons Management"
                 headerDescription="Create, configure and manage promotional discount coupons for checkout."

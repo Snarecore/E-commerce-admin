@@ -250,7 +250,7 @@ export default function ProfitReportPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-2 md:p-6 bg-gray-50/50 min-h-screen">
+    <div className="flex flex-col gap-6">
       {/* Header & Filters */}
       <ProfitFilterHeader
         datePreset={datePreset}

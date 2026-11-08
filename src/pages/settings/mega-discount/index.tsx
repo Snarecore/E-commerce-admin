@@ -106,7 +106,7 @@ const MegaDiscountPage = () => {
         : 1000;
 
     return (
-        <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-col gap-6">
             <PageHeader
                 headerTitle="Global Mega Discount"
                 headerDescription="Configure storewide promotional percentage discount and custom navbar text for all products."
@@ -162,13 +162,13 @@ const MegaDiscountPage = () => {
                     )}
 
                     {/* Configuration Form Inputs */}
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col gap-6">
-                        <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-3 flex items-center gap-2">
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col gap-4">
+                        <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2.5 flex items-center gap-2">
                             <FiTag className="w-4 h-4 text-orange-500" />
                             Discount Configuration Parameters
                         </h4>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
                             {/* Input 1: Discount Percentage */}
                             <div className="flex flex-col gap-2">
                                 <label className="text-xs font-bold text-gray-700 flex items-center justify-between">

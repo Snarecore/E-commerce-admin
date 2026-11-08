@@ -127,7 +127,7 @@ const AppearanceSettingsContent: React.FC = () => {
   }
 
   return (
-    <div className="ui-page mx-auto w-full pb-16 space-y-6" lang={language}>
+    <div className="w-full pb-16 space-y-6" lang={language}>
       {/* ---------------- Master Top Header ---------------- */}
       <header className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-xs">
         <div>

@@ -554,7 +554,7 @@ const ProductCreation = () => {
                 <Button label="Back to Product" onClick={() => navigate("/products")} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" />
             </div>
 
-            <div className="mx-auto bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm rounded-lg transition-colors">
+            <div className="w-full bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm rounded-lg transition-colors">
                 <div className="flex justify-between items-center px-4 sm:px-6 py-2 md:py-3">
                     <div className="text-base font-bold text-[var(--ui-text)]">Product Information</div>
                     <RiArrowDropDownLine
@@ -566,8 +566,8 @@ const ProductCreation = () => {
 
                 {isOpen && (
                     <>
-                        <div className="px-6 pb-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="px-5 pb-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
                                 <div>
                                     <InputField label="Product Name" type="text" name="name" required value={fieldValues.name} onChange={handleChange} />
                                 </div>
@@ -619,9 +619,6 @@ const ProductCreation = () => {
                                         placeholder="Default: 5"
                                         onChange={handleChange}
                                     />
-                                    <p className="text-[11px] text-[var(--ui-text-muted)] mt-1">
-                                        মোট স্টক এই সংখ্যার নিচে নামলে Low Stock Alerts পেজে রিস্টক সতর্কতা দেখাবে।
-                                    </p>
                                 </div>
 
                                 <SelectInput
@@ -654,12 +651,12 @@ const ProductCreation = () => {
 
                                 <div>
                                      <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Available Sizes & Stock Quantities</p>
-                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-2">
+                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-1.5">
                                          {["S", "M", "L", "XL", "XXL"].map((size) => {
                                              const isChecked = selectedSizes.includes(size);
                                              const qty = sizeStockState[size] ?? 0;
                                              return (
-                                                 <div key={size} className={`p-3 border rounded-xl flex flex-col gap-2 transition ${isChecked ? "border-[var(--primary-color)] bg-[var(--primary-color-light)] shadow-xs" : "border-[var(--ui-border)] bg-[var(--ui-surface-muted)] opacity-60"}`}>
+                                                 <div key={size} className={`p-2.5 border rounded-xl flex flex-col gap-1.5 transition ${isChecked ? "border-[var(--primary-color)] bg-[var(--primary-color-light)] shadow-xs" : "border-[var(--ui-border)] bg-[var(--ui-surface-muted)] opacity-60"}`}>
                                                      <label className="flex items-center gap-2 cursor-pointer select-none font-bold text-sm text-[var(--ui-text)]">
                                                          <input
                                                              type="checkbox"
@@ -677,7 +674,7 @@ const ProductCreation = () => {
                                                      </label>
                                                      {isChecked && (
                                                          <div className="flex flex-col">
-                                                             <span className="text-[11px] text-[var(--ui-text-muted)] font-medium mb-1">Quantity:</span>
+                                                             <span className="text-[11px] text-[var(--ui-text-muted)] font-medium mb-0.5">Quantity:</span>
                                                              <input
                                                                  type="number"
                                                                  min="0"
@@ -700,26 +697,26 @@ const ProductCreation = () => {
 
                                 <div className="">
                                     <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Product Summary</p>
-                                    <div className="space-y-2 ">
+                                    <div className="space-y-1.5">
                                         {fields.map((field, index) => (
                                             <div key={index} className="flex items-center gap-2">
                                                 <input
                                                     type="text"
                                                     value={field}
                                                     onChange={(e) => handleSummaryChange(index, e.target.value)}
-                                                    className="w-full h-10 focus:outline-none px-3 text-base border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-lg focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+                                                    className="w-full h-9 focus:outline-none px-3 text-sm border border-[var(--ui-border)] bg-[var(--ui-surface)] text-[var(--ui-text)] rounded-lg focus:ring-1 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                                 />
                                                 {index !== 0 && (
                                                     <button
                                                         onClick={() => handleRemove(index)}
-                                                        className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
+                                                        className="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
                                                     >
-                                                        <IoMdRemoveCircleOutline className="text-xl" />
+                                                        <IoMdRemoveCircleOutline className="text-lg" />
                                                     </button>
                                                 )}
                                             </div>
                                         ))}
-                                        <div className="flex justify-start mt-2">
+                                        <div className="flex justify-start mt-1.5">
                                             <Button label="Add More" onClick={handleAdd} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
                                         </div>
                                     </div>
@@ -727,14 +724,14 @@ const ProductCreation = () => {
                             </div>
                         </div>
 
-                        <div className="px-6 pb-6">
+                        <div className="px-5 pb-5">
                             <TextEditor value={description} onChange={setDescription} />
                         </div>
                     </>
                 )}
             </div>
 
-            <div className="mt-6 rounded-lg grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="mt-4 rounded-lg grid grid-cols-1 lg:grid-cols-12 gap-3.5">
                 <div className="col-span-1 lg:col-span-3 bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg pb-4 shadow-sm">
                     <div className="px-4 sm:px-4 py-3 border-b border-[var(--ui-border)]">
                         <p className="text-base font-bold text-[var(--ui-text)]">

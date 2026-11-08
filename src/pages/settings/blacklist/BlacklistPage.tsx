@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FiShield, FiPlus, FiSearch, FiCheckCircle, FiXCircle, FiUser, FiPhone, FiGlobe } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiCheckCircle, FiXCircle, FiUser, FiPhone, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { getBlacklistItems, saveBlacklistItem, revokeBlacklistItem, fetchBlacklistFromApi } from '../../../utils/blacklist-storage';
+import PageHeader from '../../../components/cards/PageHeader';
 
 export interface IBlacklistItem {
   id: string;
@@ -114,21 +115,16 @@ export default function BlacklistPage() {
   });
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-gray-200">
-        <div>
-          <div className="flex items-center gap-2">
-            <FiShield className="w-6 h-6 text-red-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Phone & IP Risk Protection</h1>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage blocked phone numbers, customer accounts, exact IP addresses, and CIDR subnets to protect your store from fraud.
-          </p>
-        </div>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <PageHeader
+          headerTitle="Phone & IP Risk Protection"
+          headerDescription="Manage blocked phone numbers, customer accounts, exact IP addresses, and CIDR subnets to protect your store from fraud."
+        />
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-colors text-sm"
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-colors text-sm cursor-pointer shadow-sm"
         >
           <FiPlus className="w-4 h-4" /> Add Blacklist Entry
         </button>
