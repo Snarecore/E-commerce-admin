@@ -246,6 +246,10 @@ const OrderTable = ({
         paymentStatus: [
             { label: "Paid", value: "Paid" },
             { label: "Unpaid", value: "Unpaid" },
+            { label: "Review Required", value: "Review Required" },
+            { label: "Refunded", value: "Refunded" },
+            { label: "Partially Refunded", value: "Partially Refunded" },
+            { label: "Failed", value: "Failed" },
         ],
     }), [customers]);
 
@@ -441,7 +445,15 @@ const OrderTable = ({
                                     {/* Payment Status & Method */}
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
-                                            <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit ${data.paymentStatus === "Paid" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
+                                            <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit ${
+                                                data.paymentStatus === "Paid"
+                                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                                    : data.paymentStatus === "Review Required"
+                                                    ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 font-bold animate-pulse"
+                                                    : data.paymentStatus === "Refunded" || data.paymentStatus === "Partially Refunded"
+                                                    ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
+                                                    : "bg-red-500/15 text-red-400 border border-red-500/30"
+                                            }`}>
                                                 {data.paymentStatus}
                                             </span>
                                             {(() => {

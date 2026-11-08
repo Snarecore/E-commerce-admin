@@ -58,6 +58,9 @@ const ProductReview     = lazy(() => import("./pages/inventory/product-reviews")
 const CouponsPage       = lazy(() => import("./pages/coupons"));
 const MegaDiscountPage  = lazy(() => import("./pages/settings/mega-discount"));
 const AuditLogs         = lazy(() => import("./pages/audit-logs"));
+const StockAdjustments  = lazy(() => import("./pages/inventory/stock-adjustment"));
+const StockMovements    = lazy(() => import("./pages/inventory/stock-movements"));
+const LowStockAlerts    = lazy(() => import("./pages/inventory/low-stock"));
 const ProfitReportPage  = lazy(() => import("./pages/reports/profit"));
 const BlacklistPage     = lazy(() => import("./pages/settings/blacklist/BlacklistPage"));
 const AppearanceSettings = lazy(() => import("./pages/settings/appearance"));
@@ -115,6 +118,24 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<CreateProduct />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/stock-adjustments"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<StockAdjustments />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/stock-movements"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<StockMovements />
+							</RoleProtectedRoute>
+						} />
+					<Route path="/low-stock-alerts"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<LowStockAlerts />
 							</RoleProtectedRoute>
 						} />
 					<Route path="/edit-product"

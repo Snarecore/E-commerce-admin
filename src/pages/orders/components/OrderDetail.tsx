@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiMessageSquare, FiPrinter, FiShield, FiTrash2, FiCopy, FiAlertTriangle, FiCreditCard } from "react-icons/fi";
+import { FiArrowLeft, FiMessageSquare, FiPrinter, FiShield, FiTrash2, FiCopy, FiAlertTriangle, FiCreditCard, FiRotateCcw, FiRepeat, FiLock } from "react-icons/fi";
 import toast from "react-hot-toast";
 import DeleteModal from "../../../components/modals/DeleteModal";
 import { useAPI } from "../../../hooks/useApi";
@@ -11,6 +11,8 @@ import { saveBlacklistItem } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
+import ProcessReturnModal from "./ProcessReturnModal";
+import ExchangeModal from "./ExchangeModal";
 
 const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Rejected", "Failed"];
 
@@ -24,6 +26,17 @@ const OrderDetail = () => {
     const [isLoading, setIsLoading] = useState(!location.state?.orderData);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+    const [exchangeItem, setExchangeItem] = useState<any | null>(null);
+
+    const refetchOrder = async () => {
+        const cleanId = (id || "").replace(/^#/, "").trim();
+        if (cleanId) {
+            const updated = await fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` });
+            const parsed = parseOrderResponse(updated, cleanId);
+            if (parsed) setOrder(parsed);
+        }
+    };
 
     const handleDeleteOrder = async () => {
         if (!order?.id) return;
@@ -278,6 +291,10 @@ const OrderDetail = () => {
     const paymentStatusColor =
         order.paymentStatus === "Paid"
             ? "bg-green-100 text-green-800"
+            : order.paymentStatus === "Review Required"
+            ? "bg-amber-100 text-amber-800 border border-amber-300 font-bold"
+            : order.paymentStatus === "Refunded" || order.paymentStatus === "Partially Refunded"
+            ? "bg-blue-100 text-blue-800"
             : "bg-red-100 text-red-800";
     const orderStatusColor =
         order.status === "Completed" || order.status === "Order Placed"
@@ -327,75 +344,152 @@ const OrderDetail = () => {
 
                     {/* Order Items Table */}
                     <div className="bg-white rounded-xl border border-gray-200 p-5">
-                        <h3 className="text-base font-semibold text-gray-800 mb-4">Order Items</h3>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead>
-                                    <tr className="bg-gray-50 text-gray-600 border-b border-gray-200">
-                                        <th className="px-4 py-3 text-left">Product</th>
-                                        <th className="px-4 py-3 text-center">Qty</th>
-                                        <th className="px-4 py-3 text-center">Price</th>
-                                        <th className="px-4 py-3 text-center">Unit Cost</th>
-                                        <th className="px-4 py-3 text-right">Subtotal</th>
-                                        <th className="px-4 py-3 text-right text-emerald-600">Est. Profit</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {orderItems.length > 0 ? (
-                                        orderItems.map((item: any) => {
-                                            const unitCost = Number(item.unitCostPrice || item.product?.cost || 0);
-                                            const hasCost = unitCost > 0;
-                                            const itemSubtotal = item.subtotal !== undefined ? Number(item.subtotal) : (item.price * item.quantity);
-                                            const itemCostTotal = item.totalCost !== undefined ? Number(item.totalCost) : (unitCost * item.quantity);
-                                            const itemProfit = item.profit !== null && item.profit !== undefined ? Number(item.profit) : (itemSubtotal - itemCostTotal);
+                        {(() => {
+                            const isOrderExchanged = Boolean(
+                                order.isExchanged ||
+                                (order.exchangeCount && order.exchangeCount >= 1) ||
+                                orderItems.some((item: any) => item.isExchanged || (item.exchangeCount && item.exchangeCount >= 1))
+                            );
 
-                                            return (
-                                                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-4 py-3">
-                                                        <div className="flex items-center gap-3">
-                                                            <img
-                                                                src={item.productImage}
-                                                                alt={item.productName}
-                                                                className="w-12 h-12 object-cover rounded-lg border border-gray-200"
-                                                            />
-                                                            <span className="font-medium text-gray-800">{item.productName}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-center text-gray-600">{item.quantity}</td>
-                                                    <td className="px-4 py-3 text-center text-gray-600">৳{Number(item.price).toFixed(2)}</td>
-                                                    <td className="px-4 py-3 text-center text-gray-600">
-                                                        {hasCost ? `৳${unitCost.toFixed(2)}` : <span className="text-gray-400 italic text-xs">Unknown</span>}
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right font-semibold text-gray-800">
-                                                        ৳{itemSubtotal.toFixed(2)}
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right font-bold text-emerald-600">
-                                                        {hasCost ? `+৳${itemProfit.toFixed(2)}` : <span className="text-gray-400 text-xs font-normal">N/A</span>}
-                                                    </td>
+                            return (
+                                <>
+                                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                        <div className="flex items-center gap-2.5">
+                                            <h3 className="text-base font-semibold text-gray-800">Order Items</h3>
+                                            {isOrderExchanged && (
+                                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                                                    <FiLock className="w-3 h-3 text-amber-600" /> 1-Time Exchange Used (Order Locked)
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-sm">
+                                            <thead>
+                                                <tr className="bg-gray-50 text-gray-600 border-b border-gray-200">
+                                                    <th className="px-4 py-3 text-left">Product</th>
+                                                    <th className="px-4 py-3 text-center">Qty</th>
+                                                    <th className="px-4 py-3 text-center">Price</th>
+                                                    <th className="px-4 py-3 text-right">Subtotal</th>
+                                                    <th className="px-4 py-3 text-center">Action</th>
                                                 </tr>
-                                            );
-                                        })
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-6 text-center text-gray-400 italic">
-                                                No items found for this order.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                                {/* Totals */}
-                                <tfoot>
-                                    <tr>
-                                        <td colSpan={5} className="px-4 py-2 text-right text-sm text-gray-500">Sub Total</td>
-                                        <td className="px-4 py-2 text-right font-semibold text-gray-700">৳{Number(order.totalAmount ?? 0).toFixed(2)}</td>
-                                    </tr>
-                                    <tr className="border-t border-gray-200">
-                                        <td colSpan={5} className="px-4 py-3 text-right text-base font-bold text-gray-800">Total Amount</td>
-                                        <td className="px-4 py-3 text-right text-base font-bold text-orange-600">৳{Number(order.totalAmount ?? 0).toFixed(2)}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100">
+                                                {orderItems.length > 0 ? (
+                                                    orderItems.map((item: any) => {
+                                                        const itemSubtotal = item.subtotal !== undefined ? Number(item.subtotal) : (Number(item.price || 0) * Number(item.quantity || 1));
+                                                        const itemSize = item.selectedSize || item.size;
+
+                                                        return (
+                                                            <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                                                <td className="px-4 py-3">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <img
+                                                                            src={item.productImage}
+                                                                            alt={item.productName}
+                                                                            className="w-12 h-12 object-cover rounded-lg border border-gray-200 shrink-0"
+                                                                        />
+                                                                        <div className="min-w-0">
+                                                                            <span className="font-medium text-gray-800 block truncate">{item.productName}</span>
+                                                                            <span className="text-xs text-gray-500 inline-flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                                                                Size: <span className="font-semibold text-gray-700 bg-gray-100 px-1.5 py-0.2 rounded border border-gray-200 text-[11px]">{itemSize || "Standard"}</span>
+                                                                                {(item.isExchanged || item.exchangeCount >= 1) && (
+                                                                                    <span className="text-[10px] text-amber-800 bg-amber-100/80 border border-amber-300 px-1.5 py-0.5 rounded font-medium inline-flex items-center gap-1">
+                                                                                        <FiRepeat className="w-2.5 h-2.5 text-amber-700" />
+                                                                                        Exchanged (Orig: {item.originalSize || "Previous"})
+                                                                                    </span>
+                                                                                )}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-3 text-center text-gray-600">{item.quantity}</td>
+                                                                <td className="px-4 py-3 text-center text-gray-600">৳{Number(item.price).toFixed(2)}</td>
+                                                                <td className="px-4 py-3 text-right font-semibold text-gray-800">
+                                                                    ৳{itemSubtotal.toFixed(2)}
+                                                                </td>
+                                                                <td className="px-4 py-3 text-center">
+                                                                    {order.status !== "Cancelled" && order.status !== "Rejected" && order.status !== "Failed" && (
+                                                                        isOrderExchanged ? (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => toast(`This order has already used its 1 allowed exchange policy (Order #${order.orderId}). Store policy allows maximum 1 exchange per order.`, { icon: '🔒' })}
+                                                                                className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-md font-medium transition cursor-pointer"
+                                                                                title="This order has already used its 1-time exchange limit. Store policy: Maximum 1 exchange per order."
+                                                                            >
+                                                                                <FiLock className="w-3.5 h-3.5 text-amber-600" />
+                                                                                Already Exchanged
+                                                                            </button>
+                                                                        ) : (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setExchangeItem(item)}
+                                                                                className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-md font-semibold transition cursor-pointer"
+                                                                                title="Exchange variant or size (Allowed 1 time for this order)"
+                                                                            >
+                                                                                <FiRepeat className="w-3.5 h-3.5 text-amber-600" />
+                                                                                Exchange
+                                                                            </button>
+                                                                        )
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan={5} className="px-4 py-6 text-center text-gray-400 italic">
+                                                            No items found for this order.
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                            {/* Totals */}
+                                            <tfoot>
+                                                {(() => {
+                                                    const calculatedItemsSubtotal = orderItems.reduce((acc: number, item: any) => {
+                                                        const sub = item.subtotal !== undefined ? Number(item.subtotal) : (Number(item.price || 0) * Number(item.quantity || 1));
+                                                        return acc + sub;
+                                                    }, 0);
+                                                    const displayedSubtotal = order.subtotal !== undefined && order.subtotal !== null ? Number(order.subtotal) : calculatedItemsSubtotal;
+                                                    const delivery = Number(order.deliveryCharge || 0);
+                                                    const discount = Number(order.discountAmount || 0);
+
+                                                    return (
+                                                        <>
+                                                            <tr>
+                                                                <td colSpan={3} className="px-4 py-2 text-right text-sm text-gray-500">Sub Total</td>
+                                                                <td className="px-4 py-2 text-right font-semibold text-gray-700">৳{displayedSubtotal.toFixed(2)}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            {delivery > 0 && (
+                                                                <tr>
+                                                                    <td colSpan={3} className="px-4 py-2 text-right text-sm text-gray-500">Delivery Charge</td>
+                                                                    <td className="px-4 py-2 text-right font-semibold text-gray-700">৳{delivery.toFixed(2)}</td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            )}
+                                                            {discount > 0 && (
+                                                                <tr>
+                                                                    <td colSpan={3} className="px-4 py-2 text-right text-sm text-orange-600">Discount</td>
+                                                                    <td className="px-4 py-2 text-right font-semibold text-orange-600">-৳{discount.toFixed(2)}</td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            )}
+                                                            <tr className="border-t border-gray-200">
+                                                                <td colSpan={3} className="px-4 py-3 text-right text-base font-bold text-gray-800">Total Amount</td>
+                                                                <td className="px-4 py-3 text-right text-base font-bold text-orange-600">৳{Number(order.totalAmount ?? 0).toFixed(2)}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </div>
                 </div>
 
@@ -689,7 +783,7 @@ const OrderDetail = () => {
                             )}
                             <div className="flex justify-between items-center pt-2 border-t border-gray-100">
                                 <span className="text-gray-500 font-semibold">Total</span>
-                                <span className="font-bold text-base text-gray-900">৳{order.totalAmount ?? "0.00"}</span>
+                                <span className="font-bold text-base text-gray-900">৳{Number(order.totalAmount ?? 0).toFixed(2)}</span>
                             </div>
                         </div>
 
@@ -795,6 +889,15 @@ const OrderDetail = () => {
                             <FiPrinter className="w-4 h-4" />
                             Print Invoice
                         </button>
+                        {order.status !== "Cancelled" && order.status !== "Rejected" && order.status !== "Failed" && (
+                            <button
+                                onClick={() => setIsReturnModalOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 text-sm font-semibold py-2.5 rounded-lg transition-all cursor-pointer"
+                            >
+                                <FiRotateCcw className="w-4 h-4 text-indigo-600" />
+                                Process Return (RMA)
+                            </button>
+                        )}
                         <button
                             onClick={() => setIsDeleteModalOpen(true)}
                             className="w-full flex items-center justify-center gap-2 bg-red-50 border border-red-200 hover:bg-red-100 text-red-600 text-sm font-semibold py-2.5 rounded-lg transition-all cursor-pointer"
@@ -955,6 +1058,25 @@ const OrderDetail = () => {
                     message={`Are you sure you want to delete order #${order.orderId || order.id}? This action cannot be undone.`}
                     onClose={() => setIsDeleteModalOpen(false)}
                     onDelete={handleDeleteOrder}
+                />
+            )}
+            {/* Process Return RMA Modal */}
+            {isReturnModalOpen && (
+                <ProcessReturnModal
+                    isOpen={isReturnModalOpen}
+                    onClose={() => setIsReturnModalOpen(false)}
+                    order={order}
+                    onSuccess={() => refetchOrder()}
+                />
+            )}
+            {/* Exchange Size / Variant Modal */}
+            {exchangeItem && (
+                <ExchangeModal
+                    isOpen={!!exchangeItem}
+                    onClose={() => setExchangeItem(null)}
+                    order={order}
+                    item={exchangeItem}
+                    onSuccess={() => refetchOrder()}
                 />
             )}
         </div>

@@ -14,6 +14,7 @@ const ORDER_TABS = [
     { key: "Pending", label: "Pending" },
     { key: "Processing", label: "Processing" },
     { key: "Completed", label: "Completed" },
+    { key: "review", label: "Needs Review ⚠️" },
     { key: "Failed", label: "Failed" },
     { key: "abandoned", label: "Abandoned" },
 ];
@@ -49,6 +50,12 @@ const Orders = () => {
         setCurrentPageNumber(1);
         if (tabKey === "all") {
             setSelectedFilters((prev) => ({ ...prev, status: null, paymentStatus: null }));
+        } else if (tabKey === "review") {
+            setSelectedFilters((prev) => ({
+                ...prev,
+                status: null,
+                paymentStatus: { label: "Review Required", value: "Review Required" },
+            }));
         } else if (tabKey === "abandoned") {
             setSelectedFilters((prev) => ({
                 ...prev,
@@ -169,6 +176,8 @@ const Orders = () => {
                                         ? "bg-gray-700 text-white shadow-sm"
                                         : tab.key === "Failed"
                                         ? "bg-red-500 text-white shadow-sm"
+                                        : tab.key === "review"
+                                        ? "bg-amber-600 text-white shadow-sm font-bold"
                                         : "bg-orange-500 text-white shadow-sm"
                                     : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                             }`}
@@ -188,6 +197,16 @@ const Orders = () => {
                         >
                             Clear Filter (View All)
                         </button>
+                    </div>
+                )}
+
+                {/* Needs Review notice */}
+                {activeTab === "review" && (
+                    <div className="flex items-start gap-2 bg-amber-50 border border-amber-300 rounded-lg px-4 py-3 text-sm text-amber-900">
+                        <span className="text-base">⚠️</span>
+                        <span>
+                            Showing orders flagged with <strong>Review Required</strong> (e.g. gateway amount/currency discrepancy or suspicious transactions). Click into the order to verify and approve or refund.
+                        </span>
                     </div>
                 )}
 

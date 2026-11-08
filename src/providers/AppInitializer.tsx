@@ -43,7 +43,7 @@ const AppInitializer = () => {
                     return;
                 }
 
-                const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
+                const rawApiUrl = import.meta.env.VITE_API_BASE_URL;
                 const apiUrl = rawApiUrl.replace(/\/$/, "");
 
                 let res = await fetch(`${apiUrl}/auth/admin/me`, {

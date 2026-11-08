@@ -32,6 +32,8 @@ interface Product {
         productId: string;
     }>;
     sizes?: string[] | string;
+    sizesString?: string;
+    sizeStock?: Record<string, number> | null;
     quantity?: number;
     quantityAlert?: number;
 }
@@ -62,10 +64,20 @@ const ProductDetails = () => {
 
     // Helper to parse available sizes
     const getAvailableSizes = (): string[] => {
-        if (!product.sizes) return ["S", "M", "L", "XL", "XXL"]; // Default to all if not saved
-        if (Array.isArray(product.sizes)) return product.sizes;
-        if (typeof product.sizes === "string") {
-            return product.sizes.split(",").map((s) => s.trim()).filter((s) => s);
+        if (product.sizeStock && typeof product.sizeStock === "object") {
+            const keys = Object.keys(product.sizeStock);
+            if (keys.length > 0) return keys;
+        }
+        if (product.sizesString && typeof product.sizesString === "string") {
+            const parsed = product.sizesString.split(",").map((s) => s.trim()).filter(Boolean);
+            if (parsed.length > 0) return parsed;
+        }
+        if (product.sizes) {
+            if (Array.isArray(product.sizes)) return product.sizes;
+            if (typeof product.sizes === "string") {
+                const parsed = product.sizes.split(",").map((s) => s.trim()).filter(Boolean);
+                if (parsed.length > 0) return parsed;
+            }
         }
         return ["S", "M", "L", "XL", "XXL"];
     };
@@ -171,6 +183,9 @@ const ProductDetails = () => {
                                 <div className="inline-block bg-gray-100 text-gray-700 text-[11px] font-mono px-2.5 py-1 rounded-md">
                                     SKU: {product.sku}
                                 </div>
+                                <div className="inline-block bg-orange-50 text-orange-700 text-[11px] font-medium px-2.5 py-1 rounded-md border border-orange-200">
+                                    Alert Limit: {product.quantityAlert ?? 5} PCS
+                                </div>
                                 {Number(product.quantity) === 0 ? (
                                     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                         Out of Stock
@@ -235,38 +250,59 @@ const ProductDetails = () => {
                                 )}
                             </div>
 
+                            {/* Variant Stock Breakdown */}
+                            {product.sizeStock && typeof product.sizeStock === "object" && Object.keys(product.sizeStock).length > 0 && (
+                                <div className="mb-6 p-3.5 bg-gray-50 border border-gray-200 rounded-xl">
+                                    <div className="flex items-center justify-between mb-2.5">
+                                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">Variant Stock Inventory</h4>
+                                        <span className="text-[11px] text-gray-500 font-medium">Total: {Number(product.quantity) || 0} PCS</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        {Object.entries(product.sizeStock).map(([sz, qty]) => {
+                                            const count = Number(qty) || 0;
+                                            const isAlert = count <= Number(product.quantityAlert || 5);
+                                            return (
+                                                <div key={sz} className="p-2 bg-white rounded-lg border border-gray-200 flex items-center justify-between shadow-2xs">
+                                                    <span className="text-xs font-bold text-gray-800">Size {sz}</span>
+                                                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${count <= 0 ? 'bg-red-50 text-red-600 border border-red-200' : isAlert ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                                                        {count} pcs
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Size Selector */}
                             <div className="mb-6">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-sm font-bold text-gray-900 uppercase tracking-wider">
-                                        Size
+                                        Sizes ({availableSizes.length})
                                     </span>
                                 </div>
-                                <div className="flex flex-wrap gap-3">
-                                    {["S", "M", "L", "XL", "XXL"].map((size) => {
-                                        const isAvailable = availableSizes.includes(size);
+                                <div className="flex flex-wrap gap-2.5">
+                                    {availableSizes.map((size) => {
+                                        const variantStock = product.sizeStock && product.sizeStock[size] !== undefined ? Number(product.sizeStock[size]) : null;
+                                        const isOutOfStock = variantStock !== null ? variantStock <= 0 : false;
                                         const isSelected = selectedSize === size;
                                         return (
                                             <button
                                                 key={size}
-                                                disabled={!isAvailable}
                                                 onClick={() => setSelectedSize(size)}
-                                                className={`relative w-12 h-12 flex items-center justify-center rounded-full border text-sm font-bold transition-all duration-200
-                                                    ${isAvailable
-                                                        ? isSelected
+                                                className={`relative min-w-12 h-11 px-3 flex flex-col items-center justify-center rounded-xl border text-xs font-bold transition-all duration-200
+                                                    ${isOutOfStock
+                                                        ? "border-red-200 bg-red-50/50 text-red-400 cursor-pointer"
+                                                        : isSelected
                                                             ? "border-black bg-black text-white shadow-sm scale-105"
-                                                            : "border-gray-300 bg-white text-gray-950 hover:border-black cursor-pointer"
-                                                        : "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                                            : "border-gray-200 bg-white text-gray-900 hover:border-black cursor-pointer"
                                                     }`}
                                             >
-                                                <span className={!isAvailable ? "line-through opacity-40" : ""}>
-                                                    {size}
-                                                </span>
-                                                {/* Diagonal strike-through line for unavailable sizes */}
-                                                {!isAvailable && (
-                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                        <div className="w-full h-[1px] bg-gray-400 rotate-45"></div>
-                                                    </div>
+                                                <span>{size}</span>
+                                                {variantStock !== null && (
+                                                    <span className={`text-[9px] font-medium leading-none mt-0.5 ${isSelected ? 'text-gray-300' : isOutOfStock ? 'text-red-500' : 'text-gray-500'}`}>
+                                                        {variantStock} pcs
+                                                    </span>
                                                 )}
                                             </button>
                                         );

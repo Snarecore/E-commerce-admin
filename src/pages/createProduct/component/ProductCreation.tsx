@@ -40,7 +40,7 @@ const initialFieldValues = {
     featuredImage: null as string | null,
     fileUrl: "",
     quantity: "",
-    quantityAlert: "",
+    quantityAlert: "5",
 }
 
 const requiredFields = [
@@ -163,7 +163,7 @@ const ProductCreation = () => {
                 featuredImage: editData.featuredImage || null,
                 fileUrl: editData.fileUrl || null,
                 quantity: editData.quantity !== undefined ? String(editData.quantity) : "",
-                quantityAlert: editData.quantityAlert !== undefined ? String(editData.quantityAlert) : "",
+                quantityAlert: editData.quantityAlert !== undefined && editData.quantityAlert !== null ? String(editData.quantityAlert) : "5",
             });
 
             setDescription(editData.description || "");
@@ -495,7 +495,7 @@ const ProductCreation = () => {
             sizesString: selectedSizes.join(','),
             sizeStock: sizeStockObj,
             quantity: calculatedTotalQty > 0 ? calculatedTotalQty : (fieldValues.quantity !== "" ? Number(fieldValues.quantity) : 0),
-            quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 0
+            quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 5
         };
 
         if (fieldValues.cost !== "" && fieldValues.cost !== null && fieldValues.cost !== undefined) {
@@ -611,7 +611,17 @@ const ProductCreation = () => {
                                 </div>
 
                                 <div>
-                                    <InputField label="Quantity Alert (Low Stock warning)" type="number" name="quantityAlert" required value={fieldValues.quantityAlert} onChange={handleChange} />
+                                    <InputField
+                                        label="Low Stock Alert Limit (কম স্টক সতর্কতা সীমা)"
+                                        type="number"
+                                        name="quantityAlert"
+                                        value={fieldValues.quantityAlert}
+                                        placeholder="Default: 5"
+                                        onChange={handleChange}
+                                    />
+                                    <p className="text-[11px] text-[var(--ui-text-muted)] mt-1">
+                                        মোট স্টক এই সংখ্যার নিচে নামলে Low Stock Alerts পেজে রিস্টক সতর্কতা দেখাবে।
+                                    </p>
                                 </div>
 
                                 <SelectInput

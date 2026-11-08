@@ -42,7 +42,15 @@
         "productListUrl": "product/admin-products",
         "productStatusUrl": "product/update-status",
         "productCommentsUrl": "product-comment/all",
-        "productCommentUrl": "product-comment"
+        "productCommentUrl": "product-comment",
+        "movementsUrl": "inventory/movements",
+        "availabilityUrl": "inventory/availability",
+        "adjustSingleUrl": "inventory/adjust-single",
+        "adjustmentsUrl": "inventory/adjustments",
+        "processReturnUrl": "inventory/returns/process",
+        "executeExchangeUrl": "inventory/exchanges/execute",
+        "inventoryAnalyticsUrl": "inventory/analytics/summary",
+        "lowStockAlertsUrl": "inventory/alerts/low-stock"
     },
     "site": {
         "mainCategoryUrl": "site/main-category",

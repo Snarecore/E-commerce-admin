@@ -3,6 +3,8 @@ import { FiEye } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { FaEllipsisVertical } from "react-icons/fa6";
+import { MdOutlineTune } from "react-icons/md";
+import QuickAdjustModal from "./QuickAdjustModal";
 import DeleteModal from "../../../../components/modals/DeleteModal";
 import Search from "../../../../components/table-components/Search";
 import DropdownFilter from "../../../../components/table-components/DropdownFilter";
@@ -44,6 +46,8 @@ interface ProductDataProps {
 	status: string;
 	quantity: number;
 	quantityAlert: number;
+	sizeStock?: Record<string, number> | null;
+	sizesString?: string;
 	totalStock?: number;
 	stockStatus?: string;
 	isOutOfStock?: boolean;
@@ -116,6 +120,8 @@ const ProductsTable = ({
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<ProductDataProps | null>(null);
 	const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
+	const [quickAdjustProduct, setQuickAdjustProduct] = useState<any>(null);
+	const [isQuickAdjustOpen, setIsQuickAdjustOpen] = useState(false);
 	// @ts-ignore
 	const [isProductSectionOne, setIsProductSectionOne] = useState(selectedProduct?.isProductSectionOne);
 	// @ts-ignore
@@ -197,7 +203,7 @@ const ProductsTable = ({
 			isApprove: String(product.isApprove) === "true",
 			status: String(product.status) === "true",
 			quantity: product.quantity !== undefined ? Number(product.quantity) : 0,
-			quantityAlert: product.quantityAlert !== undefined ? Number(product.quantityAlert) : 0
+			quantityAlert: product.quantityAlert !== undefined && product.quantityAlert !== null ? Number(product.quantityAlert) : 5
 		});
 		setIsSelectionModalOpen(true);
 	};
@@ -491,6 +497,16 @@ const ProductsTable = ({
 											>
 												<FiTrash2 />
 											</button>
+											<button
+												onClick={() => {
+													setQuickAdjustProduct(data);
+													setIsQuickAdjustOpen(true);
+												}}
+												title="Quick Adjust Stock"
+												className="inline-flex items-center justify-center hover:bg-emerald-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-emerald-600 p-2 rounded-md cursor-pointer transition-colors"
+											>
+												<MdOutlineTune />
+											</button>
 											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-2 rounded-md cursor-pointer transition-colors">
 												<FaEllipsisVertical />
 											</button>
@@ -643,16 +659,22 @@ const ProductsTable = ({
 										/>
 									</div>
 									<div>
-										<label className="text-[12px] font-medium text-[var(--ui-text-muted)] block mb-1">Qty Alert</label>
+										<label className="text-[12px] font-medium text-[var(--ui-text-muted)] block mb-1">Low Stock Alert</label>
 										<input
 											name="quantityAlert"
 											type="number"
+											placeholder="5"
 											value={fieldValues.quantityAlert}
 											onChange={handleSwitchChange}
 											className="w-full h-9 px-2 text-sm bg-[var(--ui-surface)] border border-[var(--ui-border)] text-[var(--ui-text)] rounded focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none"
 										/>
 									</div>
 								</div>
+								{selectedProduct?.sizeStock && typeof selectedProduct.sizeStock === 'object' && Object.keys(selectedProduct.sizeStock).length > 0 && (
+									<p className="text-[11px] text-amber-600 mt-2 font-medium leading-tight">
+										💡 Note: This product has size variants. Use the Quick Adjust (<span className="font-bold">Tune ⚙️</span>) icon on the table to adjust variant stock and record to ledger.
+									</p>
+								)}
 							</div>
 
 							<div className="flex justify-between items-center mb-4 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] p-3 rounded-md">
@@ -699,6 +721,18 @@ const ProductsTable = ({
 					message={`Are you sure you want to delete?`}
 					onClose={closeDeleteModal}
 					onDelete={handleDelete}
+				/>
+			)}
+			{/* Quick Adjust Modal */}
+			{isQuickAdjustOpen && (
+				<QuickAdjustModal
+					isOpen={isQuickAdjustOpen}
+					onClose={() => {
+						setIsQuickAdjustOpen(false);
+						setQuickAdjustProduct(null);
+					}}
+					product={quickAdjustProduct}
+					onSuccess={() => fetchProductList()}
 				/>
 			)}
 			{pageCount > 1 && (

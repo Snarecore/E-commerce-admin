@@ -63,7 +63,15 @@ const InvoiceView = () => {
 							<p className="text-xl font-semibold mb-2">Status</p>
 							<p className="font-medium flex items-center">
 								<span className="mr-2">Payment:</span>
-								<span className={`px-2 py-1 text-xs font-semibold rounded-full ${order.paymentStatus === "Paid" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+								<span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+									order.paymentStatus === "Paid"
+										? "bg-green-100 text-green-800"
+										: order.paymentStatus === "Review Required"
+										? "bg-amber-100 text-amber-800"
+										: order.paymentStatus === "Refunded" || order.paymentStatus === "Partially Refunded"
+										? "bg-blue-100 text-blue-800"
+										: "bg-red-100 text-red-800"
+								}`}>
 									{order.paymentStatus}
 								</span>
 							</p>

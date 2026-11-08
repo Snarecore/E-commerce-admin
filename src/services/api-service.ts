@@ -1,8 +1,8 @@
 import { GetDataProps, PostDataProps, PatchDataProps, PutDataProps, DeleteDataProps, FormDataProps } from "../models/api-models";
 import { removeStoredUser, getStoredToken, isSessionExpired } from "../utils/auth-storage";
+import { getApiBaseUrlWithTrailingSlash } from "../config/env";
 
-const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1/";
-const apiUrl = rawApiUrl.endsWith("/") ? rawApiUrl : `${rawApiUrl}/`;
+const apiUrl = getApiBaseUrlWithTrailingSlash();
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
