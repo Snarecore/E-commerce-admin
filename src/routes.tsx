@@ -65,6 +65,7 @@ const ProfitReportPage  = lazy(() => import("./pages/reports/profit"));
 const BlacklistPage     = lazy(() => import("./pages/settings/blacklist/BlacklistPage"));
 const AppearanceSettings = lazy(() => import("./pages/settings/appearance"));
 const FrontendAppearance = lazy(() => import("./pages/settings/frontend-appearance"));
+const EmailSettingPage   = lazy(() => import("./pages/settings/email-setting"));
 
 const PageLoader = () => (
 	<div className="flex items-center justify-center min-h-screen">
@@ -405,6 +406,16 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<FrontendAppearance />
+							</RoleProtectedRoute>} />
+					<Route path="/email-setting"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<EmailSettingPage />
+							</RoleProtectedRoute>} />
+					<Route path="/settings/email-setting"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<EmailSettingPage />
 							</RoleProtectedRoute>} />
 				</Route>
 				<Route path="*" element={<Navigate to="/" replace />} />

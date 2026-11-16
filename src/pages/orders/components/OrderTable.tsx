@@ -420,6 +420,20 @@ const OrderTable = ({
                                                         <p className="font-medium text-[var(--ui-text)] text-sm">
                                                             {getDisplayCustomerName(data)}
                                                         </p>
+                                                        {(data as any).isPhoneVerified ? (
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold rounded border border-emerald-500/30">
+                                                                ✓ Phone Verified
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium rounded border border-amber-500/30">
+                                                                Unverified
+                                                            </span>
+                                                        )}
+                                                        {!(data as any).userId && (
+                                                            <span className="px-1.5 py-0.5 text-[10px] bg-slate-500/15 text-slate-600 dark:text-slate-400 font-medium rounded border border-slate-500/30">
+                                                                Guest
+                                                            </span>
+                                                        )}
                                                         {isBlocked && (
                                                             <span className="px-1.5 py-0.5 text-[10px] bg-red-500/15 text-red-400 font-bold rounded border border-red-500/30">
                                                                 BLOCKED

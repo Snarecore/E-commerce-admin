@@ -107,15 +107,15 @@ const InvoiceView = () => {
 											</div>
 										</td>
 										<td className="px-4 py-3 text-center">{item.quantity}</td>
-										<td className="px-4 py-3 text-center">${item.price}</td>
-										<td className="px-4 py-3 text-right">${(item.price * item.quantity).toFixed(2)}</td>
+										<td className="px-4 py-3 text-center">৳{item.price}</td>
+										<td className="px-4 py-3 text-right">৳{(item.price * item.quantity).toFixed(2)}</td>
 									</tr>
 								))}
 								<tr>
 									<td colSpan={4} className="px-4 py-2">
 										<div className="ml-auto max-w-[500px] flex justify-between border-b border-gray-300 pb-1 text-sm font-bold">
 											<span>Sub Total</span>
-											<span>${order.totalAmount ?? "0.00"}</span>
+											<span>৳{order.totalAmount ?? "0.00"}</span>
 										</div>
 									</td>
 								</tr>
@@ -123,7 +123,7 @@ const InvoiceView = () => {
 									<td colSpan={4} className="px-4 py-3">
 										<div className="ml-auto max-w-[500px] flex justify-between pb-1 text-base text-black font-bold">
 											<span>Total Amount</span>
-											<span>${order.totalAmount ?? "0.00"}</span>
+											<span>৳{order.totalAmount ?? "0.00"}</span>
 										</div>
 									</td>
 								</tr>

@@ -30,3 +30,4 @@ export const megaDiscountQueryKey = "setting/mega-discount";
 export const auditLogQueryKey = "audit-logs";
 export const popupQueryKey = "popups";
 export const paymentQueryKey = "payments";
+export const emailSettingQueryKey = "email-setting";

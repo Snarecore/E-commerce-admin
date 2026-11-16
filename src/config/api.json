@@ -31,7 +31,9 @@
         "storefrontTheme": "header-footer-cms/theme",
         "shopPageCms": "shop-page-cms",
         "faqUrl": "faq",
-        "megaDiscountUrl": "setting/mega-discount"
+        "megaDiscountUrl": "setting/mega-discount",
+        "emailSettingUrl": "email-setting",
+        "emailSettingTestUrl": "email-setting/test"
     },
     "inventory": {
         "mainCategoryUrl": "main-category",
@@ -72,7 +74,7 @@
     },
     "auth": {
         "loginUrl": "auth/login",
-        "registrationUrl": "auth/register"
+        "registrationUrl": "auth/admin/register"
     },
     "dashboard": {
         "adminDashboardUrl": "site/admin-dashboard"

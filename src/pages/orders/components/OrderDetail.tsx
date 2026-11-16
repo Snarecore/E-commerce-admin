@@ -513,6 +513,36 @@ const OrderDetail = () => {
                                 <span className="text-gray-500">Contact / Phone</span>
                                 <span className="font-medium text-gray-800">{getDisplayCustomerContact(order) || "—"}</span>
                             </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500">Phone Verification</span>
+                                {order.isPhoneVerified ? (
+                                    <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                        ✓ Verified ({order.verificationProvider && order.verificationProvider !== "FIREBASE" && order.verificationProvider !== "MOCK" ? order.verificationProvider : "OTP"})
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                        ⚠ Unverified
+                                    </span>
+                                )}
+                            </div>
+                            {order.phoneVerifiedAt && (
+                                <div className="flex justify-between items-center text-xs text-gray-500">
+                                    <span>Verified At</span>
+                                    <span>{formatDate(order.phoneVerifiedAt)}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500">Customer Type</span>
+                                {order.userId ? (
+                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                                        Registered Member
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
+                                        Guest Checkout
+                                    </span>
+                                )}
+                            </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Order Date</span>
                                 <span className="font-medium text-gray-800">{formatDate(order.createdAt)}</span>

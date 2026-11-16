@@ -4,6 +4,7 @@ import ProductImageSlider from "./ProductImageSlider";
 import { useEffect, useState } from "react";
 import apiConfig from "../../../../config/api.json";
 import { useAPI } from "../../../../hooks/useApi";
+import { sanitizeHTML } from "../../../../utils/sanitize-utils";
 
 interface Product {
     name: string;
@@ -354,7 +355,7 @@ const ProductDetails = () => {
                         </h2>
                         <div
                             className="prose prose-sm max-w-none text-gray-600 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: product.description }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeHTML(product.description) }}
                         />
                     </div>
                 )}
