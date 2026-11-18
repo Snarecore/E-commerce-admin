@@ -13,6 +13,7 @@ import PageHeader from "../../../components/cards/PageHeader";
 import OrderStatusStepper from "./OrderStatusStepper";
 import ProcessReturnModal from "./ProcessReturnModal";
 import ExchangeModal from "./ExchangeModal";
+import CourierShipmentPanel from "./CourierShipmentPanel";
 
 const STATUS_OPTIONS = ["Pending", "Order Placed", "Processing", "Shipped", "Delivered", "Completed", "Rejected", "Failed"];
 
@@ -34,7 +35,10 @@ const OrderDetail = () => {
         if (cleanId) {
             const updated = await fetchData({ apiUrl: `${apiConfig.order.orderDetailUrl}/${cleanId}` });
             const parsed = parseOrderResponse(updated, cleanId);
-            if (parsed) setOrder(parsed);
+            if (parsed) {
+                setOrder(parsed);
+                setSelectedStatus(parsed.status || "");
+            }
         }
     };
 
@@ -881,6 +885,9 @@ const OrderDetail = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* Courier (Steadfast) */}
+                    <CourierShipmentPanel order={order} onOrderChanged={refetchOrder} />
 
                     {/* Update Status */}
                     <div className="bg-white rounded-xl border border-gray-200 p-5">
