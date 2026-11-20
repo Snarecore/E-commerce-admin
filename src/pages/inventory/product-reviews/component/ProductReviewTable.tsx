@@ -157,10 +157,10 @@ const ProductReviewTable = ({
             <div className="mt-2.5 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead className="bg-[var(--ui-surface-muted)]">
-                        <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
+                        <tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-6 py-4 text-left font-semibold text-[var(--ui-text)]">
-                                    {label}
+                                <th key={key} className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] ${key === "action" ? "text-right pr-6" : "text-left"}`}>
+                                    <span>{label}</span>
                                 </th>
                             ))}
                         </tr>
@@ -175,57 +175,57 @@ const ProductReviewTable = ({
                                         key={data.id}
                                         className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                     >
-                                        <td className="px-6 py-4 font-medium text-[var(--ui-text-muted)]">{index + 1}</td>
-                                        <td className="px-6 py-4 flex items-center gap-2">
-                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-10 h-10 rounded-md object-cover border border-[var(--ui-border)]" />
-                                            <span className="font-semibold text-[var(--ui-text)]">{data?.product?.name}</span>
+                                        <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">{index + 1}</td>
+                                        <td className="px-4 py-2.5 flex items-center gap-2">
+                                            <img src={data?.product?.featuredImage} alt={data?.product?.name} className="w-9 h-9 rounded-md shadow-sm border border-[var(--ui-border)] object-cover" />
+                                            <span className="font-medium text-[var(--ui-text)]">{data?.product?.name}</span>
                                         </td>
 
-                                        <td className="px-6 py-4 text-[var(--ui-text)]">{data?.user?.name || "Anonymous"}</td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-2.5 text-[var(--ui-text)] text-sm">{data?.user?.name || "Anonymous"}</td>
+                                        <td className="px-4 py-2.5">
                                             <button
                                                 type="button"
                                                 onClick={() => openViewModal(data)}
                                                 title="Click to view full comment"
-                                                className="max-w-[360px] text-left text-[var(--ui-text)] hover:text-[var(--primary-color)] hover:underline focus:underline focus:outline-none break-words cursor-pointer"
+                                                className="max-w-[360px] text-left text-[var(--ui-text)] hover:text-[var(--primary-color)] hover:underline focus:underline focus:outline-none break-words cursor-pointer text-sm"
                                             >
                                                 {preview}
                                             </button>
                                         </td>
 
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-2.5 whitespace-nowrap">
                                             {data.isApproved ? (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                                                     Approved
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
                                                     Pending
                                                 </span>
                                             )}
                                         </td>
 
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
+                                        <td className="px-4 py-2.5">
+                                            <div className="flex items-center justify-end gap-1.5 pr-2">
                                                 {!data.isApproved && (
                                                     <button
                                                         onClick={() => handleToggleStatus(data, true)}
-                                                        className="border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer px-2.5 py-1.5 rounded-md transition duration-200 flex items-center gap-1 text-xs font-semibold"
+                                                        className="border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer px-2 py-1 rounded-md transition duration-200 flex items-center gap-1 text-xs font-semibold"
                                                         title="Approve Comment"
                                                     >
-                                                        <FiCheck className="text-sm text-emerald-400" /> Approve
+                                                        <FiCheck className="text-xs text-emerald-400" /> Approve
                                                     </button>
                                                 )}
                                                 <button
                                                     onClick={() => openCommentViewModal(data)}
-                                                    className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-2 rounded-md transition duration-200"
+                                                    className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors"
                                                     title="View Replies"
                                                 >
                                                     <FiEye />
                                                 </button>
                                                 <button
                                                     onClick={() => openDeleteModal(data)}
-                                                    className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-2 rounded-md transition duration-200"
+                                                    className="inline-flex items-center justify-center hover:bg-red-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 p-1.5 rounded-md cursor-pointer transition-colors"
                                                     title="Delete"
                                                 >
                                                     <FiTrash2 />
@@ -237,7 +237,7 @@ const ProductReviewTable = ({
                             })
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-6 py-4 text-center italic text-[var(--ui-text-muted)]">
+                                <td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic text-[var(--ui-text-muted)]">
                                     <EmptyState title="No products review yet!" description="" />
                                 </td>
                             </tr>
