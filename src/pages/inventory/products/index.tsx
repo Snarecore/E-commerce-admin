@@ -5,6 +5,7 @@ import { productQueryKey } from "../../../config/query-key";
 import { useEffect, useState } from "react";
 import PageHeader from "../../../components/cards/PageHeader";
 import Button from "../../../components/buttons/ButtonStyleOne";
+import RefreshButton from "../../../components/table-components/RefreshButton";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { Link } from "react-router-dom";
 
@@ -63,26 +64,41 @@ const Products = () => {
 		url: getProductListApiUrl()
 	});
 
+	const handleRefresh = () => {
+		setSearchQuery("");
+		setSelectedFilters({
+			mainCategoryId: null,
+			isApprove: null,
+		});
+		setCurrentPageNumber(1);
+		fetchProductList();
+	};
 
 	return (
 		<>
-			<div className="flex flex-col gap-3.5">
-				<div className="flex items-center justify-between flex-wrap">
+			<div className="flex flex-col gap-2.5">
+				<div className="flex items-center justify-between flex-wrap gap-2.5">
 					<PageHeader
 						headerTitle="Product List"
 						headerDescription="Manage your products"
 					/>
-					<Link to="/create-product">
-						<Button
-							label="Add New Product"
-							onClick={() => {}}
-							color="var(--color-primary)"
-							hoverColor="var(--color-primary-hover)"
-							icon={<IoMdAddCircleOutline size={18} />}
+					<div className="flex items-center gap-2">
+						<RefreshButton
+							onClick={handleRefresh}
+							loading={isFetching}
 						/>
-					</Link>
+						<Link to="/create-product">
+							<Button
+								label="Add New Product"
+								onClick={() => {}}
+								color="var(--color-primary)"
+								hoverColor="var(--color-primary-hover)"
+								icon={<IoMdAddCircleOutline size={18} />}
+							/>
+						</Link>
+					</div>
 				</div>
-				<div className="grid grid-cols-12 gap-4">
+				<div className="grid grid-cols-12 gap-2.5">
 					<div className="col-span-12 xl:col-span-12">
 						<ProductsTable
 							// @ts-ignore

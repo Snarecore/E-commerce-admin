@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAPI } from "../../../hooks/useApi";
 import PageHeader from "../../../components/cards/PageHeader";
+import RefreshButton from "../../../components/table-components/RefreshButton";
 import ProductReviewTable from "./component/ProductReviewTable";
 import apiConfig from "../../../config/api.json";
 
@@ -36,15 +37,16 @@ const ProductReview = () => {
 
     return (
         <>
-            <div className="flex flex-col gap-3.5">
-                <div className="flex items-center justify-between flex-wrap">
+            <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between flex-wrap gap-3">
                     <PageHeader
                         headerTitle="Product Reviews"
                         headerDescription="Manage your product reviews"
                     />
+                    <RefreshButton onClick={() => fetchData()} loading={isFetching} />
                 </div>
 
-                <div className="grid grid-cols-12 gap-4">
+                <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-12 xl:col-span-12">
                         <ProductReviewTable
                             //@ts-ignore

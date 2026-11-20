@@ -62,8 +62,8 @@ const ContactMessageTable = ({ dataList, fetchData, isLoading, isFetching: _isFe
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-white rounded-lg border border-gray-200">
-            <div className="mt-4 w-full overflow-x-auto">
+        <div className="p-4 sm:p-5 bg-white rounded-lg border border-gray-200">
+            <div className="mt-2.5 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead className="bg-gray-100">
                         <tr className="text-gray-600 text-sm border-b border-gray-200">

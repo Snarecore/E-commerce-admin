@@ -153,8 +153,8 @@ const ProductReviewTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
-            <div className="mt-4 w-full overflow-x-auto">
+        <div className="p-4 sm:p-5 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+            <div className="mt-2.5 w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead className="bg-[var(--ui-surface-muted)]">
                         <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
@@ -404,7 +404,7 @@ const ProductReviewTable = ({
 
             {/* Pagination */}
             {pageCount > 1 && (
-                <div className="flex justify-center">
+                <div className="flex justify-end">
                     <Pagination
                         pageCount={pageCount}
                         currentPageNumber={currentPageNumber}

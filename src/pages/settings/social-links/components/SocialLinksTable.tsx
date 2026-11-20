@@ -71,7 +71,7 @@ const SocialLinksTable = ({
 	if (isLoading) return <TableSkeleton />;
 
 	return (
-		<div className="p-6 bg-white rounded-lg border border-gray-200">
+		<div className="p-4 sm:p-5 bg-white rounded-lg border border-gray-200">
 			<div className="mt-3 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[900px]">
 					<thead className="bg-gray-100">
@@ -145,7 +145,7 @@ const SocialLinksTable = ({
 				/>
 			)}
 			{pageCount > 1 && (
-				<div className="flex justify-center">
+				<div className="flex justify-end">
 					<Pagination
 						pageCount={pageCount}
 						currentPageNumber={currentPageNumber}

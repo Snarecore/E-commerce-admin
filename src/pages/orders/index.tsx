@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/cards/PageHeader";
+import RefreshButton from "../../components/table-components/RefreshButton";
 import OrderTable from "./components/OrderTable";
 import { useAPI } from "../../hooks/useApi";
 import apiConfig from "../../config/api.json";
@@ -157,11 +158,12 @@ const Orders = () => {
     return (
         <div>
             <div className="flex flex-col gap-3.5">
-                <div className="flex items-center justify-between flex-wrap">
+                <div className="flex items-center justify-between flex-wrap gap-3">
                     <PageHeader
                         headerTitle="Order List"
                         headerDescription="Manage and track all your orders"
                     />
+                    <RefreshButton onClick={() => fetchOrderList()} loading={isFetching} />
                 </div>
 
                 {/* Tab Bar */}

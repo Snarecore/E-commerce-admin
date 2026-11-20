@@ -143,7 +143,7 @@ const FaqTable = ({
                 />
             )}
             {pageCount > 1 && (
-				<div className="flex justify-center">
+				<div className="flex justify-end">
 					<Pagination
 						pageCount={pageCount}
 						currentPageNumber={currentPageNumber}

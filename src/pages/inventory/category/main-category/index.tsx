@@ -7,6 +7,7 @@ import { useAPI } from "../../../../hooks/useApi";
 import { mainCategoryQueryKey } from "../../../../config/query-key";
 import PageHeader from "../../../../components/cards/PageHeader";
 import Button from "../../../../components/buttons/ButtonStyleOne";
+import RefreshButton from "../../../../components/table-components/RefreshButton";
 
 const MainCategory = () => {
 	const dataLimit = 10;
@@ -52,15 +53,18 @@ const MainCategory = () => {
 
 	return (
 		<>
-			<div className="flex flex-col gap-3.5">
-				<div className="flex flex-wrap items-center justify-between">
+			<div className="flex flex-col gap-3">
+				<div className="flex flex-wrap items-center justify-between gap-3">
 					<PageHeader
 						headerTitle="Main Category"
 						headerDescription="Manage your main categories"
 					/>
-					<Button label="Add New Category" onClick={() => openModal()} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
+					<div className="flex items-center gap-2.5">
+						<RefreshButton onClick={() => fetchData()} loading={isFetching} />
+						<Button label="Add New Category" onClick={() => openModal()} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
+					</div>
 				</div>
-				<div className="grid grid-cols-12 gap-4">
+				<div className="grid grid-cols-12 gap-3">
 					<div className="col-span-12 xl:col-span-12">
 						<CategoryTable
 							// @ts-ignore

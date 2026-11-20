@@ -7,6 +7,7 @@ import { firstCategoryQueryKey } from "../../../../config/query-key";
 import FirstCategoryForm from "./components/FirstCategoryForm";
 import Button from "../../../../components/buttons/ButtonStyleOne";
 import PageHeader from "../../../../components/cards/PageHeader";
+import RefreshButton from "../../../../components/table-components/RefreshButton";
 
 interface FirstCategoryDataProps {
 	id: string;
@@ -62,15 +63,18 @@ const FirstCategory = () => {
 
 	return (
 		<>
-			<div className="flex flex-col gap-3.5">
-				<div className="flex flex-wrap items-center justify-between">
+			<div className="flex flex-col gap-3">
+				<div className="flex flex-wrap items-center justify-between gap-3">
 					<PageHeader
 						headerTitle="First Category"
 						headerDescription="Manage your first categories"
 					/>
-					<Button label="Add New First Category" onClick={() => openModal()} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
+					<div className="flex items-center gap-2.5">
+						<RefreshButton onClick={() => fetchData()} loading={isFetching} />
+						<Button label="Add New First Category" onClick={() => openModal()} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
+					</div>
 				</div>
-				<div className="grid grid-cols-12 gap-4">
+				<div className="grid grid-cols-12 gap-3">
 					<div className="col-span-12 xl:col-span-12">
 						<FirstCategoryTable
 							// @ts-ignore

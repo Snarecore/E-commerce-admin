@@ -8,7 +8,6 @@ import QuickAdjustModal from "./QuickAdjustModal";
 import DeleteModal from "../../../../components/modals/DeleteModal";
 import Search from "../../../../components/table-components/Search";
 import DropdownFilter from "../../../../components/table-components/DropdownFilter";
-import RefreshButton from "../../../../components/table-components/RefreshButton";
 import { TiDelete } from "react-icons/ti";
 import { Link } from "react-router-dom";
 import { useAPI } from "../../../../hooks/useApi";
@@ -159,15 +158,6 @@ const ProductsTable = ({
 		};
 	}, [mainCategories]);
 
-	const handleRefreshButton = () => {
-		setSelectedFilters({
-			mainCategoryId: null,
-			isApprove: null,
-		});
-		setSearchQuery("");
-		setCurrentPageNumber(1);
-		setOpenDropdown(null);
-	};
 	// Search and Filter by Category, Vendor
 
 	const tableHeaders = [
@@ -293,8 +283,8 @@ const ProductsTable = ({
 	if (isLoading && productsList.length === 0) return <TableSkeleton />;
 
 	return (
-		<div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
-			<div className="flex justify-between items-center flex-wrap gap-4">
+		<div className="p-3.5 sm:p-4 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+			<div className="flex justify-between items-center flex-wrap gap-3">
 				<Search
 					searchQuery={searchQuery}
 					onSearchChange={(value) => {
@@ -345,10 +335,9 @@ const ProductsTable = ({
 					/>
 					
 					))}
-					<RefreshButton onClick={handleRefreshButton} />
 				</div>
 			</div>
-			<div className="mt-4 w-full overflow-x-auto">
+			<div className="mt-2 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[1300px] cursor-pointer">
 					<thead className="bg-[var(--ui-surface-muted)]">
 						<tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
@@ -736,7 +725,7 @@ const ProductsTable = ({
 				/>
 			)}
 			{pageCount > 1 && (
-				<div className="flex justify-center">
+				<div className="flex justify-end">
 					<Pagination
 						pageCount={pageCount}
 						currentPageNumber={currentPageNumber}

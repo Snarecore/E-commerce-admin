@@ -14,7 +14,6 @@ import { saveBlacklistItem } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
-import RefreshButton from "../../../components/table-components/RefreshButton";
 
 interface OrderUser {
     id: string;
@@ -253,18 +252,6 @@ const OrderTable = ({
         ],
     }), [customers]);
 
-    const handleRefreshButton = () => {
-        setSelectedFilters({
-            userId: null,
-            status: null,
-            paymentStatus: null,
-            startDate: null,
-            endDate: null,
-        });
-        setCurrentPageNumber(1);
-        setOpenDropdown(null);
-    };
-
     const sortedDataList = useMemo(() => {
         if (!dataList || !Array.isArray(dataList)) return [];
         return [...dataList].sort((a, b) => {
@@ -299,7 +286,7 @@ const OrderTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+        <div className="p-4 sm:p-5 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
             {/* Filters */}
             <div className="flex justify-end flex-wrap space-y-4 mb-4">
                 <div className="flex flex-wrap gap-2">
@@ -336,7 +323,6 @@ const OrderTable = ({
                         initialStartDate={selectedFilters.startDate?.value}
                         initialEndDate={selectedFilters.endDate?.value}
                     />
-                    <RefreshButton onClick={handleRefreshButton} />
                 </div>
             </div>
 
@@ -557,7 +543,7 @@ const OrderTable = ({
             )}
 
             {pageCount > 1 && (
-                <div className="flex justify-center mt-6">
+                <div className="flex justify-end">
                     <Pagination
                         pageCount={pageCount}
                         currentPageNumber={currentPageNumber}
