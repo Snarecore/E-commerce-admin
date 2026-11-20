@@ -8,7 +8,7 @@ import { useAPI } from "../../hooks/useApi";
 type TabKey = "ready" | "attention" | "cod" | "all";
 
 const TABS: { key: TabKey; label: string; hint: string }[] = [
-    { key: "ready", label: "Ready to book", hint: "Confirmed orders not yet sent to Steadfast" },
+    { key: "ready", label: "Ready to book", hint: "Pending and confirmed orders not yet sent to Steadfast" },
     { key: "attention", label: "Needs attention", hint: "Failed bookings, partial deliveries, unknown courier statuses" },
     { key: "cod", label: "COD to receive", hint: "Delivered by Steadfast, payout not yet recorded" },
     { key: "all", label: "All shipments", hint: "Every Steadfast booking" },
@@ -80,13 +80,33 @@ interface BulkResult {
 const money = (v: string | number | null | undefined) =>
     v === null || v === undefined || v === "" ? "—" : `৳${Number(v).toLocaleString("en-BD")}`;
 
+const formatBdDate = (v: string | null | undefined) => {
+    if (!v) return "—";
+    try {
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return "—";
+        return new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Dhaka",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+        }).format(d);
+    } catch {
+        return "—";
+    }
+};
+
 const CourierPage = () => {
     const navigate = useNavigate();
     const [params, setParams] = useSearchParams();
     const tab = (TABS.find((t) => t.key === params.get("tab"))?.key || "ready") as TabKey;
     const { fetchData, handleApiMutation, postMutation } = useAPI();
 
-    const [enabled, setEnabled] = useState<boolean | null>(null);
+    const [enabled, setEnabled] = useState<boolean>(true);
     const [page, setPage] = useState(1);
     const [q, setQ] = useState("");
     const [query, setQuery] = useState("");
@@ -99,39 +119,58 @@ const CourierPage = () => {
     const [settleRef, setSettleRef] = useState("");
     const [failures, setFailures] = useState<BulkResult[]>([]);
 
+    // Auto-search on typing after a short debounce
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPage(1);
+            setQuery(q.trim());
+        }, 350);
+        return () => clearTimeout(timer);
+    }, [q]);
+
     const load = useCallback(async () => {
         setLoading(true);
         try {
             const qs = new URLSearchParams({ page: String(page), limit: "20" });
             if (query) qs.set("q", query);
+
             if (tab === "ready") {
-                const res = (await fetchData({ apiUrl: `courier/ready-orders?${qs}` })) as Paged<ReadyOrder> | undefined;
+                const [statusRes, res] = (await Promise.all([
+                    fetchData({ apiUrl: "courier/status" }),
+                    fetchData({ apiUrl: `courier/ready-orders?${qs}` }),
+                ])) as [any, Paged<ReadyOrder> | undefined];
+
+                if (statusRes && !statusRes.error) {
+                    const val = statusRes.steadfastEnabled ?? statusRes.data?.steadfastEnabled;
+                    if (typeof val === "boolean") setEnabled(val);
+                }
                 setReady(res || null);
             } else {
                 if (tab === "attention") qs.set("needsAttention", "true");
                 if (tab === "cod") qs.set("codUnsettled", "true");
                 if (tab === "all" && statusFilter) qs.set("status", statusFilter);
-                const res = (await fetchData({ apiUrl: `courier/shipments?${qs}` })) as Paged<ShipmentRow> | undefined;
+
+                const [statusRes, res] = (await Promise.all([
+                    fetchData({ apiUrl: "courier/status" }),
+                    fetchData({ apiUrl: `courier/shipments?${qs}` }),
+                ])) as [any, Paged<ShipmentRow> | undefined];
+
+                if (statusRes && !statusRes.error) {
+                    const val = statusRes.steadfastEnabled ?? statusRes.data?.steadfastEnabled;
+                    if (typeof val === "boolean") setEnabled(val);
+                }
                 setShipments(res || null);
             }
         } finally {
             setLoading(false);
         }
-        // fetchData is recreated each render by useAPI.
+        // fetchData is recreated each render by useAPI; keep stable deps to prevent infinite loops.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tab, page, query, statusFilter]);
 
     useEffect(() => {
         load();
     }, [load]);
-
-    useEffect(() => {
-        (async () => {
-            const res = (await fetchData({ apiUrl: "courier/status" })) as { steadfastEnabled?: boolean } | undefined;
-            setEnabled(!!res?.steadfastEnabled);
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const switchTab = (key: TabKey) => {
         setParams({ tab: key });
@@ -191,6 +230,42 @@ const CourierPage = () => {
             ...(settleRef.trim() ? { reference: settleRef.trim() } : {}),
         });
 
+    const retryShipment = async (id: string) => {
+        setBusy(true);
+        try {
+            const res = await handleApiMutation({
+                mutation: postMutation,
+                url: `courier/shipments/${id}/retry`,
+                body: {},
+                requiredFields: [],
+                showSuccessMessage: true,
+            });
+            if (res?.success) {
+                await load();
+            }
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const cancelShipment = async (id: string) => {
+        setBusy(true);
+        try {
+            const res = await handleApiMutation({
+                mutation: postMutation,
+                url: `courier/shipments/${id}/cancel`,
+                body: { reason: "Cancelled by admin" },
+                requiredFields: [],
+                showSuccessMessage: true,
+            });
+            if (res?.success) {
+                await load();
+            }
+        } finally {
+            setBusy(false);
+        }
+    };
+
     const orderCodeFor = (id?: string) =>
         ready?.data.find((o) => o.id === id)?.orderId || shipments?.data.find((s) => s.id === id)?.orderCode || id;
 
@@ -242,9 +317,23 @@ const CourierPage = () => {
                     <input
                         value={q}
                         onChange={(e) => setQ(e.target.value)}
-                        placeholder={tab === "ready" ? "Order ID" : "Order ID, invoice, consignment, tracking"}
-                        className="text-sm outline-none w-56"
+                        placeholder={tab === "ready" ? "Search Order ID, customer, phone" : "Order ID, invoice, consignment, tracking"}
+                        className="text-sm outline-none w-64"
                     />
+                    {q && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setQ("");
+                                setQuery("");
+                                setPage(1);
+                            }}
+                            className="text-xs text-gray-400 hover:text-gray-700 cursor-pointer px-1"
+                            title="Clear search"
+                        >
+                            ✕
+                        </button>
+                    )}
                 </form>
                 {tab === "all" && (
                     <select
@@ -265,7 +354,7 @@ const CourierPage = () => {
                 {tab === "ready" && (
                     <button
                         onClick={bookSelected}
-                        disabled={!enabled || busy || selected.size === 0}
+                        disabled={enabled === false || busy || selected.size === 0}
                         className="ml-auto flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer"
                     >
                         <FiTruck /> {busy ? "Queuing…" : `Book selected with Steadfast (${selected.size})`}
@@ -347,7 +436,7 @@ const CourierPage = () => {
                                     <td className="p-3 text-gray-700">{o.city || "—"}</td>
                                     <td className="p-3 text-xs text-gray-600">{o.paymentMethod} · {o.paymentStatus}</td>
                                     <td className="p-3 text-right font-semibold">{money(o.codAmount)}</td>
-                                    <td className="p-3 text-xs text-gray-500">{new Date(o.createdAt).toLocaleString()}</td>
+                                    <td className="p-3 text-xs text-gray-500">{formatBdDate(o.createdAt)}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -369,6 +458,7 @@ const CourierPage = () => {
                                 <th className="p-3 text-right">Charge</th>
                                 {tab !== "cod" && <th className="p-3 text-left">Issue</th>}
                                 <th className="p-3 text-left">Updated</th>
+                                {tab === "attention" && <th className="p-3 text-right">Actions</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -407,7 +497,27 @@ const CourierPage = () => {
                                             {s.needsAttention ? s.lastError || "Needs review" : ""}
                                         </td>
                                     )}
-                                    <td className="p-3 text-xs text-gray-500">{new Date(s.updatedAt).toLocaleString()}</td>
+                                    <td className="p-3 text-xs text-gray-500">{formatBdDate(s.updatedAt)}</td>
+                                    {tab === "attention" && (
+                                        <td className="p-3 text-right whitespace-nowrap">
+                                            <button
+                                                onClick={() => retryShipment(s.id)}
+                                                disabled={busy}
+                                                className="px-2.5 py-1 text-xs font-semibold bg-orange-50 hover:bg-orange-100 text-orange-700 rounded mr-1.5 cursor-pointer disabled:opacity-50"
+                                                title="Retry booking with Steadfast"
+                                            >
+                                                Retry
+                                            </button>
+                                            <button
+                                                onClick={() => cancelShipment(s.id)}
+                                                disabled={busy}
+                                                className="px-2.5 py-1 text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded cursor-pointer disabled:opacity-50"
+                                                title="Cancel dispatch and return order to Ready to book"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

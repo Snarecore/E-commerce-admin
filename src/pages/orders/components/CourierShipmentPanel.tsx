@@ -55,13 +55,31 @@ const STATUS_STYLE: Record<ShipmentStatus, { label: string; cls: string }> = {
     UNKNOWN: { label: "Unknown", cls: "bg-gray-100 text-gray-700 border-gray-200" },
 };
 
-const BOOKABLE_ORDER_STATUSES = ["Order Placed", "Processing"];
+const BOOKABLE_ORDER_STATUSES = ["Pending", "Order Placed", "Processing"];
 const SYNCABLE: ShipmentStatus[] = ["IN_REVIEW", "IN_TRANSIT", "ON_HOLD", "APPROVAL_PENDING", "UNKNOWN", "DELIVERED", "PARTIAL_DELIVERED", "RETURN_IN_TRANSIT"];
 
 const money = (v: string | number | null | undefined) =>
     v === null || v === undefined || v === "" ? "—" : `৳${Number(v).toLocaleString("en-BD")}`;
 
-const when = (v: string | null | undefined) => (v ? new Date(v).toLocaleString() : "—");
+const when = (v: string | null | undefined) => {
+    if (!v) return "—";
+    try {
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return "—";
+        return new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Dhaka",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+        }).format(d);
+    } catch {
+        return "—";
+    }
+};
 
 interface Props {
     order: { id: string; orderId?: string; status: string; paymentMethod?: string; paymentStatus?: string };
@@ -87,8 +105,11 @@ const CourierShipmentPanel = ({ order, onOrderChanged }: Props) => {
         const [status, list] = (await Promise.all([
             fetchData({ apiUrl: "courier/status" }),
             fetchData({ apiUrl: `courier/orders/${order.id}/shipments` }),
-        ])) as [{ steadfastEnabled?: boolean } | undefined, Shipment[] | undefined];
-        setEnabled(!!status?.steadfastEnabled);
+        ])) as [any, Shipment[] | undefined];
+        const isEn = status?.steadfastEnabled ?? status?.data?.steadfastEnabled;
+        if (typeof isEn === "boolean") {
+            setEnabled(isEn);
+        }
         setShipments(Array.isArray(list) ? list : []);
         setLoading(false);
         // fetchData is recreated every render by useAPI; keying on the order id is intentional.
