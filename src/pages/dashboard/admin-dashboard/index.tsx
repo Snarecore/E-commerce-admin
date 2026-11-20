@@ -79,7 +79,7 @@ const Dashboard = () => {
 
 	return (
 		<div>
-			<div className="flex flex-col gap-8">
+			<div className="flex flex-col gap-3.5">
 				{/* Overview Cards */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full transition-all ease-in duration-300">
 					<OverViewCard

@@ -65,7 +65,7 @@ const StockMovementsPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3.5">
             <PageHeader
                 headerTitle="Stock Movement Ledger"
                 headerDescription="Immutable audit trail of all physical and reserved inventory changes"

@@ -273,7 +273,7 @@ const CourierPage = () => {
     const total = (tab === "ready" ? ready?.total : shipments?.total) || 0;
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3.5">
             <PageHeader headerTitle="Courier" headerDescription="Book, track and reconcile Steadfast parcels">
                 <button
                     onClick={load}

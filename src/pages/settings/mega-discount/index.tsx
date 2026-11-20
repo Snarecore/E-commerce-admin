@@ -106,7 +106,7 @@ const MegaDiscountPage = () => {
         : 1000;
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3.5">
             <PageHeader
                 headerTitle="Global Mega Discount"
                 headerDescription="Configure storewide promotional percentage discount and custom navbar text for all products."

@@ -19,14 +19,14 @@ const InvoiceView = () => {
 
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-3.5">
 			<div className="flex items-center justify-between flex-wrap">
 				<PageHeader
 					headerTitle="Invoice"
 					headerDescription="View invoice details"
 				/>
 			</div>
-			<div className="grid grid-cols-12 gap-12 bg-white p-4 rounded-md border border-gray-300">
+			<div className="grid grid-cols-12 gap-4 bg-white p-4 rounded-md border border-gray-300">
 				<div className="col-span-12 xl:col-span-12">
 					<div className="grid grid-cols-2 pb-4 border-b border-gray-300">
 						<div>

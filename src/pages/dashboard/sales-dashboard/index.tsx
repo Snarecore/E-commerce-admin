@@ -52,7 +52,7 @@ const SalesDashboard = () => {
 	});
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-3.5">
 			<WelcomeCard />
 
 			<div className="grid grid-cols-12 gap-8">

@@ -3,7 +3,7 @@ import EmailSettingForm from "./components/EmailSettingForm";
 
 const EmailSettingPage = () => {
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-3.5">
 			<div className="flex items-center justify-between flex-wrap">
 				<PageHeader
 					headerTitle="Email & SMTP Configuration"

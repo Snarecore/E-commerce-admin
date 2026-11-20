@@ -222,7 +222,7 @@ const AppearanceSettingsContent: React.FC = () => {
       {/* ---------------- Main Content Grid ---------------- */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         {/* Left Column: Settings Sections */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3.5">
           {/* Theme Color Mode */}
           <SectionCard
             icon={<FiSun size={17} />}

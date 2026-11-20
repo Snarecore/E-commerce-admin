@@ -75,7 +75,7 @@ const Admins = () => {
     return (
         <>
         <div>
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-3.5">
                 <div className="flex items-center justify-between flex-wrap">
                     <PageHeader
                         headerTitle="Admin List"
@@ -83,7 +83,7 @@ const Admins = () => {
                     />
                     <Button label="Add New Admin" onClick={() => openModal()} color="var(--color-primary)" hoverColor="var(--color-primary-hover)" icon={<IoMdAddCircleOutline size={18} />} />
                 </div>
-                <div className="grid grid-cols-12 gap-12">
+                <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12">
                         <AdminTable
                             dataList={dataList}

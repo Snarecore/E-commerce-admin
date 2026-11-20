@@ -156,7 +156,7 @@ const Orders = () => {
 
     return (
         <div>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3.5">
                 <div className="flex items-center justify-between flex-wrap">
                     <PageHeader
                         headerTitle="Order List"
@@ -221,7 +221,7 @@ const Orders = () => {
                     </div>
                 )}
 
-                <div className="grid grid-cols-12 gap-12">
+                <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12">
                         <OrderTable
                             // @ts-ignore
