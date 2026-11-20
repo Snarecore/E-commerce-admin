@@ -56,6 +56,18 @@ const discountTypeOptions: Option[] = [
     { label: "Fixed Amount", value: "FLAT" },
 ]
 
+const getYouTubeEmbedUrl = (url?: string | null): string | null => {
+    if (!url || typeof url !== "string") return null;
+    const trimmed = url.trim();
+    if (!trimmed) return null;
+    const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = trimmed.match(regExp);
+    if (match && match[1]) {
+        return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0`;
+    }
+    return null;
+};
+
 const ProductCreation = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -571,7 +583,7 @@ const ProductCreation = () => {
                 {isOpen && (
                     <>
                         <div className="px-5 pb-5">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-4">
                                 <div>
                                     <InputField label="Product Name" type="text" name="name" required value={fieldValues.name} onChange={handleChange} />
                                 </div>
@@ -625,28 +637,6 @@ const ProductCreation = () => {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-[var(--ui-text)] mb-1">
-                                        Product Status (স্ট্যাটাস)
-                                    </label>
-                                    <div className="flex items-center gap-3 h-[42px] px-3 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] rounded-md">
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={status}
-                                                onChange={() => setStatus(!status)}
-                                                className="sr-only peer"
-                                            />
-                                            <div className="w-9 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
-                                                <div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${status ? "translate-x-4" : "translate-x-0"}`} />
-                                            </div>
-                                        </label>
-                                        <span className={`text-xs sm:text-sm font-semibold ${status ? "text-emerald-500" : "text-[var(--ui-text-muted)]"}`}>
-                                            {status ? "Active (পণ্যটি লাইভ থাকবে)" : "Inactive (পণ্যটি ড্রাফট থাকবে)"}
-                                        </span>
-                                    </div>
-                                </div>
-
                                 <SelectInput
                                     label="Main Category"
                                     value={selectedMainCategory}
@@ -676,6 +666,56 @@ const ProductCreation = () => {
                                 />
 
                                 <div>
+                                    <label className="block text-sm font-medium text-[var(--ui-text)] mb-1">
+                                        Product Status
+                                    </label>
+                                    <div className="flex items-center gap-2.5 h-[34px] px-3 bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-lg">
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={status}
+                                                onChange={() => setStatus(!status)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-8 h-4 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
+                                                <div className={`absolute top-[2px] left-[2px] w-3 h-3 bg-white rounded-full transition-transform duration-200 ${status ? "translate-x-4" : "translate-x-0"}`} />
+                                            </div>
+                                        </label>
+                                        <span className={`text-xs sm:text-sm font-semibold ${status ? "text-emerald-500" : "text-[var(--ui-text-muted)]"}`}>
+                                            {status ? "Active" : "Inactive"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="col-span-1 md:col-span-1 lg:col-span-2">
+                                    <InputField
+                                        label="YouTube Video Link (ভিডিও লিঙ্ক - Optional)"
+                                        type="text"
+                                        name="videoUrl"
+                                        value={fieldValues.videoUrl}
+                                        onChange={handleChange}
+                                        placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                                    />
+                                    {fieldValues.videoUrl && (() => {
+                                        const embedUrl = getYouTubeEmbedUrl(fieldValues.videoUrl);
+                                        return embedUrl ? (
+                                            <div className="mt-2.5 p-3 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] rounded-lg">
+                                                <p className="text-xs font-semibold text-[var(--ui-text-muted)] mb-1.5">Video Preview (ভিডিও প্রিভিউ):</p>
+                                                <div className="w-full max-w-sm aspect-video rounded-md overflow-hidden border border-[var(--ui-border)] shadow-xs">
+                                                    <iframe
+                                                        className="w-full h-full"
+                                                        src={embedUrl}
+                                                        title="Video Preview"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : null;
+                                    })()}
+                                </div>
+
+                                <div className="col-span-1 md:col-span-2 lg:col-span-3">
                                      <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Available Sizes & Stock Quantities</p>
                                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-1.5">
                                          {["S", "M", "L", "XL", "XXL"].map((size) => {
@@ -721,7 +761,7 @@ const ProductCreation = () => {
                                      </div>
                                  </div>
 
-                                <div className="">
+                                <div className="col-span-1 md:col-span-2 lg:col-span-3">
                                     <p className="text-sm font-medium text-[var(--ui-text)] w-full mb-1">Product Summary</p>
                                     <div className="space-y-1.5">
                                         {fields.map((field, index) => (

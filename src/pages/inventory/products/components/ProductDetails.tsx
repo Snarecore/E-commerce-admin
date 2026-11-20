@@ -39,6 +39,18 @@ interface Product {
     quantityAlert?: number;
 }
 
+const getYouTubeEmbedUrl = (url?: string | null): string | null => {
+    if (!url || typeof url !== "string") return null;
+    const trimmed = url.trim();
+    if (!trimmed) return null;
+    const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = trimmed.match(regExp);
+    if (match && match[1]) {
+        return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0`;
+    }
+    return null;
+};
+
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
@@ -328,22 +340,36 @@ const ProductDetails = () => {
                             )}
                         </div>
 
-                        {/* Video URL Link */}
-                        {product.videoUrl && (
-                            <div className="mt-4 pt-4 border-t border-gray-100">
-                                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                                    Product Video
-                                </h3>
-                                <a
-                                    href={product.videoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center text-sm font-bold text-[var(--color-primary)] hover:underline"
-                                >
-                                    Watch Video Walkthrough &rarr;
-                                </a>
-                            </div>
-                        )}
+                        {/* Video URL Link & Player */}
+                        {product.videoUrl && (() => {
+                            const embedUrl = getYouTubeEmbedUrl(product.videoUrl);
+                            return (
+                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
+                                        Product Video
+                                    </h3>
+                                    {embedUrl ? (
+                                        <div className="w-full aspect-video rounded-lg overflow-hidden border border-gray-200 shadow-sm mb-3">
+                                            <iframe
+                                                className="w-full h-full"
+                                                src={embedUrl}
+                                                title={product.name}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    ) : null}
+                                    <a
+                                        href={product.videoUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-sm font-bold text-[var(--color-primary)] hover:underline"
+                                    >
+                                        Watch Video Walkthrough &rarr;
+                                    </a>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
 
