@@ -76,49 +76,49 @@ const AdminTable = ({
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-4 sm:p-5 bg-white rounded-lg border border-gray-200">
-            <div className="mt-3 w-full overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[900px]">
-                    <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-[13px] border-b border-gray-200">
+        <div className="p-3.5 sm:p-4 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+            <div className="mt-2 w-full overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[900px] cursor-pointer">
+                    <thead className="bg-[var(--ui-surface-muted)]">
+                        <tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-4 py-2.5 text-left font-semibold text-[#000000e0]">
-                                    {label}
+                                <th key={key} className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] whitespace-nowrap ${key === "action" ? "text-right pr-6" : "text-left"}`}>
+                                    <span>{label}</span>
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+                    <tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
                         {dataList?.length > 0 ? (
                             dataList?.map((data, index) => (
                                 <tr
                                     key={data.id}
-                                    className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300"
+                                    className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                 >
-                                    <td className="px-4 py-2.5 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
                                         {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
-                                    <td className="px-4 py-2.5 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text)] whitespace-nowrap">
                                         {data.name}
                                     </td>
-                                    <td className="px-4 py-2.5 font-medium text-gray-800">
+                                    <td className="px-4 py-2.5 text-sm text-[var(--ui-text)] whitespace-nowrap">
                                         {data.email}
                                     </td>
-                                    <td className="px-4 py-2.5 font-medium text-gray-800">
-                                        {data.phone}
+                                    <td className="px-4 py-2.5 text-sm text-[var(--ui-text-muted)] font-mono whitespace-nowrap">
+                                        {data.phone || "N/A"}
                                     </td>
 
-                                    <td className="px-4 py-2.5">
-                                        <div className="flex items-center gap-1.5">
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <div className="flex items-center justify-end gap-1.5 pr-2">
                                             <button
                                                 onClick={() => openDeleteModal(data)}
-                                                className={`border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300 ${user.id === data.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                className={`border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200 ${user.id === data.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                 disabled={user.id === data.id}
+                                                title="Delete Admin"
                                             >
                                                 <FiTrash2 />
                                             </button>
                                         </div>
-
                                     </td>
                                 </tr>
                             ))
@@ -126,7 +126,7 @@ const AdminTable = ({
                             <tr>
                                 <td
                                     colSpan={tableHeaders.length}
-                                    className="px-4 py-4 text-center italic"
+                                    className="px-4 py-4 text-center italic text-[var(--ui-text-muted)]"
                                 >
                                     <EmptyState title="No admin available" description="Can't find any admin? Invest more to the developers!" />
                                 </td>

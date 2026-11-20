@@ -72,14 +72,14 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 	if (isLoading) return <TableSkeleton />;
 
 	return (
-		<div className="p-4 sm:p-5 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
-			<div className="mt-3 w-full overflow-x-auto">
+		<div className="p-3.5 sm:p-4 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+			<div className="mt-2 w-full overflow-x-auto">
 				<table className="w-full text-left border-collapse min-w-[900px] cursor-pointer">
 					<thead className="bg-[var(--ui-surface-muted)]">
-						<tr className="text-[var(--ui-text-muted)] text-[13px] border-b border-[var(--ui-border)]">
+						<tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
 							{tableHeaders.map(({ key, label }) => (
-								<th key={key} className="px-4 py-2.5 text-left font-semibold text-[var(--ui-text)]">
-									{label}
+								<th key={key} className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] whitespace-nowrap ${key === "action" ? "text-right pr-6" : "text-left"}`}>
+									<span>{label}</span>
 								</th>
 							))}
 						</tr>
@@ -88,38 +88,38 @@ const CategoryTable = ({ dataList, fetchData, pageCount, currentPageNumber, hand
 						{dataList?.length > 0 ? (
 							dataList?.map((data, index) => (
 								<tr key={data.id} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200">
-									<td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">
-										{index + 1}
+									<td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">
+										{(currentPageNumber - 1) * 10 + index + 1}
 									</td>
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 whitespace-nowrap">
 										<img
 											src={data.image}
-											alt="image"
+											alt={data.name}
 											className="w-12 h-12 object-cover rounded-md p-0.5 border border-[var(--ui-border)] hover:scale-105 transition-all ease-in-out duration-300"
 										/>
 									</td>
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 whitespace-nowrap">
 										<img
 											src={data.bannerImage}
 											alt="banner image"
 											className="w-20 h-11 object-cover rounded-md shadow-sm border border-[var(--ui-border)] hover:scale-105 transition-all ease-in-out duration-300"
 										/>
 									</td>
-									<td className="px-4 py-2.5">{data.name}</td>
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 font-medium text-[var(--ui-text)] whitespace-nowrap">{data.name}</td>
+									<td className="px-4 py-2.5 text-[var(--ui-text-muted)] whitespace-nowrap">
 										{data.position !== undefined && data.position !== 9999 ? data.position : "N/A"}
 									</td>
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 whitespace-nowrap">
 										<span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
 											{data.status ? "Active" : "Inactive"}
 										</span>
 									</td>
-									<td className="px-4 py-2.5">
-										<div className="flex items-center gap-1.5">
-											<button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200">
+									<td className="px-4 py-2.5 whitespace-nowrap">
+										<div className="flex items-center justify-end gap-1.5 pr-2">
+											<button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200" title="Edit Category">
 												<FaEdit />
 											</button>
-											<button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200">
+											<button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200" title="Delete Category">
 												<FiTrash2 />
 											</button>
 										</div>

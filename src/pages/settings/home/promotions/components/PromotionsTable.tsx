@@ -66,42 +66,42 @@ const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPag
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-4 sm:p-5 bg-white rounded-lg border border-gray-200">
-            <div className="mt-3 w-full overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[1000px]">
-                    <thead className="bg-gray-100">
-                        <tr className="text-gray-600 text-[13px] border-b border-gray-200">
+        <div className="p-3.5 sm:p-4 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+            <div className="mt-2 w-full overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[1000px] cursor-pointer">
+                    <thead className="bg-[var(--ui-surface-muted)]">
+                        <tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-4 py-2.5 text-left font-semibold text-[#000000e0]">{label}</th>
+                                <th key={key} className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] whitespace-nowrap ${key === "action" ? "text-right pr-6" : "text-left"}`}>{label}</th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 rounded-lg">
+                    <tbody className="bg-[var(--ui-surface)] divide-y divide-[var(--ui-border)] rounded-md">
                         {dataList?.length > 0 ? (
                             dataList?.map((data, index) => (
-                                <tr key={data.id} className="border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition duration-300">
-                                    <td className="px-4 py-2.5 font-medium text-gray-800">{index + 1}</td>
-                                    <td className="px-4 py-2.5">
+                                <tr key={data.id} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] whitespace-nowrap">{(currentPageNumber - 1) * 10 + index + 1}</td>
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
                                         <img
                                             src={data.image}
-                                            alt="image"
-                                            className="w-12 h-12 object-cover rounded-md shadow-sm border border-gray-200"
+                                            alt="promo image"
+                                            className="w-12 h-12 object-cover rounded-md shadow-sm border border-[var(--ui-border)]"
                                         />
                                     </td>
-                                    <td className="px-4 py-2.5 text-blue-500 hover:underline cursor-pointer">
-                                        {data.link}
+                                    <td className="px-4 py-2.5 text-[var(--color-primary)] hover:underline cursor-pointer whitespace-nowrap">
+                                        {data.link || "N/A"}
                                     </td>
-                                    <td className="px-4 py-2.5">
-                                        <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${data.status ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-red-500/15 text-red-400 border border-red-500/30"}`}>
                                             {data.status ? "Active" : "Inactive"}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-2.5">
-                                        <div className="flex items-center gap-1.5">
-                                            <button onClick={() => onEdit(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300">
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <div className="flex items-center justify-end gap-1.5 pr-2">
+                                            <button onClick={() => onEdit(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200" title="Edit Promotion">
                                                 <FaEdit />
                                             </button>
-                                            <button onClick={() => openDeleteModal(data)} className="border border-gray-300 text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-200 cursor-pointer p-1.5 rounded-md transition duration-300">
+                                            <button onClick={() => openDeleteModal(data)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200" title="Delete Promotion">
                                                 <FiTrash2 />
                                             </button>
                                         </div>
@@ -110,7 +110,7 @@ const PromotionsTable = ({ dataList, fetchData, isLoading, pageCount, currentPag
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic">
+                                <td colSpan={tableHeaders.length} className="px-4 py-4 text-center italic text-[var(--ui-text-muted)]">
                                     <EmptyState title="No promotions available" description="Click below to add your first promotion!" buttonText="+ Add New Promotion" onButtonClick={() => onEdit()} />
                                 </td>
                             </tr>
