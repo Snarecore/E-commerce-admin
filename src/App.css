@@ -742,14 +742,12 @@ table thead th svg,
   fill: currentColor;
 }
 
-table thead tr th:first-child {
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-}
-
+table thead,
+table thead tr,
+table thead th,
+table thead tr th:first-child,
 table thead tr th:last-child {
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-radius: 0 !important;
 }
 
 .dark table tbody,

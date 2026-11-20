@@ -167,7 +167,6 @@ const ProductsTable = ({
 		{ key: "sku", label: "SKU" },
 		{ key: "price", label: "Price" },
 		{ key: "stock", label: "Stock" },
-		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" },
 	];
 
@@ -252,29 +251,6 @@ const ProductsTable = ({
 			}
 		} catch (error) {
 			console.error('Error updating product:', error);
-		}
-	};
-
-	const handleToggleProductStatus = async (product: ProductDataProps) => {
-		try {
-			const currentStatus = String(product.status) === "true";
-			const newStatus = !currentStatus;
-
-			const result = await handleApiMutation({
-				// @ts-ignore
-				mutation: patchMutation,
-				url: `${statusApiUrl}/${product.id}`,
-				body: { status: newStatus },
-				invalidateQueryKey: [productQueryKey],
-				showSuccessMessage: true,
-				showErrorMessage: true
-			});
-
-			if (result?.success) {
-				fetchProductList();
-			}
-		} catch (error) {
-			console.error('Error toggling product status:', error);
 		}
 	};
 
@@ -374,21 +350,18 @@ const ProductsTable = ({
 										</span>
 									</td>
 
-									<td className="px-4 py-2.5">
-										<div className="flex flex-col">
-											<span className="text-sm font-medium text-[var(--ui-text)]">
-												{data.mainCategoryName || <span className="text-[var(--ui-text-muted)] opacity-60 italic">No Category</span>}
-											</span>
-											{data.firstCategoryName && (
-												<span className="text-xs text-[var(--ui-text-muted)]">
-													{data.firstCategoryName}
-												</span>
+									<td className="px-4 py-2.5 whitespace-nowrap">
+										<span className="text-sm font-medium text-[var(--ui-text)]">
+											{data.mainCategoryName ? (
+												data.firstCategoryName ? `${data.mainCategoryName} / ${data.firstCategoryName}` : data.mainCategoryName
+											) : (
+												<span className="text-[var(--ui-text-muted)] opacity-60 italic">No Category</span>
 											)}
-										</div>
+										</span>
 									</td>
 
-									<td className="px-4 py-2.5 text-[var(--ui-text-muted)]">{data.sku}</td>
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 text-[var(--ui-text-muted)] whitespace-nowrap">{data.sku}</td>
+									<td className="px-4 py-2.5 whitespace-nowrap">
 										{(() => {
 											const basePrice = Number(data.price) || 0;
 											const dAmount = Number((data as any).discountAmount) || 0;
@@ -406,14 +379,12 @@ const ProductsTable = ({
 
 											if (dAmount > 0 && salePrice < basePrice) {
 												return (
-													<div className="flex flex-col">
+													<div className="flex items-center gap-1.5">
 														<span className="font-semibold text-[var(--ui-text)]">৳{salePrice.toFixed(2)}</span>
-														<div className="flex items-center gap-1">
-															<span className="text-xs text-[var(--ui-text-muted)] line-through">৳{basePrice}</span>
-															<span className="text-[10px] bg-red-500/15 text-red-400 font-bold px-1 rounded">
-																{dType.includes("PERCENT") ? `${dAmount}% OFF` : `-৳${dAmount}`}
-															</span>
-														</div>
+														<span className="text-xs text-[var(--ui-text-muted)] line-through">৳{basePrice}</span>
+														<span className="text-[10px] bg-red-500/15 text-red-400 font-bold px-1 rounded">
+															{dType.includes("PERCENT") ? `${dAmount}% OFF` : `-৳${dAmount}`}
+														</span>
 													</div>
 												);
 											}
@@ -421,50 +392,24 @@ const ProductsTable = ({
 										})()}
 									</td>
 
-									<td className="px-4 py-2.5">
+									<td className="px-4 py-2.5 whitespace-nowrap">
 										{(() => {
 											const totalQty = data.totalStock !== undefined ? Number(data.totalStock) : (Number(data.quantity) || 0);
-											const status = data.stockStatus || (totalQty === 0 ? 'OUT_OF_STOCK' : totalQty <= Number(data.quantityAlert || 5) ? 'LOW_STOCK' : 'IN_STOCK');
+											const isOutOfStock = totalQty === 0;
+											const isLowStock = totalQty > 0 && totalQty <= Number(data.quantityAlert || 5);
 
-											if (status === 'OUT_OF_STOCK' || totalQty === 0) {
-												return (
-													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
-														Out of Stock
-													</span>
-												);
-											}
-											if (status === 'LOW_STOCK') {
-												return (
-													<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-														Low Stock ({totalQty})
-													</span>
-												);
-											}
 											return (
-												<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-													In Stock ({totalQty})
+												<span className={`inline-flex items-center justify-center min-w-[32px] px-2.5 py-0.5 rounded-full text-xs font-bold ${
+													isOutOfStock
+														? "bg-red-500/15 text-red-500 border border-red-500/30"
+														: isLowStock
+														? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+														: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
+												}`}>
+													{totalQty}
 												</span>
 											);
 										})()}
-									</td>
-
-									<td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
-										<div className="flex items-center gap-2">
-											<label className="relative inline-flex items-center cursor-pointer">
-												<input
-													type="checkbox"
-													checked={String(data.status) === "true"}
-													onChange={() => handleToggleProductStatus(data)}
-													className="sr-only peer"
-												/>
-												<div className="w-9 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
-													<div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${String(data.status) === "true" ? "translate-x-4" : "translate-x-0"}`} />
-												</div>
-											</label>
-											<span className={`text-xs font-semibold ${String(data.status) === "true" ? "text-emerald-500" : "text-[var(--ui-text-muted)]"}`}>
-												{String(data.status) === "true" ? "Active" : "Inactive"}
-											</span>
-										</div>
 									</td>
 
 									<td className="px-4 py-2.5">

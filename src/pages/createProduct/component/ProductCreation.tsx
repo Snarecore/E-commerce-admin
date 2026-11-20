@@ -61,6 +61,7 @@ const ProductCreation = () => {
     const navigate = useNavigate();
     const editData = location.state?.editData;
     const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState<boolean>(true);
     const [description, setDescription] = useState("");
     const [uniqueCode, setUniqueCode] = useState("");
     const [productImages, setProductImages] = useState<(File | string)[]>([]);
@@ -168,6 +169,7 @@ const ProductCreation = () => {
 
             setDescription(editData.description || "");
             setUniqueCode(editData.sku || "");
+            setStatus(editData.status === true || String(editData.status) === "true");
             if (editData.productImages && editData.productImages.length > 0) {
                 setProductImages(editData.productImages.map((img: any) => img.imageUrl));
             }
@@ -446,6 +448,7 @@ const ProductCreation = () => {
         setSelectedSecondCategory(null);
         setSelectedSizes(["S", "M", "L", "XL", "XXL"]);
         setSizeStockState({ S: 0, M: 0, L: 0, XL: 0, XXL: 0 });
+        setStatus(true);
     };
 
     const handleFeaturedImageUpload = (file: File | null) => {
@@ -495,7 +498,8 @@ const ProductCreation = () => {
             sizesString: selectedSizes.join(','),
             sizeStock: sizeStockObj,
             quantity: calculatedTotalQty > 0 ? calculatedTotalQty : (fieldValues.quantity !== "" ? Number(fieldValues.quantity) : 0),
-            quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 5
+            quantityAlert: fieldValues.quantityAlert !== "" ? Number(fieldValues.quantityAlert) : 5,
+            status: status
         };
 
         if (fieldValues.cost !== "" && fieldValues.cost !== null && fieldValues.cost !== undefined) {
@@ -619,6 +623,28 @@ const ProductCreation = () => {
                                         placeholder="Default: 5"
                                         onChange={handleChange}
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--ui-text)] mb-1">
+                                        Product Status (স্ট্যাটাস)
+                                    </label>
+                                    <div className="flex items-center gap-3 h-[42px] px-3 bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] rounded-md">
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={status}
+                                                onChange={() => setStatus(!status)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-9 h-5 bg-[var(--ui-border)] peer-focus:outline-none rounded-full peer peer-checked:bg-[var(--color-primary)] relative transition-all duration-200">
+                                                <div className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full transition-transform duration-200 ${status ? "translate-x-4" : "translate-x-0"}`} />
+                                            </div>
+                                        </label>
+                                        <span className={`text-xs sm:text-sm font-semibold ${status ? "text-emerald-500" : "text-[var(--ui-text-muted)]"}`}>
+                                            {status ? "Active (পণ্যটি লাইভ থাকবে)" : "Inactive (পণ্যটি ড্রাফট থাকবে)"}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <SelectInput
