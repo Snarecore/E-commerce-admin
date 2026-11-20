@@ -14,6 +14,7 @@ import { saveBlacklistItem } from "../../../utils/blacklist-storage";
 import { IBlacklistItem } from "../../settings/blacklist/BlacklistPage";
 import DateRangePicker from "../../../components/cards/welcomeCard/DateRangePicker";
 import DropdownFilter from "../../../components/table-components/DropdownFilter";
+import Search from "../../../components/table-components/Search";
 
 interface OrderUser {
     id: string;
@@ -58,6 +59,8 @@ interface OrderTableProps {
     isLoading: boolean;
     isFetching?: boolean;
     activeTab?: string;
+    searchQuery?: string;
+    setSearchQuery?: (query: string) => void;
     selectedFilters: {
         userId: { label: string; value: string } | null;
         status: { label: string; value: string } | null;
@@ -120,6 +123,8 @@ const OrderTable = ({
     isFetching: _isFetching,
     selectedFilters,
     setSelectedFilters,
+    searchQuery,
+    setSearchQuery,
 }: OrderTableProps) => {
     const navigate = useNavigate();
     const { handleDeleteAPI, fetchData } = useAPI();
@@ -130,7 +135,9 @@ const OrderTable = ({
         { key: "sl", label: "Sl" },
         { key: "orderId", label: "Order ID" },
         { key: "customer", label: "Customer" },
+        { key: "phone", label: "Phone" },
         { key: "totalAmount", label: "Amount" },
+        { key: "paymentMethod", label: "Method" },
         { key: "paymentStatus", label: "Payment" },
         { key: "status", label: "Status" },
         { key: "createdAt", label: "Date" },
@@ -274,22 +281,43 @@ const OrderTable = ({
         });
     }, [dataList]);
 
-    const displayDataList = useMemo(() => {
+    const filteredDataList = useMemo(() => {
         if (!sortedDataList || sortedDataList.length === 0) return [];
-        if (sortedDataList.length > 10 && (!pageCount || pageCount <= 1)) {
+        if (!searchQuery || !searchQuery.trim()) return sortedDataList;
+        const q = searchQuery.toLowerCase().trim();
+        return sortedDataList.filter((item) => {
+            const orderId = (item.orderId || item.id || "").toLowerCase();
+            const name = (getDisplayCustomerName(item) || "").toLowerCase();
+            const phone = (getDisplayCustomerPhone(item) || getDisplayCustomerContact(item) || "").toLowerCase();
+            const status = (item.status || "").toLowerCase();
+            const paymentStatus = (item.paymentStatus || "").toLowerCase();
+            return orderId.includes(q) || name.includes(q) || phone.includes(q) || status.includes(q) || paymentStatus.includes(q);
+        });
+    }, [sortedDataList, searchQuery]);
+
+    const displayDataList = useMemo(() => {
+        if (!filteredDataList || filteredDataList.length === 0) return [];
+        if (filteredDataList.length > 10 && (!pageCount || pageCount <= 1)) {
             const startIndex = (currentPageNumber - 1) * 10;
-            return sortedDataList.slice(startIndex, startIndex + 10);
+            return filteredDataList.slice(startIndex, startIndex + 10);
         }
-        return sortedDataList;
-    }, [sortedDataList, currentPageNumber, pageCount]);
+        return filteredDataList;
+    }, [filteredDataList, currentPageNumber, pageCount]);
 
     if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-4 sm:p-5 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
-            {/* Filters */}
-            <div className="flex justify-end flex-wrap space-y-4 mb-4">
-                <div className="flex flex-wrap gap-2">
+        <div className="p-3.5 sm:p-4 bg-[var(--ui-surface)] rounded-md border border-[var(--ui-border)] shadow-sm transition-colors duration-200">
+            {/* Search and Filters */}
+            <div className="flex justify-between items-center flex-wrap gap-3 mb-3">
+                <Search
+                    searchQuery={searchQuery || ""}
+                    onSearchChange={(value) => {
+                        if (setSearchQuery) setSearchQuery(value);
+                        setCurrentPageNumber(1);
+                    }}
+                />
+                <div className="flex flex-wrap items-center gap-3">
                     {(Object.entries(dropdownOptions) as [keyof typeof selectedFilters, any][]).map(([key, options]) => (
                         <DropdownFilter
                             key={key}
@@ -328,12 +356,15 @@ const OrderTable = ({
 
             {/* Table */}
             <div className="mt-2 w-full overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[1000px]">
+                <table className="w-full text-left border-collapse min-w-[1250px] cursor-pointer">
                     <thead className="bg-[var(--ui-surface-muted)]">
-                        <tr className="text-[var(--ui-text-muted)] text-sm border-b border-[var(--ui-border)]">
+                        <tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
                             {tableHeaders.map(({ key, label }) => (
-                                <th key={key} className="px-4 py-3 text-left font-semibold text-[var(--ui-text)]">
-                                    {label}
+                                <th
+                                    key={key}
+                                    className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] whitespace-nowrap ${key === "action" ? "text-right pr-6" : "text-left"}`}
+                                >
+                                    <span>{label}</span>
                                 </th>
                             ))}
                         </tr>
@@ -346,7 +377,7 @@ const OrderTable = ({
                                     className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition duration-200"
                                 >
                                     {/* Product Image Thumbnail */}
-                                    <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                                    <td className="px-4 py-2.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                         {(() => {
                                             const imgUrl = getFirstProductImage(data);
                                             const itemCount = getProductItemCount(data);
@@ -363,7 +394,7 @@ const OrderTable = ({
                                                         <img
                                                             src={imgUrl}
                                                             alt={title}
-                                                            className="w-9 h-9 rounded-lg object-cover border border-[var(--ui-border)] shadow-xs bg-[var(--ui-surface-muted)] hover:scale-105 transition-transform duration-200"
+                                                            className="w-9 h-9 rounded-md object-cover border border-[var(--ui-border)] shadow-xs bg-[var(--ui-surface-muted)] hover:scale-105 transition-transform duration-200"
                                                             onError={(e) => {
                                                                 (e.target as HTMLElement).style.display = "none";
                                                                 const fallback = (e.target as HTMLElement).nextElementSibling;
@@ -371,7 +402,7 @@ const OrderTable = ({
                                                             }}
                                                         />
                                                     ) : null}
-                                                    <div className={`w-9 h-9 rounded-lg bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] flex items-center justify-center text-[var(--ui-text-muted)] ${imgUrl ? 'hidden' : ''}`}>
+                                                    <div className={`w-9 h-9 rounded-md bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] flex items-center justify-center text-[var(--ui-text-muted)] ${imgUrl ? 'hidden' : ''}`}>
                                                         <FiPackage className="text-[var(--ui-text-muted)] text-base" />
                                                     </div>
                                                     {itemCount > 1 && (
@@ -385,108 +416,123 @@ const OrderTable = ({
                                     </td>
 
                                     {/* Sl */}
-                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)]">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] text-sm whitespace-nowrap">
                                         {(currentPageNumber - 1) * 10 + index + 1}
                                     </td>
+
                                     {/* Order ID */}
-                                    <td className="px-4 py-2.5 font-semibold text-[var(--primary-color)]">
+                                    <td className="px-4 py-2.5 font-semibold text-[var(--primary-color)] text-sm whitespace-nowrap">
                                         #{data.orderId}
                                     </td>
+
                                     {/* Customer */}
-                                    <td className="px-4 py-2.5">
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
                                         {(() => {
-                                            const custPhone = getDisplayCustomerPhone(data);
-                                            const custContact = custPhone || getDisplayCustomerContact(data);
                                             const isBlocked = Boolean((data as any).isBlacklisted || (data as any).riskLevel === 'CRITICAL');
                                             const isSuspicious = Boolean(!isBlocked && ((data as any).isSuspicious || (data as any).riskLevel === 'HIGH'));
 
                                             return (
-                                                <div>
-                                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                                        <p className="font-medium text-[var(--ui-text)] text-sm">
-                                                            {getDisplayCustomerName(data)}
-                                                        </p>
-                                                        {(data as any).isPhoneVerified ? (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold rounded border border-emerald-500/30">
-                                                                ✓ Phone Verified
-                                                            </span>
-                                                        ) : (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium rounded border border-amber-500/30">
-                                                                Unverified
-                                                            </span>
-                                                        )}
-                                                        {!(data as any).userId && (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-slate-500/15 text-slate-600 dark:text-slate-400 font-medium rounded border border-slate-500/30">
-                                                                Guest
-                                                            </span>
-                                                        )}
-                                                        {isBlocked && (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-red-500/15 text-red-400 font-bold rounded border border-red-500/30">
-                                                                BLOCKED
-                                                            </span>
-                                                        )}
-                                                        {isSuspicious && (
-                                                            <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-400 font-bold rounded border border-amber-500/30">
-                                                                SUSPICIOUS
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-xs text-[var(--ui-text-muted)] font-mono">
-                                                        {custPhone || custContact || "N/A"}
-                                                    </p>
+                                                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                                    <span className="font-medium text-[var(--ui-text)] text-sm">
+                                                        {getDisplayCustomerName(data)}
+                                                    </span>
+                                                    {(data as any).isPhoneVerified ? (
+                                                        <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold rounded border border-emerald-500/30 whitespace-nowrap">
+                                                            ✓ Verified
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium rounded border border-amber-500/30 whitespace-nowrap">
+                                                            Unverified
+                                                        </span>
+                                                    )}
+                                                    {!(data as any).userId && (
+                                                        <span className="px-1.5 py-0.5 text-[10px] bg-slate-500/15 text-slate-600 dark:text-slate-400 font-medium rounded border border-slate-500/30 whitespace-nowrap">
+                                                            Guest
+                                                        </span>
+                                                    )}
+                                                    {isBlocked && (
+                                                        <span className="px-1.5 py-0.5 text-[10px] bg-red-500/15 text-red-400 font-bold rounded border border-red-500/30 whitespace-nowrap">
+                                                            BLOCKED
+                                                        </span>
+                                                    )}
+                                                    {isSuspicious && (
+                                                        <span className="px-1.5 py-0.5 text-[10px] bg-amber-500/15 text-amber-400 font-bold rounded border border-amber-500/30 whitespace-nowrap">
+                                                            SUSPICIOUS
+                                                        </span>
+                                                    )}
                                                 </div>
                                             );
                                         })()}
                                     </td>
+
+                                    {/* Phone */}
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        {(() => {
+                                            const custPhone = getDisplayCustomerPhone(data);
+                                            const custContact = custPhone || getDisplayCustomerContact(data);
+                                            return (
+                                                <span className="text-xs text-[var(--ui-text-muted)] font-mono">
+                                                    {custPhone || custContact || "N/A"}
+                                                </span>
+                                            );
+                                        })()}
+                                    </td>
+
                                     {/* Amount */}
-                                    <td className="px-4 py-2.5 font-semibold text-[var(--ui-text)]">
+                                    <td className="px-4 py-2.5 font-semibold text-[var(--ui-text)] text-sm whitespace-nowrap">
                                         ৳{Number(data.totalAmount || 0).toFixed(2)}
                                     </td>
-                                    {/* Payment Status & Method */}
-                                    <td className="px-4 py-2.5">
-                                        <div className="flex flex-col gap-1">
-                                            <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md flex items-center w-fit ${
-                                                data.paymentStatus === "Paid"
-                                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                                                    : data.paymentStatus === "Review Required"
-                                                    ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 font-bold animate-pulse"
-                                                    : data.paymentStatus === "Refunded" || data.paymentStatus === "Partially Refunded"
-                                                    ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
-                                                    : "bg-red-500/15 text-red-400 border border-red-500/30"
-                                            }`}>
-                                                {data.paymentStatus}
-                                            </span>
-                                            {(() => {
-                                                const latestPay = (data as any).payments?.[0];
-                                                const method = (latestPay?.paymentMethod || (data as any).paymentMethod || "COD").toUpperCase();
-                                                if (method.includes("BKASH")) return <span className="text-[10px] font-bold text-pink-600 bg-pink-50 border border-pink-200 px-1.5 py-0.2 rounded w-fit">bKash</span>;
-                                                if (method.includes("NAGAD")) return <span className="text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded w-fit">Nagad</span>;
-                                                if (method.includes("ROCKET")) return <span className="text-[10px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.2 rounded w-fit">Rocket</span>;
-                                                if (method.includes("ONLINE") || method.includes("STRIPE")) return <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.2 rounded w-fit">Stripe</span>;
-                                                return <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.2 rounded w-fit">{method}</span>;
-                                            })()}
-                                        </div>
+
+                                    {/* Payment Method */}
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        {(() => {
+                                            const latestPay = (data as any).payments?.[0];
+                                            const method = (latestPay?.paymentMethod || (data as any).paymentMethod || "COD").toUpperCase();
+                                            if (method.includes("BKASH")) return <span className="text-[10px] font-bold text-pink-600 bg-pink-500/15 border border-pink-500/30 px-2 py-0.5 rounded-md whitespace-nowrap">bKash</span>;
+                                            if (method.includes("NAGAD")) return <span className="text-[10px] font-bold text-orange-600 bg-orange-500/15 border border-orange-500/30 px-2 py-0.5 rounded-md whitespace-nowrap">Nagad</span>;
+                                            if (method.includes("ROCKET")) return <span className="text-[10px] font-bold text-purple-600 bg-purple-500/15 border border-purple-500/30 px-2 py-0.5 rounded-md whitespace-nowrap">Rocket</span>;
+                                            if (method.includes("ONLINE") || method.includes("STRIPE")) return <span className="text-[10px] font-bold text-indigo-600 bg-indigo-500/15 border border-indigo-500/30 px-2 py-0.5 rounded-md whitespace-nowrap">Stripe</span>;
+                                            return <span className="text-[10px] font-semibold text-[var(--ui-text-muted)] bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] px-2 py-0.5 rounded-md whitespace-nowrap">{method}</span>;
+                                        })()}
                                     </td>
+
+                                    {/* Payment Status */}
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md inline-flex items-center whitespace-nowrap ${
+                                            data.paymentStatus === "Paid"
+                                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                                : data.paymentStatus === "Review Required"
+                                                ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 font-bold animate-pulse"
+                                                : data.paymentStatus === "Refunded" || data.paymentStatus === "Partially Refunded"
+                                                ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
+                                                : "bg-red-500/15 text-red-400 border border-red-500/30"
+                                        }`}>
+                                            {data.paymentStatus}
+                                        </span>
+                                    </td>
+
                                     {/* Order Status */}
-                                    <td className="px-4 py-2.5">
-                                        <span className={`px-2.5 py-0.5 text-[11px] font-semibold rounded-md flex items-center w-fit ${getStatusBadgeClass(data.status)}`}>
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <span className={`px-2.5 py-0.5 text-[11px] font-semibold rounded-md inline-flex items-center whitespace-nowrap ${getStatusBadgeClass(data.status)}`}>
                                             {data.status}
                                         </span>
                                     </td>
+
                                     {/* Date */}
-                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] text-xs">
+                                    <td className="px-4 py-2.5 font-medium text-[var(--ui-text-muted)] text-xs whitespace-nowrap">
                                         {formatPrettyDateWithTime(
                                             data?.createdAt || (data as any)?.created_at || (data as any)?.date || (data as any)?.updatedAt
                                         )}
                                     </td>
+
                                     {/* Actions */}
-                                    <td className="px-4 py-2.5">
-                                        <div className="flex items-center gap-1.5">
+                                    <td className="px-4 py-2.5 whitespace-nowrap">
+                                        <div className="flex items-center justify-end gap-1.5 pr-2">
                                             {/* View Detail */}
                                             <button
                                                 onClick={() => handleViewDetail(data)}
                                                 title="View Detail"
-                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
+                                                className="inline-flex items-center justify-center border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
                                                 <FiEye className="w-3.5 h-3.5" />
                                             </button>
@@ -494,7 +540,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleChat(data)}
                                                 title="Chat with Customer"
-                                                className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
+                                                className="inline-flex items-center justify-center border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
                                                 <FiMessageSquare className="w-3.5 h-3.5" />
                                             </button>
@@ -502,7 +548,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleOpenBlockModal(data)}
                                                 title="Block Customer / Add to Blacklist"
-                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
+                                                className="inline-flex items-center justify-center border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
                                                 <FiShield className="w-3.5 h-3.5" />
                                             </button>
@@ -510,7 +556,7 @@ const OrderTable = ({
                                             <button
                                                 onClick={() => handleOpenDeleteModal(data)}
                                                 title="Delete Order"
-                                                className="border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
+                                                className="inline-flex items-center justify-center border border-red-500/30 text-red-400 hover:text-red-300 hover:border-red-500 hover:bg-red-500/10 cursor-pointer p-1.5 rounded-md transition duration-200"
                                             >
                                                 <FiTrash2 className="w-3.5 h-3.5" />
                                             </button>

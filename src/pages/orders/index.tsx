@@ -29,6 +29,18 @@ const Orders = () => {
     const dataLimit = 10;
     const [activeTab, setActiveTab] = useState("all");
     const [currentPageNumber, setCurrentPageNumber] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [tempSearch, setTempSearch] = useState("");
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setSearchQuery(tempSearch);
+            setCurrentPageNumber(1);
+        }, 400);
+
+        return () => clearTimeout(handler);
+    }, [tempSearch]);
+
     const { usePaginatedQuery } = useAPI();
 
     const [selectedFilters, setSelectedFilters] = useState<{
@@ -99,6 +111,9 @@ const Orders = () => {
         if (urlOrderId) {
             params.append("orderId", urlOrderId);
         }
+        if (searchQuery && searchQuery.trim()) {
+            params.append("search", searchQuery.trim());
+        }
 
         return `${apiConfig.order.orderListUrl}?${params.toString()}`;
     };
@@ -118,6 +133,7 @@ const Orders = () => {
         queryKey: [
             orderQueryKey,
             activeTab,
+            searchQuery,
             selectedFilters.userId?.value || "",
             selectedFilters.status?.value || "",
             selectedFilters.paymentStatus?.value || "",
@@ -163,7 +179,12 @@ const Orders = () => {
                         headerTitle="Order List"
                         headerDescription="Manage and track all your orders"
                     />
-                    <RefreshButton onClick={() => fetchOrderList()} loading={isFetching} />
+                    <RefreshButton onClick={() => {
+                        setTempSearch("");
+                        setSearchQuery("");
+                        setCurrentPageNumber(1);
+                        fetchOrderList();
+                    }} loading={isFetching} />
                 </div>
 
                 {/* Tab Bar */}
@@ -238,6 +259,8 @@ const Orders = () => {
                             selectedFilters={selectedFilters}
                             setSelectedFilters={setSelectedFilters}
                             activeTab={activeTab}
+                            searchQuery={tempSearch}
+                            setSearchQuery={setTempSearch}
                         />
                     </div>
                 </div>
