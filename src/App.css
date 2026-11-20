@@ -750,6 +750,33 @@ table thead tr th:last-child {
   border-radius: 0 !important;
 }
 
+/* ============================================================================
+   Global Table Cell, Spacing & Row Styling (Standardized Pattern)
+   ========================================================================== */
+table {
+  border-collapse: collapse;
+}
+
+table th {
+  padding: 0.625rem 1rem !important; /* px-4 py-2.5 */
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+}
+
+table td {
+  padding: 0.625rem 1rem; /* px-4 py-2.5 */
+}
+
+table tbody tr {
+  border-bottom: 1px solid var(--ui-border);
+  transition: background-color 200ms ease;
+}
+
+table tbody tr:hover {
+  background-color: var(--ui-surface-muted);
+}
+
 .dark table tbody,
 [data-theme-mode="dark"] table tbody {
   background-color: var(--ui-surface) !important;
