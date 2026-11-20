@@ -3,8 +3,6 @@ import { FiEye } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { MdOutlineTune } from "react-icons/md";
-import QuickAdjustModal from "./QuickAdjustModal";
 import DeleteModal from "../../../../components/modals/DeleteModal";
 import Search from "../../../../components/table-components/Search";
 import DropdownFilter from "../../../../components/table-components/DropdownFilter";
@@ -119,8 +117,6 @@ const ProductsTable = ({
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<ProductDataProps | null>(null);
 	const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
-	const [quickAdjustProduct, setQuickAdjustProduct] = useState<any>(null);
-	const [isQuickAdjustOpen, setIsQuickAdjustOpen] = useState(false);
 	// @ts-ignore
 	const [isProductSectionOne, setIsProductSectionOne] = useState(selectedProduct?.isProductSectionOne);
 	// @ts-ignore
@@ -163,10 +159,12 @@ const ProductsTable = ({
 	const tableHeaders = [
 		{ key: "sl", label: "Sl" },
 		{ key: "name", label: "Product Name" },
-		{ key: "category", label: "Category" },
+		{ key: "mainCategory", label: "Main Category" },
+		{ key: "subCategory", label: "Sub Category" },
 		{ key: "sku", label: "SKU" },
 		{ key: "price", label: "Price" },
 		{ key: "stock", label: "Stock" },
+		{ key: "status", label: "Status" },
 		{ key: "action", label: "Action" },
 	];
 
@@ -318,7 +316,7 @@ const ProductsTable = ({
 					<thead className="bg-[var(--ui-surface-muted)]">
 						<tr className="text-[13px] font-semibold border-b border-[var(--ui-border)] text-[var(--ui-text-muted)]">
 							{tableHeaders.map(({ key, label }) => (
-								<th key={key} className="px-4 py-2.5 text-left font-semibold text-[var(--ui-text)]">
+								<th key={key} className={`px-4 py-2.5 font-semibold text-[var(--ui-text)] ${key === "action" ? "text-right pr-6" : "text-left"}`}>
 									<span>{label}</span>
 								</th>
 							))}
@@ -352,11 +350,13 @@ const ProductsTable = ({
 
 									<td className="px-4 py-2.5 whitespace-nowrap">
 										<span className="text-sm font-medium text-[var(--ui-text)]">
-											{data.mainCategoryName ? (
-												data.firstCategoryName ? `${data.mainCategoryName} / ${data.firstCategoryName}` : data.mainCategoryName
-											) : (
-												<span className="text-[var(--ui-text-muted)] opacity-60 italic">No Category</span>
-											)}
+											{data.mainCategoryName || <span className="text-[var(--ui-text-muted)] opacity-60 italic">-</span>}
+										</span>
+									</td>
+
+									<td className="px-4 py-2.5 whitespace-nowrap">
+										<span className="text-sm font-medium text-[var(--ui-text)]">
+											{data.firstCategoryName || <span className="text-[var(--ui-text-muted)] opacity-60 italic">-</span>}
 										</span>
 									</td>
 
@@ -412,36 +412,40 @@ const ProductsTable = ({
 										})()}
 									</td>
 
+									<td className="px-4 py-2.5 whitespace-nowrap">
+										<span className={`text-xs font-semibold ${
+											String(data.status) === "true" || data.status === true
+												? "text-emerald-500"
+												: "text-red-400"
+										}`}>
+											{String(data.status) === "true" || data.status === true ? "Active" : "Inactive"}
+										</span>
+									</td>
+
 									<td className="px-4 py-2.5">
-										<div className="flex items-center gap-1.5">
+										<div className="flex items-center justify-end gap-1.5 pr-2">
 											<Link to={`/product-details/${data.id}`}
-												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors">
+												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors"
+												title="View Details"
+											>
 												<FiEye />
 											</Link>
 											<Link
 												to="/edit-product"
 												state={{ editData: data }}
 												className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors"
+												title="Edit Product"
 											>
 												<FaEdit />
 											</Link>
 											<button
 												onClick={() => openDeleteModal(data)}
 												className="inline-flex items-center justify-center hover:bg-red-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-red-500 p-1.5 rounded-md cursor-pointer transition-colors"
+												title="Delete Product"
 											>
 												<FiTrash2 />
 											</button>
-											<button
-												onClick={() => {
-													setQuickAdjustProduct(data);
-													setIsQuickAdjustOpen(true);
-												}}
-												title="Quick Adjust Stock"
-												className="inline-flex items-center justify-center hover:bg-emerald-500/10 border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-emerald-600 p-1.5 rounded-md cursor-pointer transition-colors"
-											>
-												<MdOutlineTune />
-											</button>
-											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors">
+											<button onClick={() => openSelectionModal(data)} className="inline-flex items-center justify-center hover:bg-[var(--ui-surface-muted)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--color-primary)] p-1.5 rounded-md cursor-pointer transition-colors" title="Settings">
 												<FaEllipsisVertical />
 											</button>
 										</div>
@@ -655,18 +659,6 @@ const ProductsTable = ({
 					message={`Are you sure you want to delete?`}
 					onClose={closeDeleteModal}
 					onDelete={handleDelete}
-				/>
-			)}
-			{/* Quick Adjust Modal */}
-			{isQuickAdjustOpen && (
-				<QuickAdjustModal
-					isOpen={isQuickAdjustOpen}
-					onClose={() => {
-						setIsQuickAdjustOpen(false);
-						setQuickAdjustProduct(null);
-					}}
-					product={quickAdjustProduct}
-					onSuccess={() => fetchProductList()}
 				/>
 			)}
 			{pageCount > 1 && (
