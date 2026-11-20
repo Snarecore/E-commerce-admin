@@ -6,11 +6,11 @@ const TableSkeleton = () => {
 					<thead className="bg-[var(--ui-surface-muted)]">
 						<tr className="border-b border-[var(--ui-border)]">
 							<th className="p-3 w-10">
-								<div className="h-4 w-4 bg-[var(--ui-border)] rounded"></div>
+								<div className="h-4 w-4 bg-white/40 rounded"></div>
 							</th>
 							{[...Array(4)].map((_, i) => (
 								<th key={i} className="p-3">
-									<div className="h-4 w-24 bg-[var(--ui-border)] rounded"></div>
+									<div className="h-4 w-24 bg-white/40 rounded"></div>
 								</th>
 							))}
 						</tr>

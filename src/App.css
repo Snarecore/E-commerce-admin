@@ -686,18 +686,56 @@ input[type="number"] {
   background: var(--primary-color-hover, #e08a2c) !important;
 }
 
-/* Tables in Dark Mode */
+/* ============================================================================
+   Global Table Header Styling (Primary Brand Color)
+   ========================================================================== */
+table thead,
+table thead tr,
+table thead th,
 .dark table thead,
-[data-theme-mode="dark"] table thead {
-  background-color: var(--ui-surface-muted) !important;
+.dark table thead tr,
+.dark table thead th,
+[data-theme-mode="dark"] table thead,
+[data-theme-mode="dark"] table thead tr,
+[data-theme-mode="dark"] table thead th {
+  background-color: var(--primary-color, #fe9f43) !important;
+  color: #ffffff !important;
 }
 
+table thead tr,
+.dark table thead tr,
+[data-theme-mode="dark"] table thead tr {
+  border-bottom: 1px solid color-mix(in srgb, var(--primary-color, #fe9f43) 80%, black) !important;
+}
+
+table thead th,
 .dark table thead th,
-[data-theme-mode="dark"] table thead th,
-.dark table thead th span,
-[data-theme-mode="dark"] table thead th span {
-  color: var(--ui-text) !important;
-  border-color: var(--ui-border) !important;
+[data-theme-mode="dark"] table thead th {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+table thead th *:not(input):not(button.btn-accent),
+.dark table thead th *:not(input):not(button.btn-accent),
+[data-theme-mode="dark"] table thead th *:not(input):not(button.btn-accent) {
+  color: #ffffff !important;
+}
+
+table thead th svg,
+.dark table thead th svg,
+[data-theme-mode="dark"] table thead th svg {
+  color: #ffffff !important;
+  fill: currentColor;
+}
+
+table thead tr th:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+table thead tr th:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 .dark table tbody,
