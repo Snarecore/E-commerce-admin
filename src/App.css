@@ -702,10 +702,24 @@ table thead th,
   color: #ffffff !important;
 }
 
+table thead,
 table thead tr,
+table thead th,
+.dark table thead,
 .dark table thead tr,
-[data-theme-mode="dark"] table thead tr {
-  border-bottom: 1px solid color-mix(in srgb, var(--primary-color, #fe9f43) 80%, black) !important;
+.dark table thead th,
+[data-theme-mode="dark"] table thead,
+[data-theme-mode="dark"] table thead tr,
+[data-theme-mode="dark"] table thead th {
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+table tbody tr:first-child,
+.dark table tbody tr:first-child,
+[data-theme-mode="dark"] table tbody tr:first-child {
+  border-top: none !important;
 }
 
 table thead th,
