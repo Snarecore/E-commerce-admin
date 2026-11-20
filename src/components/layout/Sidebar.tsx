@@ -390,16 +390,16 @@ const Sidebar = () => {
 				</div>
 
 				<div
-					className={`p-2 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
+					className={`p-1.5 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
 						isCollapsed ? "w-[68px]" : "w-63"
 					} pr-1`}
 				>
 				{menu.map((section) => (
-					<div key={section.sectionName} className="mb-2">
+					<div key={section.sectionName} className="mb-1.5">
 						{isCollapsed ? (
-							<div className="h-px w-8 mx-auto my-2.5 bg-[var(--ui-sidebar-border,var(--ui-border))]/60" />
+							<div className="h-px w-8 mx-auto my-2 bg-[var(--ui-sidebar-border,var(--ui-border))]/60" />
 						) : (
-							<p className="text-[11px] uppercase tracking-wider text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] font-bold mb-1.5 px-2">
+							<p className="text-[10px] uppercase tracking-wider text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] font-bold mb-1 px-2.5 pt-0.5">
 								{section.sectionName}
 							</p>
 						)}
@@ -420,10 +420,10 @@ const Sidebar = () => {
 									<NavLink
 										to={item.subItems.length > 0 && !isCollapsed ? "#" : item.path}
 										title={isCollapsed ? item.name : undefined}
-										className={`flex items-center cursor-pointer rounded-lg transition-colors mb-1 ${
+										className={`flex items-center cursor-pointer rounded-lg transition-colors mb-0.5 ${
 											isCollapsed
-												? "justify-center w-11 h-11 mx-auto p-0"
-												: "justify-between px-3 py-2 w-full"
+												? "justify-center w-10 h-10 mx-auto p-0"
+												: "justify-between px-2.5 py-1.5 w-full"
 										} ${
 											shouldShowActive
 												? "bg-[var(--ui-sidebar-active-bg,var(--primary-color-light))] text-[var(--ui-sidebar-active-text,var(--primary-color))] font-semibold shadow-2xs"
@@ -440,12 +440,12 @@ const Sidebar = () => {
 											}
 										}}
 									>
-										<div className="flex items-center gap-2.5 min-w-0">
-											<span className="text-[18px] shrink-0">
+										<div className="flex items-center gap-2 min-w-0">
+											<span className="text-[17px] shrink-0">
 												{item.icon}
 											</span>
 											{!isCollapsed && (
-												<span className="text-[13px] font-medium truncate">
+												<span className="text-[12.5px] font-medium truncate">
 													{item.name}
 												</span>
 											)}
@@ -470,21 +470,21 @@ const Sidebar = () => {
 
 									{/* Submenu for Expanded View */}
 									{!isCollapsed && item.subItems.length > 0 && isOpen && (
-										<ul className="pl-6 pr-1 py-1 space-y-0.5 border-l-2 border-[var(--ui-border)]/60 ml-4 mb-1">
+										<ul className="pl-5 pr-1 py-0.5 space-y-0.5 border-l border-[var(--ui-border)]/60 ml-3.5 mb-0.5">
 											{item.subItems.map((subItem) => (
 												<li key={subItem.id}>
 													<NavLink
 														to={subItem.path}
 														className={({ isActive }) =>
-															`block rounded-md px-2.5 py-1.5 text-[12px] transition-colors ${
+															`block rounded-md px-2 py-1 text-[11.5px] transition-colors ${
 																isActive
 																	? "text-[var(--primary-color)] font-semibold bg-[var(--primary-color-light)]"
 																	: "text-[var(--ui-sidebar-text-muted,var(--ui-text-muted))] hover:text-[var(--ui-sidebar-text,var(--ui-text))] hover:bg-[var(--ui-surface-muted)]"
 															}`
 														}
 													>
-														<span className="flex items-center gap-2">
-															<GoDotFill className="text-[8px] opacity-70" />
+														<span className="flex items-center gap-1.5">
+															<GoDotFill className="text-[7px] opacity-70" />
 															<span className="truncate">{subItem.name}</span>
 														</span>
 													</NavLink>
