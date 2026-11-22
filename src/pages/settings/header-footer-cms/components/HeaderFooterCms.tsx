@@ -19,7 +19,8 @@ const initialFieldValues = {
     headerLogo: "" as string | File,
     footerLogo: "" as string | File,
     footerSectionTwoTitle: "",
-    footerSectionThreeTitle: ""
+    footerSectionThreeTitle: "",
+    paymentBanner: "https://res.cloudinary.com/dps0qdamq/image/upload/v1795371802/payment-gateways/sslcommerz-verified-banner.png"
 };
 
 const requiredFields = [
@@ -279,6 +280,22 @@ const HeaderFooterCmsForm = () => {
                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-[var(--color-primary)] focus:outline-none"
                             required
                         />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-[14px] font-medium text-[#212b36] mb-1">
+                            SSLCommerz Payment Gateway Banner URL:
+                        </label>
+                        <input
+                            type="text"
+                            name="paymentBanner"
+                            value={(fieldValues as any).paymentBanner || ""}
+                            onChange={handleChange}
+                            placeholder="https://... (or leave blank to use default SSLCommerz verified banner)"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-[var(--color-primary)] focus:outline-none text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Direct image URL of the SSLCommerz partner banner. It stays live and automatically updates partners.
+                        </p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3 mb-5">
