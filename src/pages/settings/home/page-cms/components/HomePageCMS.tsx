@@ -35,7 +35,23 @@ const initialFieldValues = {
     productSectionSixFontColor: "",
     productSectionSixBackgroundColor: "",
     bannerImage: "" as string | File,
-    bannerImageLink: ""
+    bannerImageLink: "",
+    isDeliveryProcessVisible: true,
+    deliveryProcessBadge: "Seamless Fulfillment Journey",
+    deliveryProcessTitle: "How Your Order Reaches Your Doorstep",
+    deliveryProcessDescription: "From our dedicated warehouse to your wardrobe, every item is handled with precision, care, and guaranteed transparency at every stage.",
+    deliveryStepOneTitle: "Order & Verification",
+    deliveryStepOneHighlight: "Instant Confirmation",
+    deliveryStepOneDescription: "Instant order confirmation with real-time digital invoice & tracking ID generated.",
+    deliveryStepTwoTitle: "Quality Check & Packing",
+    deliveryStepTwoHighlight: "100% Inspected",
+    deliveryStepTwoDescription: "Rigorous 3-tier fabric & seam inspection, hygienic steam press, and eco-friendly packaging.",
+    deliveryStepThreeTitle: "Express Dispatch & Transit",
+    deliveryStepThreeHighlight: "24-48h Fast Dispatch",
+    deliveryStepThreeDescription: "Dispatched through trusted premier courier networks with live SMS updates and route tracking.",
+    deliveryStepFourTitle: "Doorstep Delivery & Trial",
+    deliveryStepFourHighlight: "7-Day Easy Returns",
+    deliveryStepFourDescription: "Safe contactless or COD handover at your doorstep with 7 days hassle-free exchange & returns."
 };
 
 const requiredFields = [
@@ -460,6 +476,232 @@ const HomePageCmsForm = () => {
                             />
                         </div>
                     </>}
+                </div>
+
+                {/* Product Delivery Process Section */}
+                <div className="grid grid-cols-1 gap-y-4 mb-6 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <div>
+                        <p className="text-xl font-bold flex items-center justify-between gap-2 text-slate-800">
+                            Product Delivery Process
+                            <ToggleInput 
+                                label="" 
+                                name="isDeliveryProcessVisible" 
+                                checked={fieldValues.isDeliveryProcessVisible ?? true} 
+                                onChange={(checked) => handleSwitchChange("isDeliveryProcessVisible", checked)} 
+                            />
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">Configure the 4-step delivery lifecycle shown on the storefront.</p>
+                    </div>
+
+                    {(fieldValues.isDeliveryProcessVisible ?? true) && (
+                        <div className="space-y-4 pt-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[14px] font-medium text-[#212b36] mb-1">
+                                        Section Badge:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="deliveryProcessBadge"
+                                        value={fieldValues.deliveryProcessBadge || ""}
+                                        onChange={handleChange}
+                                        className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none text-sm"
+                                        placeholder="e.g. Seamless Fulfillment Journey"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[14px] font-medium text-[#212b36] mb-1">
+                                        Section Main Title:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="deliveryProcessTitle"
+                                        value={fieldValues.deliveryProcessTitle || ""}
+                                        onChange={handleChange}
+                                        className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none text-sm"
+                                        placeholder="e.g. How Your Order Reaches Your Doorstep"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[14px] font-medium text-[#212b36] mb-1">
+                                    Section Subtitle / Description:
+                                </label>
+                                <textarea
+                                    name="deliveryProcessDescription"
+                                    rows={2}
+                                    value={fieldValues.deliveryProcessDescription || ""}
+                                    onChange={(e: any) => handleChange(e)}
+                                    className="w-full p-2 bg-white border border-gray-300 rounded-md focus:ring-[var(--primary-color)] focus:outline-none text-sm"
+                                    placeholder="Enter section description..."
+                                />
+                            </div>
+
+                            {/* 4 Steps Configuration */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                {/* Step 1 */}
+                                <div className="p-4 bg-white rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2 mb-2 font-semibold text-sm text-[var(--primary-color)]">
+                                        <span className="w-5 h-5 rounded-full bg-[var(--primary-color)] text-white text-xs flex items-center justify-center font-bold">1</span>
+                                        Step 1: Order &amp; Verification
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Title</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepOneTitle"
+                                                value={fieldValues.deliveryStepOneTitle || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Highlight Badge</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepOneHighlight"
+                                                value={fieldValues.deliveryStepOneHighlight || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Description</label>
+                                            <textarea
+                                                name="deliveryStepOneDescription"
+                                                rows={2}
+                                                value={fieldValues.deliveryStepOneDescription || ""}
+                                                onChange={(e: any) => handleChange(e)}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Step 2 */}
+                                <div className="p-4 bg-white rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2 mb-2 font-semibold text-sm text-[var(--primary-color)]">
+                                        <span className="w-5 h-5 rounded-full bg-[var(--primary-color)] text-white text-xs flex items-center justify-center font-bold">2</span>
+                                        Step 2: Quality Check &amp; Packing
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Title</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepTwoTitle"
+                                                value={fieldValues.deliveryStepTwoTitle || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Highlight Badge</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepTwoHighlight"
+                                                value={fieldValues.deliveryStepTwoHighlight || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Description</label>
+                                            <textarea
+                                                name="deliveryStepTwoDescription"
+                                                rows={2}
+                                                value={fieldValues.deliveryStepTwoDescription || ""}
+                                                onChange={(e: any) => handleChange(e)}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Step 3 */}
+                                <div className="p-4 bg-white rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2 mb-2 font-semibold text-sm text-[var(--primary-color)]">
+                                        <span className="w-5 h-5 rounded-full bg-[var(--primary-color)] text-white text-xs flex items-center justify-center font-bold">3</span>
+                                        Step 3: Express Dispatch &amp; Transit
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Title</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepThreeTitle"
+                                                value={fieldValues.deliveryStepThreeTitle || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Highlight Badge</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepThreeHighlight"
+                                                value={fieldValues.deliveryStepThreeHighlight || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Description</label>
+                                            <textarea
+                                                name="deliveryStepThreeDescription"
+                                                rows={2}
+                                                value={fieldValues.deliveryStepThreeDescription || ""}
+                                                onChange={(e: any) => handleChange(e)}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Step 4 */}
+                                <div className="p-4 bg-white rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2 mb-2 font-semibold text-sm text-[var(--primary-color)]">
+                                        <span className="w-5 h-5 rounded-full bg-[var(--primary-color)] text-white text-xs flex items-center justify-center font-bold">4</span>
+                                        Step 4: Doorstep Delivery &amp; Returns
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Title</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepFourTitle"
+                                                value={fieldValues.deliveryStepFourTitle || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Highlight Badge</label>
+                                            <input
+                                                type="text"
+                                                name="deliveryStepFourHighlight"
+                                                value={fieldValues.deliveryStepFourHighlight || ""}
+                                                onChange={handleChange}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-0.5">Description</label>
+                                            <textarea
+                                                name="deliveryStepFourDescription"
+                                                rows={2}
+                                                value={fieldValues.deliveryStepFourDescription || ""}
+                                                onChange={(e: any) => handleChange(e)}
+                                                className="w-full p-1.5 bg-white border border-gray-300 rounded-md text-xs focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div>
