@@ -80,23 +80,27 @@ interface BulkResult {
 const money = (v: string | number | null | undefined) =>
     v === null || v === undefined || v === "" ? "—" : `৳${Number(v).toLocaleString("en-BD")}`;
 
-const formatBdDate = (v: string | null | undefined) => {
-    if (!v) return "—";
+const formatBdDateParts = (v: string | null | undefined) => {
+    if (!v) return { date: "—", time: "" };
     try {
         const d = new Date(v);
-        if (Number.isNaN(d.getTime())) return "—";
-        return new Intl.DateTimeFormat("en-GB", {
+        if (Number.isNaN(d.getTime())) return { date: "—", time: "" };
+        const date = new Intl.DateTimeFormat("en-GB", {
             timeZone: "Asia/Dhaka",
             day: "2-digit",
             month: "short",
             year: "numeric",
+        }).format(d);
+        const time = new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Dhaka",
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
             hour12: true,
         }).format(d);
+        return { date, time };
     } catch {
-        return "—";
+        return { date: "—", time: "" };
     }
 };
 
@@ -434,9 +438,22 @@ const CourierPage = () => {
                                         <p className="text-xs text-gray-500">{o.phone}</p>
                                     </td>
                                     <td className="p-3 text-gray-700">{o.city || "—"}</td>
-                                    <td className="p-3 text-xs text-gray-600">{o.paymentMethod} · {o.paymentStatus}</td>
+                                    <td className="p-3">
+                                        <p className="font-medium text-xs text-gray-800 dark:text-gray-200">{o.paymentMethod || "—"}</p>
+                                        <p className="text-[11px] text-gray-500 dark:text-gray-400">{o.paymentStatus || "—"}</p>
+                                    </td>
                                     <td className="p-3 text-right font-semibold">{money(o.codAmount)}</td>
-                                    <td className="p-3 text-xs text-gray-500">{formatBdDate(o.createdAt)}</td>
+                                    <td className="p-3">
+                                        {(() => {
+                                            const { date, time } = formatBdDateParts(o.createdAt);
+                                            return (
+                                                <>
+                                                    <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap">{date}</p>
+                                                    {time && <p className="text-[11px] text-gray-400 whitespace-nowrap">{time}</p>}
+                                                </>
+                                            );
+                                        })()}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -497,7 +514,17 @@ const CourierPage = () => {
                                             {s.needsAttention ? s.lastError || "Needs review" : ""}
                                         </td>
                                     )}
-                                    <td className="p-3 text-xs text-gray-500">{formatBdDate(s.updatedAt)}</td>
+                                    <td className="p-3">
+                                        {(() => {
+                                            const { date, time } = formatBdDateParts(s.updatedAt);
+                                            return (
+                                                <>
+                                                    <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap">{date}</p>
+                                                    {time && <p className="text-[11px] text-gray-400 whitespace-nowrap">{time}</p>}
+                                                </>
+                                            );
+                                        })()}
+                                    </td>
                                     {tab === "attention" && (
                                         <td className="p-3 text-right whitespace-nowrap">
                                             <button

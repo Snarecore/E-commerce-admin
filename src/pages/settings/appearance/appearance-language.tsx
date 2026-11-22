@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo, useState, type ReactNode } f
 
 export type AppearanceLanguage = 'en' | 'bn'
 
-const LANGUAGE_STORAGE_KEY = 'bazaarbound-appearance-language'
+const LANGUAGE_STORAGE_KEY = 'fashion-time-appearance-language'
 
 const BANGLA: Record<string, string> = {
   Appearance: 'ড্যাশবোর্ড রূপ ও থিম (Admin Appearance)',
@@ -194,7 +194,7 @@ export const AppearanceLanguageProvider: React.FC<{ children: ReactNode }> = ({ 
   const [language, setLanguageState] = useState<AppearanceLanguage>(() => {
     if (typeof window === 'undefined') return 'en'
     try {
-      const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
+      const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY) || window.localStorage.getItem('bazaarbound-appearance-language')
       return stored === 'bn' ? 'bn' : 'en'
     } catch {
       return 'en'

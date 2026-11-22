@@ -26,11 +26,11 @@ const ProductListTable = ({
 				<table className="w-full min-w-[600px]">
 					<thead>
 						<tr className="border-b border-[var(--ui-border)] text-[var(--ui-text-muted)] text-sm">
-							<th className="p-3 text-left">
+							<th className="px-4 py-2 text-left">
 								Sl
 							</th>
 							{headers.map((header, index) => (
-								<th key={index} className="p-3 text-left">
+								<th key={index} className="px-4 py-2 text-left">
 									{header}
 								</th>
 							))}
@@ -39,19 +39,19 @@ const ProductListTable = ({
 					<tbody>
 						{safeData.map((row, rowIndex) => (
 							<tr key={row?.id || row?._id || rowIndex} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition-colors">
-								<td className="p-3 text-left text-sm text-[var(--ui-text-muted)]">
+								<td className="px-4 py-2 text-left text-sm text-[var(--ui-text-muted)]">
 									{rowIndex + 1}
 								</td>
-								<td className="p-3 flex items-center gap-3">
-									<img src={row?.featuredImage || ""} alt={row?.name || "product"} className="w-10 h-10 rounded-md object-cover bg-gray-50 border border-[var(--ui-border)]" />
+								<td className="px-4 py-2 flex items-center gap-2.5">
+									<img src={row?.featuredImage || ""} alt={row?.name || "product"} className="w-9 h-9 rounded-md object-cover bg-gray-50 border border-[var(--ui-border)]" />
 									<span className="font-medium">{row?.name || "N/A"}</span>
 								</td>
-								<td className="p-3 text-sm text-[var(--ui-text-muted)]">{row?.mainCategoryName || row?.mainCategory?.name || "N/A"}</td>
-								<td className="p-3 font-semibold">৳{row?.price || 0}</td>
-								<td className="p-3 text-sm text-[var(--ui-text-muted)]">{formatPrettyDateWithTime(row?.createdAt)}</td>
-								<td className="p-3 flex items-center gap-3">
+								<td className="px-4 py-2 text-sm text-[var(--ui-text-muted)]">{row?.mainCategoryName || row?.mainCategory?.name || "N/A"}</td>
+								<td className="px-4 py-2 font-semibold">৳{row?.price || 0}</td>
+								<td className="px-4 py-2 text-sm text-[var(--ui-text-muted)]">{formatPrettyDateWithTime(row?.createdAt)}</td>
+								<td className="px-4 py-2 flex items-center gap-3">
 									<Link to={`/product-details/${row?.id || row?._id || ""}`}
-										className="inline-flex items-center justify-center hover:bg-[var(--primary-color-light)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] p-2 rounded-md cursor-pointer transition-colors">
+										className="inline-flex items-center justify-center hover:bg-[var(--primary-color-light)] border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] p-1.5 rounded-md cursor-pointer transition-colors">
 										<FiEye />
 									</Link>
 								</td>

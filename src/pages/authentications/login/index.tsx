@@ -1,6 +1,6 @@
 import { LuMail } from "react-icons/lu";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
-import companyLogo from "/images/BazaarBound Logo.svg";
+import companyLogo from "/images/Admin-logo.png";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSetAtom, useAtomValue } from "jotai";

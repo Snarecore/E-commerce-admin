@@ -2,7 +2,7 @@ import { isValidHex, normalizeHex } from './color'
 import type { ThemePalette, ThemePaletteKey, ThemePreset, ThemeRef } from './types'
 
 export const CUSTOM_PREFIX = 'custom:'
-const STORAGE_KEY = 'bazaarbound-custom-themes'
+const STORAGE_KEY = 'fashion-time-custom-themes'
 
 export const PALETTE_KEYS: ThemePaletteKey[] = [
   'accent',
@@ -127,7 +127,7 @@ export const sanitizeTheme = (raw: unknown): ThemePreset | null => {
 export const loadCustomThemes = (): ThemePreset[] => {
   if (typeof window === 'undefined') return []
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
+    const raw = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('bazaarbound-custom-themes')
     if (!raw) return []
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
@@ -175,7 +175,7 @@ export const downloadThemes = (themes: ThemePreset[]): void => {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `bazaarbound-themes-${new Date().toISOString().slice(0, 10)}.json`
+  a.download = `fashion-time-themes-${new Date().toISOString().slice(0, 10)}.json`
   a.click()
   URL.revokeObjectURL(url)
 }

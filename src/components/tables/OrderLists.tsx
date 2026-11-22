@@ -67,11 +67,11 @@ const OrderListTable = ({
                 <table className="w-full min-w-[600px]">
                     <thead>
                         <tr className="border-b border-[var(--ui-border)] text-[var(--ui-text-muted)] text-sm">
-                            <th className="p-3 text-left">
+                            <th className="px-4 py-2 text-left">
                                 Sl
                             </th>
                             {headers.map((header, index) => (
-                                <th key={index} className="p-3 text-left">
+                                <th key={index} className="px-4 py-2 text-left">
                                     {header}
                                 </th>
                             ))}
@@ -80,24 +80,24 @@ const OrderListTable = ({
                     <tbody>
                         {sortedData.map((row, rowIndex) => (
                             <tr key={row?.id || row?._id || rowIndex} className="border-b border-[var(--ui-border)] text-[var(--ui-text)] hover:bg-[var(--ui-surface-muted)] transition-colors">
-                                <td className="p-3 text-left text-sm text-[var(--ui-text-muted)]">
+                                <td className="px-4 py-2 text-left text-sm text-[var(--ui-text-muted)]">
                                     {rowIndex + 1}
                                 </td>
-                                <td className="p-3 text-left font-medium">
+                                <td className="px-4 py-2 text-left font-medium">
                                     {row?.orderId || row?.id || row?._id || "N/A"}
                                 </td>
 
-                                <td className="p-3">{getDisplayCustomerName(row)}</td>
-                                <td className="p-3 font-semibold">৳{row?.totalAmount || row?.grandTotal || 0}</td>
-                                <td className="p-3">
-                                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row?.status === "Completed" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                                <td className="px-4 py-2">{getDisplayCustomerName(row)}</td>
+                                <td className="px-4 py-2 font-semibold">৳{row?.totalAmount || row?.grandTotal || 0}</td>
+                                <td className="px-4 py-2">
+                                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-md flex items-center w-fit transition-all ${row?.status === "Completed" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
                                         {row?.status || "Pending"}
                                     </span>
                                 </td>
-                                <td className="p-3 text-sm text-[var(--ui-text-muted)]">{formatPrettyDateWithTime(row?.createdAt)}</td>
+                                <td className="px-4 py-2 text-sm text-[var(--ui-text-muted)]">{formatPrettyDateWithTime(row?.createdAt)}</td>
 
-                                <td className="p-3 flex items-center gap-3">
-                                    <button onClick={() => handleInvoice(row)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--primary-color-light)] cursor-pointer p-2 rounded-md transition duration-300">
+                                <td className="px-4 py-2 flex items-center gap-3">
+                                    <button onClick={() => handleInvoice(row)} className="border border-[var(--ui-border)] text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--primary-color-light)] cursor-pointer p-1.5 rounded-md transition duration-300">
                                         <FiEye />
                                     </button>
                                 </td>

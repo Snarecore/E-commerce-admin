@@ -237,7 +237,7 @@ export default function ProfitReportPage() {
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.setAttribute("download", `bazaarbound_profit_report_${new Date().toISOString().split("T")[0]}.csv`);
+      link.setAttribute("download", `fashion_time_profit_report_${new Date().toISOString().split("T")[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);

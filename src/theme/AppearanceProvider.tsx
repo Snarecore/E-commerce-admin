@@ -12,7 +12,7 @@ import { DEFAULT_APPEARANCE, applyAppearance, findTheme, resolveAppearance } fro
 import { THEME_PRESETS } from './themes'
 import type { AppearanceOverrides, AppearanceState, ThemePreset, ThemeRef } from './types'
 
-const STORAGE_KEY = 'bazaarbound-appearance'
+const STORAGE_KEY = 'fashion-time-appearance'
 
 // Isomorphic layout effect to avoid SSR warnings while guaranteeing pre-paint execution
 const useIsomorphicLayoutEffect =
@@ -187,7 +187,7 @@ const readStoredState = (): AppearanceState => {
   if (typeof window === 'undefined') return DEFAULT_APPEARANCE
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
+    const raw = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('bazaarbound-appearance')
     if (!raw) return DEFAULT_APPEARANCE
 
     const parsed = JSON.parse(raw) as Partial<AppearanceState>

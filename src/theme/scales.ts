@@ -172,9 +172,9 @@ export const TABLE_DENSITY_SCALE: Record<TableDensityId, TableDensityTokens> = {
     pagePadding: '16px',
   },
   default: {
-    rowH: '46px',
+    rowH: '42px',
     cellPx: '14px',
-    cellPy: '10px',
+    cellPy: '8px',
     pagePadding: '24px',
   },
   comfortable: {

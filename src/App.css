@@ -77,9 +77,9 @@
   --ui-shadow-popover: 0 16px 36px -12px rgba(15, 23, 42, 0.28), 0 4px 12px -6px rgba(15, 23, 42, 0.14);
 
   /* Tables */
-  --ui-table-row-h: 40px;
+  --ui-table-row-h: 38px;
   --ui-table-cell-px: 13px;
-  --ui-table-cell-py: 9px;
+  --ui-table-cell-py: 8px;
   --ui-page-padding: 20px;
 
   /* Focus ring */
@@ -758,14 +758,14 @@ table {
 }
 
 table th {
-  padding: 0.625rem 1rem !important; /* px-4 py-2.5 */
+  padding: 0.5rem 1rem !important; /* px-4 py-2 */
   font-size: 13px !important;
   font-weight: 600 !important;
   white-space: nowrap;
 }
 
 table td {
-  padding: 0.625rem 1rem; /* px-4 py-2.5 */
+  padding: 0.5rem 1rem !important; /* px-4 py-2 */
 }
 
 table tbody tr {

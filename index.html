@@ -10,7 +10,7 @@
 		/* Pre-hydrate appearance tokens immediately before HTML parse to guarantee 0ms FOUC */
 		(function () {
 			try {
-				var raw = localStorage.getItem('bazaarbound-appearance');
+				var raw = localStorage.getItem('fashion-time-appearance') || localStorage.getItem('bazaarbound-appearance');
 				if (raw) {
 					var state = JSON.parse(raw);
 					if (state.themeId) document.documentElement.dataset.theme = state.themeId;

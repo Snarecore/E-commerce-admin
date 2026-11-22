@@ -7,7 +7,7 @@ export interface SavedPreset {
   state: AppearanceState
 }
 
-const STORAGE_KEY = 'bazaarbound-appearance-presets'
+const STORAGE_KEY = 'fashion-time-appearance-presets'
 
 export const createPreset = (name: string, state: AppearanceState): SavedPreset => ({
   id: `preset-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
@@ -19,7 +19,7 @@ export const createPreset = (name: string, state: AppearanceState): SavedPreset 
 export const loadPresets = (): SavedPreset[] => {
   if (typeof window === 'undefined') return []
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
+    const raw = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('bazaarbound-appearance-presets')
     if (!raw) return []
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
@@ -74,7 +74,7 @@ export const downloadPresets = (presets: SavedPreset[]): void => {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `bazaarbound-presets-${new Date().toISOString().slice(0, 10)}.json`
+  a.download = `fashion-time-presets-${new Date().toISOString().slice(0, 10)}.json`
   a.click()
   URL.revokeObjectURL(url)
 }
