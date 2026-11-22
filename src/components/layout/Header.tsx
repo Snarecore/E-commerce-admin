@@ -256,10 +256,10 @@ const Header = () => {
 			className={`w-full ${
 				isStaticHeader ? "relative" : "fixed top-0 right-0 z-40"
 			} transition-all duration-300 ease-in-out ${
-				isCollapsed ? "lg:w-[calc(100%-68px)]" : "lg:w-[calc(100%-252px)]"
+				isCollapsed ? "lg:w-[calc(100%-68px)]" : "lg:w-[calc(100%-232px)]"
 			}`}
 		>
-			<div className="flex lg:hidden items-center justify-between px-4 py-2 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] transition-all ease-in-out duration-300">
+			<div className="flex lg:hidden items-center justify-between px-4 h-14 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] transition-all ease-in-out duration-300">
 				<GiHamburgerMenu
 					size={22}
 					className="text-[var(--color-primary)] cursor-pointer"
@@ -393,7 +393,7 @@ const Header = () => {
 				<div className="" onClick={() => setShowSidebar(true)}></div>
 			)}
 
-			<div className="flex justify-end items-center px-4 lg:py-1 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] text-[var(--ui-text)]">
+			<div className="flex justify-end items-center px-4 h-14 border-b border-[var(--ui-header-border,var(--ui-border))] bg-[var(--ui-header-bg,var(--ui-surface))] text-[var(--ui-text)]">
 				<div className="flex gap-2.5 items-center">
 					{/* Theme Mode Toggle (Light / Dark / System) */}
 					<button
@@ -407,26 +407,26 @@ const Header = () => {
 										: 'light';
 							setOverrides({ colorMode: nextMode });
 						}}
-						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						className="relative p-1.5 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
 						title={`Mode: ${resolved.colorMode} (${resolved.resolvedColorMode})`}
 						aria-label="Toggle theme mode"
 					>
 						{resolved.colorMode === 'dark' ? (
-							<FiMoon className="text-xl sm:text-2xl text-[var(--primary-color)]" />
+							<FiMoon className="text-lg sm:text-xl text-[var(--primary-color)]" />
 						) : resolved.colorMode === 'system' ? (
-							<FiMonitor className="text-xl sm:text-2xl text-[var(--primary-color)]" />
+							<FiMonitor className="text-lg sm:text-xl text-[var(--primary-color)]" />
 						) : (
-							<FiSun className="text-xl sm:text-2xl text-amber-500" />
+							<FiSun className="text-lg sm:text-xl text-amber-500" />
 						)}
 					</button>
 
 					<NavLink
 						to="/chat"
-						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						className="relative p-1.5 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
 						title="Customer Messages"
 						aria-label="Customer Messages"
 					>
-						<FaFacebookMessenger className="text-xl sm:text-2xl" />
+						<FaFacebookMessenger className="text-lg sm:text-xl" />
 						{unreadChatCount > 0 && (
 							<span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1.5 flex items-center justify-center shadow-md animate-pulse">
 								{unreadChatCount > 9 ? "9+" : unreadChatCount}
@@ -438,25 +438,25 @@ const Header = () => {
 
 					<NavLink
 						to="/appearance"
-						className="relative p-2 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
+						className="relative p-1.5 text-[var(--ui-text-muted)] hover:text-[var(--primary-color)] hover:bg-[var(--ui-surface-muted)] rounded-full transition-colors cursor-pointer flex items-center justify-center"
 						title="Appearance Settings"
 						aria-label="Appearance Settings"
 					>
-						<MdOutlinePalette className="text-xl sm:text-2xl" />
+						<MdOutlinePalette className="text-lg sm:text-xl" />
 					</NavLink>
 
 					<div
-						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-[var(--ui-surface-muted)] p-2 rounded-lg transition-colors relative"
+						className="hidden lg:flex items-center gap-2 cursor-pointer hover:bg-[var(--ui-surface-muted)] p-1.5 rounded-lg transition-colors relative"
 						onClick={() => setShowUserDropdown(!showUserDropdown)}>
 						<img
 							src={userAvatar}
 							alt="user"
-							className="w-[40px] h-[40px] rounded-lg"
+							className="w-[34px] h-[34px] rounded-lg"
 						/>
 					</div>
 
 					{showUserDropdown && (
-						<div ref={dropdownRef} className="absolute top-16.5 right-0 bg-[var(--ui-surface)] shadow-xl rounded-xl border border-[var(--ui-border)] p-2 text-[var(--ui-text)]">
+						<div ref={dropdownRef} className="absolute top-14 right-2 bg-[var(--ui-surface)] shadow-xl rounded-xl border border-[var(--ui-border)] p-2 text-[var(--ui-text)]">
 							<div className="flex items-center gap-1 bg-[var(--ui-surface-muted)] border-b border-[var(--ui-border)] p-2 rounded-md mb-2">
 								<img
 									src={userAvatar}

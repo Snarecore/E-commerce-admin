@@ -228,7 +228,7 @@ export const appearanceToCssVars = (r: ResolvedAppearance): Record<string, strin
     '--ui-resolved-mode': r.resolvedColorMode,
     '--ui-sidebar-style': r.sidebarStyle,
     '--ui-sidebar-collapse': r.sidebarCollapse,
-    '--ui-sidebar-width': r.sidebarCollapse === 'collapsed' ? '68px' : '252px',
+    '--ui-sidebar-width': r.sidebarCollapse === 'collapsed' ? '68px' : '232px',
     '--ui-sidebar-bg':
       r.sidebarStyle === 'dark'
         ? '#0f172a'

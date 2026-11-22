@@ -366,7 +366,7 @@ export const SIDEBAR_STYLE_OPTIONS: ScaleOption<SidebarStyleId>[] = [
 ]
 
 export const SIDEBAR_COLLAPSE_OPTIONS: ScaleOption<SidebarCollapseId>[] = [
-  { id: 'expanded', label: 'Full width (252px)', hint: 'Standard complete labels and section headers' },
+  { id: 'expanded', label: 'Full width (232px)', hint: 'Standard complete labels and section headers' },
   { id: 'collapsed', label: 'Compact mini (68px)', hint: 'Icon-only view maximizing dashboard canvas' },
 ]
 

@@ -17,7 +17,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 				<Header />
 				<main
 					className={`p-3.5 sm:p-5 flex-1 bg-[var(--ui-surface-sunken,#f6f6f6)] min-h-screen overflow-y-auto transition-all duration-300 ${
-						isStaticHeader ? "mt-0" : "mt-16"
+						isStaticHeader ? "mt-0" : "mt-14"
 					}`}
 				>
 					{children}

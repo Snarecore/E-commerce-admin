@@ -350,8 +350,8 @@ const Sidebar = () => {
 				}
 				aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
 				style={{ willChange: "left" }}
-				className={`hidden lg:flex items-center justify-center fixed top-4 z-[51] bg-[var(--primary-color)] hover:bg-[var(--primary-color-hover)] text-white rounded-full p-1.5 shadow-md hover:scale-105 active:scale-95 focus:outline-none -translate-x-1/2 transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer motion-reduce:transition-none ${
-					isCollapsed ? "left-[68px]" : "left-63"
+				className={`hidden lg:flex items-center justify-center fixed top-3.5 z-[51] bg-[var(--primary-color)] hover:bg-[var(--primary-color-hover)] text-white rounded-full p-1.5 shadow-md hover:scale-105 active:scale-95 focus:outline-none -translate-x-1/2 transition-[left,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer motion-reduce:transition-none ${
+					isCollapsed ? "left-[68px]" : "left-[232px]"
 				}`}
 				title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
 			>
@@ -364,12 +364,12 @@ const Sidebar = () => {
 
 			<aside
 				className={`hidden lg:block min-h-screen border-r transition-all ease-in-out duration-300 z-30 select-none shadow-xs border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] text-[var(--ui-sidebar-text,var(--ui-text))] ${
-					isCollapsed ? "w-[68px]" : "w-63"
+					isCollapsed ? "w-[68px]" : "w-[232px]"
 				}`}
 			>
 				<div
-					className={`fixed top-0 left-0 h-16 z-20 flex items-center border-b px-2 transition-all ease-in-out duration-300 border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] ${
-						isCollapsed ? "w-[68px] justify-center" : "w-63 justify-start px-3"
+					className={`fixed top-0 left-0 h-14 z-20 flex items-center border-b px-2 transition-all ease-in-out duration-300 border-[var(--ui-sidebar-border,var(--ui-border))] bg-[var(--ui-sidebar-bg,var(--ui-surface))] ${
+						isCollapsed ? "w-[68px] justify-center" : "w-[232px] justify-start px-3"
 					}`}
 				>
 					<Link to={"/"} className="flex items-center justify-center w-full overflow-hidden">
@@ -377,21 +377,21 @@ const Sidebar = () => {
 							<img
 								src="/images/Admin-logo.png"
 								alt="Admin logo"
-								className="h-8 w-8 object-contain"
+								className="h-7 w-7 object-contain"
 							/>
 						) : (
 							<img
 								src="/images/Admin-logo.png"
 								alt="Admin logo"
-								className="w-full h-12 object-contain"
+								className="w-full h-10 object-contain"
 							/>
 						)}
 					</Link>
 				</div>
 
 				<div
-					className={`p-1.5 pb-20 fixed top-16 left-0 h-[calc(100vh-64px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
-						isCollapsed ? "w-[68px]" : "w-63"
+					className={`p-1.5 pb-20 fixed top-14 left-0 h-[calc(100vh-56px)] overflow-y-scroll custom-scrollbar transition-all ease-in-out duration-300 ${
+						isCollapsed ? "w-[68px]" : "w-[232px]"
 					} pr-1`}
 				>
 				{menu.map((section) => (
