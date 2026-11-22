@@ -39,7 +39,7 @@ const initialFieldValues = {
     isDeliveryProcessVisible: true,
     deliveryProcessBadge: "Seamless Fulfillment Journey",
     deliveryProcessTitle: "How Your Order Reaches Your Doorstep",
-    deliveryProcessDescription: "From our dedicated warehouse to your wardrobe, every item is handled with precision, care, and guaranteed transparency at every stage.",
+    deliveryProcessDescription: "",
     deliveryStepOneTitle: "Order & Verification",
     deliveryStepOneHighlight: "Instant Confirmation",
     deliveryStepOneDescription: "Instant order confirmation with real-time digital invoice & tracking ID generated.",
