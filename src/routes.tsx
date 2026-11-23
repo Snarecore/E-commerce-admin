@@ -29,6 +29,7 @@ const ContactPageCMS    = lazy(() => import("./pages/settings/contact-us/contact
 const HomePageCMS       = lazy(() => import("./pages/settings/home/page-cms"));
 const Orders            = lazy(() => import("./pages/orders"));
 const OrderDetail       = lazy(() => import("./pages/orders/components/OrderDetail"));
+const IncompleteCheckouts = lazy(() => import("./pages/sales/incomplete-checkouts"));
 const PaymentsPage      = lazy(() => import("./pages/payments"));
 const CourierPage       = lazy(() => import("./pages/courier"));
 const Admins            = lazy(() => import("./pages/people/admin"));
@@ -226,6 +227,16 @@ const AppRoutes = () => {
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
 								<Orders />
+							</RoleProtectedRoute>} />
+					<Route path="/incomplete-checkouts"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<IncompleteCheckouts />
+							</RoleProtectedRoute>} />
+					<Route path="/sales/incomplete-checkouts"
+						element={
+							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
+								<IncompleteCheckouts />
 							</RoleProtectedRoute>} />
 					<Route path="/courier"
 						element={
