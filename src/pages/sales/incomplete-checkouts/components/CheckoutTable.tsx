@@ -123,7 +123,7 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                                             alt={firstProduct.title}
                                                             className="w-full h-full object-cover"
                                                             onError={(e) => {
-                                                                (e.target as any).style.display = 'none';
+                                                                e.currentTarget.style.display = 'none';
                                                             }}
                                                         />
                                                     ) : (

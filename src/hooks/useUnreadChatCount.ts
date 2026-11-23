@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getData } from "../services/api-service";
 import { useSocket } from "./useSocket";
 import { SocketEvent, ConversationUpdatedPayload, MessageCreatedPayload } from "../types/socket.types";
+import { ConversationItem } from "../pages/chat/component/ChatSidebar";
 
 export function useUnreadChatCount() {
     const [unreadCount, setUnreadCount] = useState<number>(0);
@@ -9,14 +10,19 @@ export function useUnreadChatCount() {
 
     const fetchUnreadCount = useCallback(async () => {
         try {
-            const res: any = await getData({ url: "message/conversations?page=1&limit=100" });
-            let items: any[] = [];
+            const res = await getData<{ data?: { data?: ConversationItem[] } } | ConversationItem[]>({
+                url: "message/conversations?page=1&limit=50",
+            });
+            let items: ConversationItem[] = [];
             if (Array.isArray(res)) {
                 items = res;
-            } else if (Array.isArray(res?.data)) {
-                items = res.data;
-            } else if (Array.isArray(res?.data?.data)) {
-                items = res.data.data;
+            } else if (res && typeof res === "object") {
+                const responseData = (res as { data?: { data?: ConversationItem[] } | ConversationItem[] }).data;
+                if (Array.isArray(responseData)) {
+                    items = responseData;
+                } else if (responseData && typeof responseData === "object" && Array.isArray(responseData.data)) {
+                    items = responseData.data;
+                }
             }
 
             const totalUnread = items.reduce(

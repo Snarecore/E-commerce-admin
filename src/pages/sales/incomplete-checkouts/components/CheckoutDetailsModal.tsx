@@ -166,7 +166,7 @@ export const CheckoutDetailsModal: React.FC<CheckoutDetailsModalProps> = ({
                                                     alt={item.title}
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => {
-                                                        (e.target as any).style.display = 'none';
+                                                        e.currentTarget.style.display = 'none';
                                                     }}
                                                 />
                                             ) : (

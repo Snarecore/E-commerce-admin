@@ -15,6 +15,18 @@ export interface CheckoutListResponse {
     totalPages: number;
 }
 
+interface ApiResponseWrapper<T = unknown> {
+    status?: string;
+    statusCode?: number;
+    message?: string;
+    data?: T;
+    error?: boolean;
+}
+
+function isApiError(res: unknown): res is { error: boolean; message: string } {
+    return Boolean(res && typeof res === 'object' && 'error' in res && (res as { error: boolean }).error);
+}
+
 export const incompleteCheckoutService = {
     async getStats(fromDate?: string, toDate?: string): Promise<IncompleteCheckoutStats> {
         let url = 'incomplete-checkouts/stats';
@@ -23,11 +35,11 @@ export const incompleteCheckoutService = {
         if (toDate) params.append('toDate', toDate);
         if (params.toString()) url += `?${params.toString()}`;
 
-        const res: any = await getData({ url });
-        if (res?.error) {
+        const res = await getData<ApiResponseWrapper<IncompleteCheckoutStats>>({ url });
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to fetch stats');
         }
-        return res?.data || res;
+        return (res?.data || res) as IncompleteCheckoutStats;
     },
 
     async getList(filter: IncompleteCheckoutFilter): Promise<CheckoutListResponse> {
@@ -42,51 +54,53 @@ export const incompleteCheckoutService = {
 
         if (params.toString()) url += `?${params.toString()}`;
 
-        const res: any = await getData({ url });
-        if (res?.error) {
+        const res = await getData<ApiResponseWrapper<CheckoutListResponse>>({ url });
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to fetch incomplete checkouts');
         }
-        return res?.data || res;
+        return (res?.data || res) as CheckoutListResponse;
     },
 
     async getDetails(id: string): Promise<IncompleteCheckoutItem> {
-        const res: any = await getData({ url: `incomplete-checkouts/${id}` });
-        if (res?.error) {
+        const res = await getData<ApiResponseWrapper<IncompleteCheckoutItem>>({
+            url: `incomplete-checkouts/${id}`,
+        });
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to fetch checkout details');
         }
-        return res?.data || res;
+        return (res?.data || res) as IncompleteCheckoutItem;
     },
 
-    async logActivity(checkoutId: string, action: RecoveryAction, note?: string): Promise<any> {
-        const res: any = await postData({
+    async logActivity(checkoutId: string, action: RecoveryAction, note?: string): Promise<unknown> {
+        const res = await postData<ApiResponseWrapper>({
             url: `incomplete-checkouts/${checkoutId}/activity`,
             body: { action, note },
         });
-        if (res?.error) {
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to record recovery activity');
         }
-        return res?.data || res;
+        return res?.data ?? res;
     },
 
-    async updateStatus(checkoutId: string, status: CheckoutStatus, note?: string): Promise<any> {
-        const res: any = await patchData({
+    async updateStatus(checkoutId: string, status: CheckoutStatus, note?: string): Promise<unknown> {
+        const res = await patchData<ApiResponseWrapper>({
             url: `incomplete-checkouts/${checkoutId}/status`,
             body: { status, note },
         });
-        if (res?.error) {
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to update checkout status');
         }
-        return res?.data || res;
+        return res?.data ?? res;
     },
 
-    async convertToOrder(checkoutId: string): Promise<any> {
-        const res: any = await postData({
+    async convertToOrder(checkoutId: string): Promise<unknown> {
+        const res = await postData<ApiResponseWrapper>({
             url: `incomplete-checkouts/${checkoutId}/convert-to-order`,
             body: {},
         });
-        if (res?.error) {
+        if (isApiError(res)) {
             throw new Error(res.message || 'Failed to convert checkout to order');
         }
-        return res?.data || res;
+        return res?.data ?? res;
     },
 };

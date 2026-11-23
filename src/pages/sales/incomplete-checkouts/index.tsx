@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
     IncompleteCheckoutFilter,
@@ -36,7 +36,7 @@ const IncompleteCheckoutsPage: React.FC = () => {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
     // Fetch Stats & List
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
             const [statsRes, listRes] = await Promise.all([
@@ -53,16 +53,17 @@ const IncompleteCheckoutsPage: React.FC = () => {
                 setTotal(listRes.total || 0);
                 setTotalPages(listRes.totalPages || 1);
             }
-        } catch (error: any) {
-            toast.error(error?.message || 'Failed to load checkouts');
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : 'Failed to load checkouts';
+            toast.error(msg);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [filter]);
 
     useEffect(() => {
         fetchData();
-    }, [filter]);
+    }, [fetchData]);
 
     // Handle Quick Recovery Call
     const handleCall = async (item: IncompleteCheckoutItem) => {
@@ -117,8 +118,9 @@ const IncompleteCheckoutsPage: React.FC = () => {
             toast.success('Successfully converted to official order!');
             setIsDetailsOpen(false);
             fetchData();
-        } catch (error: any) {
-            toast.error(error?.message || 'Failed to convert order');
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : 'Failed to convert order';
+            toast.error(msg);
         } finally {
             setIsConverting(false);
         }
@@ -131,8 +133,9 @@ const IncompleteCheckoutsPage: React.FC = () => {
             toast.success('Checkout marked as cancelled');
             if (isDetailsOpen) setIsDetailsOpen(false);
             fetchData();
-        } catch (error: any) {
-            toast.error(error?.message || 'Failed to cancel checkout');
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : 'Failed to cancel checkout';
+            toast.error(msg);
         }
     };
 
@@ -152,8 +155,9 @@ const IncompleteCheckoutsPage: React.FC = () => {
             const updated = await incompleteCheckoutService.getDetails(selectedCheckout.id);
             setSelectedCheckout(updated);
             toast.success('Activity recorded');
-        } catch (error: any) {
-            toast.error(error?.message || 'Failed to record activity');
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : 'Failed to record activity';
+            toast.error(msg);
         }
     };
 
