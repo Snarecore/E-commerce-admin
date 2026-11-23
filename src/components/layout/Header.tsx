@@ -159,8 +159,8 @@ const menu = [
 				path: "/exchange-policy",
 				subItems: [
 					{ id: 1, name: "Exchange & Return", path: "/exchange-policy" },
-					{ id: 2, name: "Privacy", path: "/privacy-policy" },
-					{ id: 2, name: "Terms & Conditions", path: "/terms-conditions" },
+					{ id: 2, name: "Privacy Policy", path: "/privacy-policy" },
+					{ id: 3, name: "Terms & Conditions", path: "/terms-conditions" },
 				],
 			},
 			{

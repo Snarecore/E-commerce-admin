@@ -39,18 +39,6 @@ const ShopPageCMS       = lazy(() => import("./pages/settings/shop-page-cms"));
 const Chat              = lazy(() => import("./pages/chat"));
 const ProductMeta       = lazy(() => import("./pages/seo/product-meta"));
 const PageMeta          = lazy(() => import("./pages/seo/page-meta"));
-const PolicyOne         = lazy(() => import("./pages/settings/policy/policy-one"));
-const PolicyTwo         = lazy(() => import("./pages/settings/policy/policy-two"));
-const PolicyThree       = lazy(() => import("./pages/settings/policy/policy-three"));
-const PolicyFour        = lazy(() => import("./pages/settings/policy/policy-four"));
-const PolicyFive        = lazy(() => import("./pages/settings/policy/policy-five"));
-const PolicySix         = lazy(() => import("./pages/settings/policy/policy-six"));
-const PolicySeven       = lazy(() => import("./pages/settings/policy/policy-seven"));
-const PolicyEight       = lazy(() => import("./pages/settings/policy/policy-eight"));
-const PolicyNine        = lazy(() => import("./pages/settings/policy/policy-nine"));
-const PolicyTen         = lazy(() => import("./pages/settings/policy/policy-ten"));
-const PolicyEleven      = lazy(() => import("./pages/settings/policy/policy-eleven"));
-const PolicyTwelve      = lazy(() => import("./pages/settings/policy/policy-twelve"));
 const PrivacyPolicy     = lazy(() => import("./pages/settings/policy/privacy"));
 const ExchangeReturn    = lazy(() => import("./pages/settings/policy/exchange-return"));
 const TermsConditions   = lazy(() => import("./pages/settings/policy/terms-conditions"));
@@ -308,66 +296,6 @@ const AppRoutes = () => {
 								<BlacklistPage />
 							</RoleProtectedRoute>} />
 
-					<Route path="/policy-one"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyOne />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-two"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyTwo />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-three"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyThree />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-four"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyFour />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-five"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyFive />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-six"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicySix />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-seven"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicySeven />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-eight"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyEight />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-nine"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyNine />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-ten"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyTen />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-eleven"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyEleven />
-							</RoleProtectedRoute>} />
-					<Route path="/policy-twelve"
-						element={
-							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>
-								<PolicyTwelve />
-							</RoleProtectedRoute>} />
 					<Route path="/privacy-policy"
 						element={
 							<RoleProtectedRoute allowedRoles={[Role.ADMIN]}>

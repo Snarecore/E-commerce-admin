@@ -13,19 +13,7 @@
         "policy": {
             "exchangeReturnUrl": "return-policy-cms",
             "privacyPolicyUrl": "privacy-policy-cms",
-            "termsConditionsUrl": "terms-and-conditions-cms",
-            "policyOneUrl": "policy-one-cms",
-            "policyTwoUrl": "policy-two-cms",
-            "policyThreeUrl": "policy-three-cms",
-            "policyFourUrl": "policy-four-cms",
-            "policyFiveUrl": "policy-five-cms",
-            "policySixUrl": "policy-six-cms",
-            "policySevenUrl": "policy-seven-cms",
-            "policyEightUrl": "policy-eight-cms",
-            "policyNineUrl": "policy-nine-cms",
-            "policyTenUrl": "policy-ten-cms",
-            "policyElevenUrl": "policy-eleven-cms",
-            "policyTwelveUrl": "policy-twelve-cms"
+            "termsConditionsUrl": "terms-and-conditions-cms"
         },
         "headerFooterCms": "header-footer-cms",
         "storefrontTheme": "header-footer-cms/theme",
