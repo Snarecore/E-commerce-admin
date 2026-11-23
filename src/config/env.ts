@@ -11,14 +11,8 @@ export const getApiBaseUrl = (): string => {
         return stripTrailingSlash(envUrl.trim());
     }
 
-    if (import.meta.env.PROD) {
-        if (typeof window !== "undefined") {
-            console.warn("[Env Warning] VITE_API_BASE_URL missing in production. Falling back to origin API.");
-            return `${stripTrailingSlash(window.location.origin)}/api/v1`;
-        }
-    }
-
-    return "http://localhost:5000/api/v1";
+    // Default to same-origin relative API path (handled by Vercel rewrite in prod and Vite proxy in dev)
+    return "/api/v1";
 };
 
 export const getApiBaseUrlWithTrailingSlash = (): string => {

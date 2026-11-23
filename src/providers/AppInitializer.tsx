@@ -7,10 +7,11 @@ import {
     getStoredUser,
     setStoredUser,
     removeStoredUser,
-    isSessionExpired,
-    recordUserActivity
+    recordUserActivity,
+    subscribeAuthEvents
 } from "../utils/auth-storage";
-import { showErrorToast } from "../utils/toast-utils";
+import { getApiBaseUrl } from "../config/env";
+import { queryClient } from "../config/query-client";
 
 const AppInitializer = () => {
     const setUser = useSetAtom(userAtom);
@@ -33,18 +34,7 @@ const AppInitializer = () => {
                     return;
                 }
 
-                // Check 2-hour session expiry
-                if (isSessionExpired()) {
-                    removeStoredUser();
-                    setUser(null);
-                    setUserLoaded(true);
-                    showErrorToast("Session expired after 2 hours. Please log in again.");
-                    navigate("/login", { replace: true });
-                    return;
-                }
-
-                const rawApiUrl = import.meta.env.VITE_API_BASE_URL;
-                const apiUrl = rawApiUrl.replace(/\/$/, "");
+                const apiUrl = getApiBaseUrl().replace(/\/+$/, "");
 
                 let res = await fetch(`${apiUrl}/auth/admin/me`, {
                     method: "GET",
@@ -73,11 +63,13 @@ const AppInitializer = () => {
                         };
                         setUser(mergedUser);
                         setStoredUser(mergedUser);
+                        recordUserActivity();
                     } else {
                         setUser(storedUser);
                     }
                 } else {
                     removeStoredUser();
+                    try { queryClient.clear(); } catch {}
                     setUser(null);
                 }
             } catch {
@@ -93,11 +85,26 @@ const AppInitializer = () => {
         };
 
         initSession();
+    }, [setUser, setUserLoaded]);
+
+    // Multi-tab session synchronization (BroadcastChannel)
+    useEffect(() => {
+        return subscribeAuthEvents((event) => {
+            if (event.type === "LOGOUT") {
+                setUser(null);
+                setUserLoaded(true);
+                try {
+                    queryClient.clear();
+                } catch {}
+                if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+                    navigate("/login", { replace: true });
+                }
+            }
+        });
     }, [setUser, setUserLoaded, navigate]);
 
     // Proactive background interval: runs every 30s
-    // 1. Checks 2-hour session expiry
-    // 2. Silently refreshes access token cookie in the background
+    // Silently refreshes access token cookie in the background before expiry
     useEffect(() => {
         let lastRefreshTime = Date.now();
 
@@ -105,19 +112,10 @@ const AppInitializer = () => {
             const currentUser = getStoredUser();
             if (!currentUser) return;
 
-            // Check if 2-hour session expired
-            if (isSessionExpired()) {
-                removeStoredUser();
-                setUser(null);
-                showErrorToast("Your 2-hour session has ended. Please log in again.");
-                navigate("/login", { replace: true });
-                return;
-            }
-
             const now = Date.now();
             const timeSinceLastRefresh = now - lastRefreshTime;
 
-            // Refresh cookie every 10 minutes
+            // Silently refresh token every 10 minutes for active users
             if (timeSinceLastRefresh >= 600000) {
                 lastRefreshTime = now;
                 await refreshAccessToken();
@@ -125,7 +123,7 @@ const AppInitializer = () => {
         }, 30000);
 
         return () => clearInterval(intervalId);
-    }, [setUser, navigate]);
+    }, []);
 
     // User activity tracking: tracks clicks, keystrokes, mouse moves
     useEffect(() => {

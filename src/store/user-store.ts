@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { removeStoredUser } from "../utils/auth-storage";
+import { queryClient } from "../config/query-client";
 
 export interface User {
     id: string;
@@ -16,6 +17,9 @@ export const userLoadedAtom = atom(false);
 //@ts-ignore
 export const logoutUserAtom = atom(null, (get :any, set: any, navigate?: () => void) => {
     removeStoredUser();
+    try {
+        queryClient.clear();
+    } catch {}
     set(userAtom, null);
     set(userLoadedAtom, true);
     if (typeof navigate === "function") {
