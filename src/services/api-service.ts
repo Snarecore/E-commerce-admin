@@ -1,8 +1,8 @@
 import { GetDataProps, PostDataProps, PatchDataProps, PutDataProps, DeleteDataProps, FormDataProps } from "../models/api-models";
-import { removeStoredUser, getStoredToken, isSessionExpired } from "../utils/auth-storage";
+import { removeStoredUser, getStoredToken, recordUserActivity, broadcastAuthEvent } from "../utils/auth-storage";
 import { getApiBaseUrlWithTrailingSlash } from "../config/env";
 
-const apiUrl = getApiBaseUrlWithTrailingSlash();
+const getApiUrl = () => getApiBaseUrlWithTrailingSlash();
 
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
@@ -12,30 +12,26 @@ export async function refreshAccessToken(): Promise<string | null> {
         return refreshPromise;
     }
 
-    if (isSessionExpired()) {
-        removeStoredUser();
-        if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
-            window.location.href = "/login";
-        }
-        return null;
-    }
-
     isRefreshing = true;
     refreshPromise = (async () => {
         try {
-            const response = await fetch(`${apiUrl}auth/refresh-token`, {
+            const currentApiUrl = getApiUrl();
+            const response = await fetch(`${currentApiUrl}auth/refresh-token`, {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" }
             });
 
             if (response.ok) {
-                const resData = await response.json();
+                const resData = await response.json().catch(() => null);
                 const newToken = resData?.accessToken || resData?.data?.accessToken || "refreshed";
+                recordUserActivity();
+                broadcastAuthEvent({ type: "REFRESH_SUCCESS" });
                 return newToken;
             }
 
-            if (response.status === 401 || response.status === 403) {
+            // Only definitive 401 means the refresh token is truly expired or revoked on the server
+            if (response.status === 401) {
                 removeStoredUser();
                 if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
                     window.location.href = "/login";
@@ -43,7 +39,9 @@ export async function refreshAccessToken(): Promise<string | null> {
             }
 
             return null;
-        } catch {
+        } catch (err) {
+            // Network failure or timeout must NOT clear user authentication
+            console.warn("[Auth Warning] Network error during silent token refresh:", err);
             return null;
         } finally {
             isRefreshing = false;
@@ -61,12 +59,19 @@ async function apiRequest<T>(url: string, options: RequestInit, isRetry = false)
             credentials: "include"
         };
 
-        const response = await fetch(`${apiUrl}${url}`, fetchOptions);
+        const currentApiUrl = getApiUrl();
+        const response = await fetch(`${currentApiUrl}${url}`, fetchOptions);
 
         if (response.status === 401 && !isRetry && !url.includes("auth/login") && !url.includes("auth/refresh")) {
             const newToken = await refreshAccessToken();
             if (newToken) {
-                return apiRequest<T>(url, { ...options }, true);
+                const updatedOptions: RequestInit = { ...options };
+                if (newToken !== "refreshed") {
+                    const headers = new Headers(updatedOptions.headers || {});
+                    headers.set("Authorization", `Bearer ${newToken}`);
+                    updatedOptions.headers = headers;
+                }
+                return apiRequest<T>(url, updatedOptions, true);
             }
         }
 

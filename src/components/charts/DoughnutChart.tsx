@@ -121,40 +121,40 @@ const DoughnutChart = ({
   }));
 
   return (
-    <div className="bg-[var(--ui-surface)] px-6 py-6 rounded-md shadow-sm border border-[var(--ui-border)] h-full flex flex-col justify-between transition-colors duration-200">
+    <div className="bg-[var(--ui-surface)] p-3.5 sm:p-4 2xl:p-6 rounded-lg shadow-xs border border-[var(--ui-border)] h-full flex flex-col justify-between transition-colors duration-200">
       <div>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-2.5 mb-3">
           <span
-            className="p-2 rounded-full transition-colors"
+            className="p-1.5 2xl:p-2 rounded-full transition-colors"
             style={{
               backgroundColor: 'var(--primary-color-light)',
               color: 'var(--primary-color)',
             }}
           >
-            <FiGrid size={20} />
+            <FiGrid size={18} />
           </span>
-          <p className="text-2xl font-bold text-[var(--ui-text)]">Top Categories</p>
+          <p className="text-lg sm:text-xl 2xl:text-2xl font-bold text-[var(--ui-text)]">Top Categories</p>
         </div>
 
-        <div className="border-b border-[var(--ui-border)] mb-6"></div>
+        <div className="border-b border-[var(--ui-border)] mb-3 2xl:mb-5"></div>
 
-        <div className="flex items-center justify-around gap-4 my-4">
-          <div className="h-48 w-48 relative">
+        <div className="flex flex-col sm:flex-row items-center justify-around gap-2.5 sm:gap-3 2xl:gap-5 my-2 2xl:my-4">
+          <div className="h-32 w-32 sm:h-36 sm:w-36 2xl:h-44 2xl:w-44 relative shrink-0">
             <Doughnut data={data} options={options} />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 2xl:space-y-3 min-w-0 flex-1">
             {legendItems.map((item, index) => (
-              <div key={index}>
-                <div className="flex items-center gap-2 text-xs text-[var(--ui-text-muted)]">
+              <div key={index} className="min-w-0">
+                <div className="flex items-center gap-1.5 text-xs text-[var(--ui-text-muted)] truncate">
                   <span
-                    className="w-1.5 h-3 rounded-full inline-block"
+                    className="w-1.5 h-2.5 rounded-full inline-block shrink-0"
                     style={{ backgroundColor: item.color }}
                   ></span>
-                  {item.label}
+                  <span className="truncate">{item.label}</span>
                 </div>
-                <div className="text-base font-semibold text-[var(--ui-text)] ml-3.5">
-                  {item.value.toLocaleString()} <span className="text-xs font-normal text-[var(--ui-text-muted)] opacity-70">Sales</span>
+                <div className="text-sm 2xl:text-base font-semibold text-[var(--ui-text)] ml-3">
+                  {item.value.toLocaleString()} <span className="text-[11px] font-normal text-[var(--ui-text-muted)] opacity-70">Sales</span>
                 </div>
               </div>
             ))}
@@ -162,23 +162,23 @@ const DoughnutChart = ({
         </div>
       </div>
 
-      <div className="mt-4">
-        <p className="text-sm font-semibold text-[var(--ui-text)]">Category Statistics</p>
-        <div className="border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] mt-2 rounded-lg divide-y divide-[var(--ui-border)]">
-          <div className="flex items-center justify-between p-2.5">
-            <p className="text-sm flex items-center gap-2 text-[var(--ui-text-muted)]">
-              <span className="w-2 h-2 rounded-full inline-block bg-black"></span>
+      <div className="mt-3">
+        <p className="text-xs sm:text-sm font-semibold text-[var(--ui-text)]">Category Statistics</p>
+        <div className="border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] mt-1.5 rounded-lg divide-y divide-[var(--ui-border)]">
+          <div className="flex items-center justify-between p-2 sm:p-2.5">
+            <p className="text-xs sm:text-[13px] flex items-center gap-1.5 text-[var(--ui-text-muted)]">
+              <span className="w-2 h-2 rounded-full inline-block bg-black shrink-0"></span>
               Total Number Of Categories
             </p>
-            <p className="text-sm font-semibold text-[var(--ui-text)]">{totalCategories}</p>
+            <p className="text-xs sm:text-sm font-semibold text-[var(--ui-text)]">{totalCategories}</p>
           </div>
 
-          <div className="flex items-center justify-between p-2.5">
-            <p className="text-sm flex items-center gap-2 text-[var(--ui-text-muted)]">
-              <span className="w-2 h-2 rounded-full inline-block bg-[#28c76f]"></span>
+          <div className="flex items-center justify-between p-2 sm:p-2.5">
+            <p className="text-xs sm:text-[13px] flex items-center gap-1.5 text-[var(--ui-text-muted)]">
+              <span className="w-2 h-2 rounded-full inline-block bg-[#28c76f] shrink-0"></span>
               Total Number Of Products
             </p>
-            <p className="text-sm font-semibold text-[var(--ui-text)]">{totalProducts}</p>
+            <p className="text-xs sm:text-sm font-semibold text-[var(--ui-text)]">{totalProducts}</p>
           </div>
         </div>
       </div>

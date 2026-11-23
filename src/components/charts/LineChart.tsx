@@ -155,23 +155,23 @@ export default function MonthlyReportsLine({
   );
 
   return (
-    <div className="w-full rounded-md bg-[var(--ui-surface)] p-6 shadow-sm border border-[var(--ui-border)] transition-colors duration-200">
-      <div className="flex items-center gap-3 mb-4">
+    <div className="w-full rounded-lg bg-[var(--ui-surface)] p-3.5 sm:p-4 2xl:p-6 shadow-xs border border-[var(--ui-border)] transition-colors duration-200">
+      <div className="flex items-center gap-2.5 mb-3">
         <span
-          className="p-2 rounded-full transition-colors"
+          className="p-1.5 2xl:p-2 rounded-full transition-colors"
           style={{
             backgroundColor: "var(--primary-color-light)",
             color: "var(--primary-color)",
           }}
         >
-          <FiGrid size={20} />
+          <FiGrid size={18} />
         </span>
-        <p className="text-2xl font-bold text-[var(--ui-text)]">{title}</p>
+        <p className="text-lg sm:text-xl 2xl:text-2xl font-bold text-[var(--ui-text)]">{title}</p>
       </div>
 
-      <div className="border-b border-[var(--ui-border)] mb-6"></div>
+      <div className="border-b border-[var(--ui-border)] mb-3 2xl:mb-5"></div>
 
-      <div className="relative h-[320px]">
+      <div className="relative h-[210px] sm:h-[230px] 2xl:h-[300px]">
         <Line ref={chartRef} data={data} options={options} plugins={[hoverLine]} />
       </div>
     </div>

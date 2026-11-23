@@ -55,7 +55,7 @@ const SalesDashboard = () => {
 		<div className="flex flex-col gap-3.5">
 			<WelcomeCard />
 
-			<div className="grid grid-cols-12 gap-8">
+			<div className="grid grid-cols-12 gap-3.5 sm:gap-4 xl:gap-5">
 				{/* Weekly Earnings */}
 				<div className="col-span-12 lg:col-span-12 xl:col-span-6">
 					<WeeklyEarningCard
@@ -86,7 +86,7 @@ const SalesDashboard = () => {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-12 gap-6">
+			<div className="grid grid-cols-12 gap-3.5 sm:gap-4 xl:gap-5">
 				{/* Best Seller - 4 Columns */}
 				<div className="col-span-12 xl:col-span-4">
 					<BestSeller bestSellers={dashboardData?.bestSellers || []} />

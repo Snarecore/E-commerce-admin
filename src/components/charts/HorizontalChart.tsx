@@ -91,14 +91,14 @@ export default function NewAgentsBar({
           data: values,
           backgroundColor: effectiveBarColor,
           borderRadius: {
-            topRight: windowWidth < 768 ? 6 : 10,
-            bottomRight: windowWidth < 768 ? 6 : 10,
+            topRight: windowWidth < 768 ? 4 : 8,
+            bottomRight: windowWidth < 768 ? 4 : 8,
             topLeft: 0,
             bottomLeft: 0,
           },
           borderSkipped: false,
-          barThickness: windowWidth < 768 ? 10 : windowWidth < 1024 ? 12 : 14,
-          maxBarThickness: windowWidth < 768 ? 14 : windowWidth < 1024 ? 16 : 20,
+          barThickness: windowWidth < 768 ? 8 : windowWidth < 1440 ? 9 : 13,
+          maxBarThickness: windowWidth < 768 ? 10 : windowWidth < 1440 ? 12 : 18,
         },
       ],
     }),
@@ -112,10 +112,10 @@ export default function NewAgentsBar({
       maintainAspectRatio: false,
       layout: {
         padding: {
-          top: 8,
-          right: 16,
-          bottom: 8,
-          left: 8,
+          top: 6,
+          right: 14,
+          bottom: 6,
+          left: 6,
         },
       },
       plugins: {
@@ -135,9 +135,9 @@ export default function NewAgentsBar({
           ticks: {
             color: resolved.palette.textMuted,
             font: {
-              size: windowWidth < 768 ? 10 : 12,
+              size: windowWidth < 768 ? 9 : 11,
             },
-            padding: windowWidth < 768 ? 4 : 8,
+            padding: windowWidth < 768 ? 4 : 6,
           },
         },
       },
@@ -147,25 +147,25 @@ export default function NewAgentsBar({
 
   return (
     <div
-      className="w-full rounded-md shadow-sm border border-[var(--ui-border)] bg-[var(--ui-surface)] p-6 transition-colors duration-200"
+      className="w-full rounded-lg shadow-xs border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3.5 sm:p-4 2xl:p-6 transition-colors duration-200"
       style={cardBg && cardBg !== "#ffffff" ? { background: cardBg } : undefined}
     >
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-2.5 mb-3">
         <span
-          className="p-2 rounded-full transition-colors"
+          className="p-1.5 2xl:p-2 rounded-full transition-colors"
           style={{
             backgroundColor: "var(--primary-color-light)",
             color: "var(--primary-color)",
           }}
         >
-          <FiGrid size={20} />
+          <FiGrid size={18} />
         </span>
-        <p className="text-2xl font-bold text-[var(--ui-text)]">{title}</p>
+        <p className="text-lg sm:text-xl 2xl:text-2xl font-bold text-[var(--ui-text)]">{title}</p>
       </div>
 
-      <div className="border-b border-[var(--ui-border)] mb-6"></div>
+      <div className="border-b border-[var(--ui-border)] mb-3 2xl:mb-5"></div>
 
-      <div className="relative w-full h-[320px]">
+      <div className="relative w-full h-[210px] sm:h-[230px] 2xl:h-[300px]">
         <Bar data={data} options={options} plugins={[valueLabels]} />
       </div>
     </div>

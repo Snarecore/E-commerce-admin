@@ -87,6 +87,36 @@ export function setStoredUser(user: User, customExpiryMs?: number): void {
     }
 }
 
+export const AUTH_CHANNEL_NAME = "ecommerce_admin_auth_channel";
+
+export function broadcastAuthEvent(event: { type: "LOGOUT" | "REFRESH_SUCCESS" }) {
+    if (typeof window === "undefined") return;
+    try {
+        if ("BroadcastChannel" in window) {
+            const channel = new BroadcastChannel(AUTH_CHANNEL_NAME);
+            channel.postMessage(event);
+            channel.close();
+        }
+    } catch {}
+}
+
+export function subscribeAuthEvents(callback: (event: { type: "LOGOUT" | "REFRESH_SUCCESS" }) => void): () => void {
+    if (typeof window === "undefined" || !("BroadcastChannel" in window)) {
+        return () => {};
+    }
+    try {
+        const channel = new BroadcastChannel(AUTH_CHANNEL_NAME);
+        channel.onmessage = (msg) => {
+            if (msg?.data) {
+                callback(msg.data);
+            }
+        };
+        return () => channel.close();
+    } catch {
+        return () => {};
+    }
+}
+
 /**
  * Clears user session and storage data.
  */
@@ -100,6 +130,8 @@ export function removeStoredUser(): void {
         localStorage.removeItem(STORAGE_KEY_USER);
         localStorage.removeItem(STORAGE_KEY_SESSION_EXPIRES_AT);
         localStorage.removeItem(STORAGE_KEY_LAST_ACTIVITY);
+
+        broadcastAuthEvent({ type: "LOGOUT" });
     } catch (e) {
         console.error("Failed to clear user session:", e);
     }
