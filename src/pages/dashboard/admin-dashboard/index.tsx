@@ -79,9 +79,9 @@ const Dashboard = () => {
 
 	return (
 		<div>
-			<div className="flex flex-col gap-3.5">
+			<div className="flex flex-col gap-3 sm:gap-3.5 xl:gap-4">
 				{/* Overview Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full transition-all ease-in duration-300">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 xl:gap-4 w-full transition-all ease-in duration-300">
 					<OverViewCard
 						bgColor="bg-[var(--primary-color)]"
 						title={dashboardData?.totalProducts?.toString() || "0"}
@@ -113,13 +113,13 @@ const Dashboard = () => {
 				</div>
 
 				{/* Charts Grid 1: Sales vs Commissions (Bar) & Top Categories (Doughnut) */}
-				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-					<div className="lg:col-span-8">
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 2xl:gap-5">
+					<div className="lg:col-span-7 2xl:col-span-8">
 						<SalesPurchaseChart
 							monthlySalesCommissionData={monthlySalesCommissionData}
 						/>
 					</div>
-					<div className="lg:col-span-4">
+					<div className="lg:col-span-5 2xl:col-span-4">
 						<DoughnutChart
 							totalProducts={dashboardData?.totalProducts || 0}
 							totalCategories={dashboardData?.totalCategories || 0}
@@ -129,14 +129,14 @@ const Dashboard = () => {
 				</div>
 
 				{/* Charts Grid 2: Customer Reports Line & New Added Vendors Horizontal Bar */}
-				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-					<div className="lg:col-span-8">
+				<div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-3.5 2xl:gap-5">
+					<div className="lg:col-span-7 2xl:col-span-8">
 						<MonthlyReportsLine
 							title="Customer Reports by Month"
 							values={dashboardData?.customerMonthlyReports}
 						/>
 					</div>
-					<div className="lg:col-span-4">
+					<div className="lg:col-span-5 2xl:col-span-4">
 						<NewAgentsBar
 							title="New Registered Customers"
 							dataValues={dashboardData?.newVendorMonthlyReports}

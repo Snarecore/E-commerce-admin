@@ -86,103 +86,101 @@ const Login = () => {
 	};
 
 	return (
-		<div className="flex min-h-screen w-full bg-white items-center justify-center p-4 sm:p-8">
-			<div className="w-full max-w-md mx-auto space-y-8">
+		<div className="flex min-h-screen w-full bg-white items-center justify-center p-4 sm:p-6">
+			<div className="w-full max-w-md mx-auto space-y-6">
+				<div className="text-center">
 					<img
 						src={companyLogo}
 						alt="company logo"
-						className="w-48 mx-auto mb-4"
+						className="w-44 mx-auto mb-3"
 					/>
-					<p className="text-3xl text-center font-bold text-black mb-2">
+					<h1 className="text-2xl sm:text-3xl font-bold text-black mb-1">
 						Log in to your account
-					</p>
-					<p className="text-[15px] text-center text-gray-600">
+					</h1>
+					<p className="text-sm text-gray-500">
 						Welcome back! Please enter your credentials.
 					</p>
-					<form className="space-y-5" onSubmit={handleLogin}>
-						<div className="space-y-4">
-							<div>
-								<label className="block mb-1.5">
-									<span className="text-[14px] font-bold text-[var(--color-primary)]">
-										Email Address
-									</span>
-									<span className="text-red-500 ml-1">*</span>
-								</label>
-								<div className="relative group">
-									<input
-										type="email"
-										name="email"
-										value={fieldValues.email}
-										onChange={handleChange}
-										className="w-full bg-white text-[#212b36] px-4 py-4 border border-[#e6eaed] rounded-lg focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
-										required
-									/>
-									<div className="absolute inset-y-0 right-4 flex items-center pointer-events-none border-l border-gray-200">
-										<LuMail className="h-6 w-6 pl-2" />
-									</div>
-								</div>
-							</div>
+				</div>
 
-							<div>
-								<label className="block mb-1.5">
-									<span className="text-[14px] font-bold text-[var(--color-primary)]">
-										Password
-									</span>
-									<span className="text-red-500 ml-1">*</span>
-								</label>
-								<div className="relative group">
-									<input
-										type={showPassword ? "text" : "password"}
-										value={fieldValues.password}
-										name="password"
-										onChange={handleChange}
-										className="w-full bg-white text-[#212b36] px-4 py-4 border border-[#e6eaed] rounded-lg focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200"
-										required
-									/>
-									<div
-										className="absolute inset-y-0 right-3 flex items-center cursor-pointer border-l pl-2 border-gray-200"
-										onClick={() => setShowPassword(!showPassword)}
-									>
-										{showPassword ? (
-											<BiSolidShow className="h-5 w-5 hover:text-gray-700" />
-										) : (
-											<BiSolidHide className="h-5 w-5 hover:text-gray-700" />
-										)}
-									</div>
-								</div>
-							</div>
-
-							<div className="flex justify-between items-center cursor-pointer">
-								<div className="flex items-center space-x-2">
-								</div>
-
-								<div>
-									<Link
-										to={"/forgot-password"}
-										className="text-[var(--color-primary)] font-bold text-[15px]"
-									>
-										Forgot Password?
-									</Link>
+				<form className="space-y-4" onSubmit={handleLogin}>
+					<div className="space-y-3.5">
+						<div>
+							<label className="block mb-1">
+								<span className="text-[13px] sm:text-[14px] font-bold text-[var(--color-primary)]">
+									Email Address
+								</span>
+								<span className="text-red-500 ml-1">*</span>
+							</label>
+							<div className="relative group">
+								<input
+									type="email"
+									name="email"
+									value={fieldValues.email}
+									onChange={handleChange}
+									className="w-full bg-white text-[#212b36] px-3.5 py-2.5 pr-12 border border-[#e6eaed] rounded-lg focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200 text-sm sm:text-base"
+									required
+								/>
+								<div className="absolute inset-y-0 right-3.5 flex items-center pointer-events-none border-l border-gray-200 pl-2.5 text-gray-400">
+									<LuMail className="h-5 w-5" />
 								</div>
 							</div>
 						</div>
 
-						<button
-							type="submit"
-							disabled={isSubmitting || postMutation.isPending}
-							className="w-full bg-[var(--color-primary)] border border-[var(--color-primary)] text-white py-3 rounded-lg hover:bg-white hover:text-[var(--color-primary)] font-bold transform transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-						>
-							{(isSubmitting || postMutation.isPending) ? (
-								<>
-									<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-									<span>Signing In...</span>
-								</>
-							) : (
-								"Sign In"
-							)}
-						</button>
-					</form>
-				</div>
+						<div>
+							<label className="block mb-1">
+								<span className="text-[13px] sm:text-[14px] font-bold text-[var(--color-primary)]">
+									Password
+								</span>
+								<span className="text-red-500 ml-1">*</span>
+							</label>
+							<div className="relative group">
+								<input
+									type={showPassword ? "text" : "password"}
+									value={fieldValues.password}
+									name="password"
+									onChange={handleChange}
+									className="w-full bg-white text-[#212b36] px-3.5 py-2.5 pr-12 border border-[#e6eaed] rounded-lg focus:outline-none focus:border-[var(--color-primary)] transition-all duration-200 text-sm sm:text-base"
+									required
+								/>
+								<div
+									className="absolute inset-y-0 right-3.5 flex items-center cursor-pointer border-l border-gray-200 pl-2.5 text-gray-400"
+									onClick={() => setShowPassword(!showPassword)}
+								>
+									{showPassword ? (
+										<BiSolidShow className="h-5 w-5 hover:text-gray-700" />
+									) : (
+										<BiSolidHide className="h-5 w-5 hover:text-gray-700" />
+									)}
+								</div>
+							</div>
+						</div>
+
+						<div className="flex justify-end items-center">
+							<Link
+								to={"/forgot-password"}
+								className="text-[var(--color-primary)] font-bold text-sm hover:underline"
+							>
+								Forgot Password?
+							</Link>
+						</div>
+					</div>
+
+					<button
+						type="submit"
+						disabled={isSubmitting || postMutation.isPending}
+						className="w-full bg-[var(--color-primary)] border border-[var(--color-primary)] text-white py-2.5 rounded-lg hover:bg-white hover:text-[var(--color-primary)] font-bold transform transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+					>
+						{(isSubmitting || postMutation.isPending) ? (
+							<>
+								<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+								<span>Signing In...</span>
+							</>
+						) : (
+							"Sign In"
+						)}
+					</button>
+				</form>
+			</div>
 		</div>
 	);
 };

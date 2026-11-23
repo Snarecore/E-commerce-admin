@@ -139,43 +139,43 @@ const SalesPurchaseChart = ({ monthlySalesCommissionData = [] }: SalesPurchaseCh
   const totalCommissions = monthlyCommissions.reduce((acc, val) => acc + val, 0);
 
   return (
-    <div className="w-full mx-auto bg-[var(--ui-surface)] p-6 rounded-md shadow-sm border border-[var(--ui-border)] transition-colors duration-200">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-2xl font-bold flex items-center gap-3 text-[var(--ui-text)]">
+    <div className="w-full mx-auto bg-[var(--ui-surface)] p-3.5 sm:p-4 2xl:p-6 rounded-lg shadow-xs border border-[var(--ui-border)] transition-colors duration-200">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-lg sm:text-xl 2xl:text-2xl font-bold flex items-center gap-2.5 text-[var(--ui-text)]">
           <span
-            className="p-2 rounded-full transition-colors"
+            className="p-1.5 2xl:p-2 rounded-full transition-colors"
             style={{
               backgroundColor: 'var(--primary-color-light)',
               color: 'var(--primary-color)',
             }}
           >
-            <FiBarChart2 size={22} />
+            <FiBarChart2 size={18} />
           </span>
           Sales vs Commissions
         </p>
       </div>
 
-      <div className="border-b border-[var(--ui-border)] mb-6"></div>
+      <div className="border-b border-[var(--ui-border)] mb-3 2xl:mb-5"></div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
-        <div className="text-md border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] rounded-lg p-3 min-w-[140px] flex-1">
-          <div className="flex items-center gap-2 text-[var(--ui-text-muted)] text-sm">
+      <div className="flex flex-wrap gap-2.5 sm:gap-3 mb-3 2xl:mb-5">
+        <div className="border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] rounded-lg p-2.5 sm:p-3 min-w-[120px] flex-1">
+          <div className="flex items-center gap-2 text-[var(--ui-text-muted)] text-xs sm:text-sm">
             <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: salesColor }}></span>
             <span>Total Sales</span>
           </div>
-          <p className="font-bold text-xl mt-1 text-[var(--ui-text)]">৳{totalSales.toLocaleString()}</p>
+          <p className="font-bold text-base sm:text-lg 2xl:text-xl mt-0.5 text-[var(--ui-text)]">৳{totalSales.toLocaleString()}</p>
         </div>
 
-        <div className="text-md border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] rounded-lg p-3 min-w-[140px] flex-1">
-          <div className="flex items-center gap-2 text-[var(--ui-text-muted)] text-sm">
+        <div className="border border-[var(--ui-border)] bg-[var(--ui-surface-muted)] rounded-lg p-2.5 sm:p-3 min-w-[120px] flex-1">
+          <div className="flex items-center gap-2 text-[var(--ui-text-muted)] text-xs sm:text-sm">
             <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: commissionColor }}></span>
             <span>Total Commissions</span>
           </div>
-          <p className="font-bold text-xl mt-1 text-[var(--ui-text)]">৳{totalCommissions.toLocaleString()}</p>
+          <p className="font-bold text-base sm:text-lg 2xl:text-xl mt-0.5 text-[var(--ui-text)]">৳{totalCommissions.toLocaleString()}</p>
         </div>
       </div>
 
-      <div className="relative w-full h-[280px]">
+      <div className="relative w-full h-[210px] sm:h-[230px] 2xl:h-[280px]">
         <Bar data={data} options={options} />
       </div>
     </div>
