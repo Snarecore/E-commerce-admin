@@ -144,13 +144,6 @@ const menu = [
 				path: "/reports/profit",
 				subItems: [],
 			},
-			{
-				id: 699,
-				name: "Audit Logs",
-				icon: <FiActivity />,
-				path: "/audit-logs",
-				subItems: [],
-			},
 		],
 	},
 	{
@@ -274,6 +267,13 @@ const menu = [
 				name: "Email Settings",
 				icon: <FiMail />,
 				path: "/email-setting",
+				subItems: [],
+			},
+			{
+				id: 103,
+				name: "Audit Logs",
+				icon: <FiActivity />,
+				path: "/audit-logs",
 				subItems: [],
 			},
 		],
