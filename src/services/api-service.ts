@@ -1,5 +1,13 @@
 import { GetDataProps, PostDataProps, PatchDataProps, PutDataProps, DeleteDataProps, FormDataProps } from "../models/api-models";
-import { removeStoredUser, getStoredToken, recordUserActivity, broadcastAuthEvent } from "../utils/auth-storage";
+import {
+    removeStoredUser,
+    getStoredToken,
+    getStoredRefreshToken,
+    setStoredToken,
+    setStoredRefreshToken,
+    recordUserActivity,
+    broadcastAuthEvent,
+} from "../utils/auth-storage";
 import { getApiBaseUrlWithTrailingSlash } from "../config/env";
 
 const getApiUrl = () => getApiBaseUrlWithTrailingSlash();
@@ -16,15 +24,29 @@ export async function refreshAccessToken(): Promise<string | null> {
     refreshPromise = (async () => {
         try {
             const currentApiUrl = getApiUrl();
+            const storedRefreshToken = getStoredRefreshToken();
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (storedRefreshToken) {
+                headers["x-refresh-token"] = storedRefreshToken;
+            }
+
             const response = await fetch(`${currentApiUrl}auth/refresh-token`, {
                 method: "POST",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" }
+                headers,
+                body: storedRefreshToken ? JSON.stringify({ refreshToken: storedRefreshToken }) : undefined,
             });
 
             if (response.ok) {
                 const resData = await response.json().catch(() => null);
-                const newToken = resData?.accessToken || resData?.data?.accessToken || "refreshed";
+                const newToken = resData?.data?.accessToken || resData?.accessToken || "refreshed";
+                const newRefreshToken = resData?.data?.refreshToken || resData?.refreshToken;
+                if (newToken && newToken !== "refreshed") {
+                    setStoredToken(newToken);
+                }
+                if (newRefreshToken) {
+                    setStoredRefreshToken(newRefreshToken);
+                }
                 recordUserActivity();
                 broadcastAuthEvent({ type: "REFRESH_SUCCESS" });
                 return newToken;
@@ -54,9 +76,16 @@ export async function refreshAccessToken(): Promise<string | null> {
 
 async function apiRequest<T>(url: string, options: RequestInit, isRetry = false): Promise<T | { error: boolean; message: string }> {
     try {
+        const activeToken = getStoredToken();
+        const headers = new Headers(options.headers || {});
+        if (activeToken && !headers.has("Authorization")) {
+            headers.set("Authorization", `Bearer ${activeToken}`);
+        }
+
         const fetchOptions: RequestInit = {
             ...options,
-            credentials: "include"
+            headers,
+            credentials: "include",
         };
 
         const currentApiUrl = getApiUrl();
@@ -66,11 +95,11 @@ async function apiRequest<T>(url: string, options: RequestInit, isRetry = false)
             const newToken = await refreshAccessToken();
             if (newToken) {
                 const updatedOptions: RequestInit = { ...options };
+                const retryHeaders = new Headers(updatedOptions.headers || {});
                 if (newToken !== "refreshed") {
-                    const headers = new Headers(updatedOptions.headers || {});
-                    headers.set("Authorization", `Bearer ${newToken}`);
-                    updatedOptions.headers = headers;
+                    retryHeaders.set("Authorization", `Bearer ${newToken}`);
                 }
+                updatedOptions.headers = retryHeaders;
                 return apiRequest<T>(url, updatedOptions, true);
             }
         }

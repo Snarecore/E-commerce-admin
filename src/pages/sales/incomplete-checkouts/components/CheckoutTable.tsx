@@ -3,6 +3,8 @@ import { FiEye, FiSlash, FiTrash2, FiPhone, FiShoppingBag } from 'react-icons/fi
 import { FaWhatsapp } from 'react-icons/fa';
 import { IncompleteCheckoutItem } from '../../../../models/incomplete-checkout';
 import { formatDistanceToNow, format } from 'date-fns';
+import EmptyState from '../../../../components/empty-state/EmptyState';
+import TableSkeleton from '../../../../components/skeleton/TableSkeleton';
 
 const getProductImage = (img?: string | null): string => {
     if (!img) return '';
@@ -50,40 +52,38 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
 
     if (isLoading) {
         return (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-3" />
-                <p className="text-sm text-gray-500">Loading incomplete checkouts...</p>
+            <div className="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden">
+                <TableSkeleton />
             </div>
         );
     }
 
     if (!items || items.length === 0) {
         return (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
-                <FiShoppingBag className="mx-auto text-4xl text-gray-300 mb-3" />
-                <h3 className="text-base font-semibold text-gray-700">No Incomplete Checkouts Found</h3>
-                <p className="text-xs text-gray-400 mt-1">
-                    Try adjusting your filters, date range, or search keyword.
-                </p>
+            <div className="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden p-6 sm:p-10">
+                <EmptyState
+                    title="No Incomplete Checkouts Found"
+                    description="Try adjusting your filters, date range, or search keyword."
+                />
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr className="border-b border-gray-100 bg-gray-50/60 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-                            <th className="py-3.5 px-4">CHECKOUT ID</th>
-                            <th className="py-3.5 px-4">CUSTOMER</th>
-                            <th className="py-3.5 px-4">PRODUCTS</th>
-                            <th className="py-3.5 px-4">TOTAL</th>
-                            <th className="py-3.5 px-4">SOURCE</th>
-                            <th className="py-3.5 px-4">STARTED</th>
-                            <th className="py-3.5 px-4">LAST ACTIVITY</th>
-                            <th className="py-3.5 px-4">STATUS</th>
-                            <th className="py-3.5 px-4 text-center">ACTIONS</th>
+                        <tr className="border-b border-gray-200 bg-gray-50/80 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                            <th className="py-3 px-3.5 sm:px-4">CHECKOUT ID</th>
+                            <th className="py-3 px-3.5 sm:px-4">CUSTOMER</th>
+                            <th className="py-3 px-3.5 sm:px-4">PRODUCTS</th>
+                            <th className="py-3 px-3.5 sm:px-4">TOTAL</th>
+                            <th className="py-3 px-3.5 sm:px-4">SOURCE</th>
+                            <th className="py-3 px-3.5 sm:px-4">STARTED</th>
+                            <th className="py-3 px-3.5 sm:px-4">LAST ACTIVITY</th>
+                            <th className="py-3 px-3.5 sm:px-4">STATUS</th>
+                            <th className="py-3 px-3.5 sm:px-4 text-center">ACTIONS</th>
                         </tr>
                     </thead>
 
@@ -95,7 +95,7 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                             return (
                                 <tr key={item.id} className="hover:bg-orange-50/20 transition-colors">
                                     {/* CHECKOUT ID */}
-                                    <td className="py-4 px-4 font-semibold text-orange-600 font-mono">
+                                    <td className="py-3 px-3.5 sm:px-4 font-semibold text-orange-600 font-mono">
                                         <button
                                             onClick={() => onViewDetails(item)}
                                             className="hover:underline focus:outline-none cursor-pointer"
@@ -105,7 +105,7 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                     </td>
 
                                     {/* CUSTOMER */}
-                                    <td className="py-4 px-4">
+                                    <td className="py-3 px-3.5 sm:px-4">
                                         <div className="font-medium text-gray-900">{item.customer.name}</div>
                                         <div className="text-gray-400 font-mono text-[11px]">
                                             {item.customer.phone || '—'}
@@ -113,10 +113,10 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                     </td>
 
                                     {/* PRODUCTS */}
-                                    <td className="py-4 px-4 max-w-xs">
+                                    <td className="py-3 px-3.5 sm:px-4 max-w-xs">
                                         {firstProduct ? (
                                             <div className="flex items-center gap-2.5">
-                                                <div className="w-9 h-9 rounded bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                                                <div className="w-9 h-9 rounded-md bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
                                                     {firstProduct.image ? (
                                                         <img
                                                             src={getProductImage(firstProduct.image)}
@@ -152,12 +152,12 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                     </td>
 
                                     {/* TOTAL */}
-                                    <td className="py-4 px-4 font-bold text-gray-900 font-mono">
+                                    <td className="py-3 px-3.5 sm:px-4 font-bold text-gray-900 font-mono">
                                         {formatBDT(item.total)}
                                     </td>
 
                                     {/* SOURCE */}
-                                    <td className="py-4 px-4">
+                                    <td className="py-3 px-3.5 sm:px-4">
                                         {item.source.startsWith('/') ? (
                                             <span className="text-orange-600 hover:underline cursor-pointer font-medium">
                                                 {item.source}
@@ -168,19 +168,19 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                     </td>
 
                                     {/* STARTED */}
-                                    <td className="py-4 px-4 text-gray-600 whitespace-nowrap">
+                                    <td className="py-3 px-3.5 sm:px-4 text-gray-600 whitespace-nowrap">
                                         {formatStartedDate(item.startedAt)}
                                     </td>
 
                                     {/* LAST ACTIVITY */}
-                                    <td className="py-4 px-4 text-gray-500 whitespace-nowrap">
+                                    <td className="py-3 px-3.5 sm:px-4 text-gray-500 whitespace-nowrap">
                                         {formatRelativeTime(item.lastActivityAt)}
                                     </td>
 
                                     {/* STATUS */}
-                                    <td className="py-4 px-4">
+                                    <td className="py-3 px-3.5 sm:px-4">
                                         <span
-                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${
+                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${
                                                 item.status === 'abandoned'
                                                     ? 'bg-amber-100 text-amber-700'
                                                     : item.status === 'converted'
@@ -192,13 +192,13 @@ export const CheckoutTable: React.FC<CheckoutTableProps> = ({
                                                     : 'bg-gray-100 text-gray-600'
                                             }`}
                                         >
-                                            {item.status === 'abandoned' ? 'Incomplete' : item.status}
+                                            {item.status === 'abandoned' ? 'Not ordered' : item.status}
                                         </span>
                                     </td>
 
                                     {/* ACTIONS */}
-                                    <td className="py-4 px-4">
-                                        <div className="flex items-center justify-center gap-1.5">
+                                    <td className="py-3 px-3.5 sm:px-4">
+                                        <div className="flex items-center justify-center gap-1">
                                             {/* View Details */}
                                             <button
                                                 onClick={() => onViewDetails(item)}

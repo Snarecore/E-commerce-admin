@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSearch, FiFilter, FiRefreshCw } from 'react-icons/fi';
-import { CheckoutStatus, IncompleteCheckoutFilter } from '../../../../models/incomplete-checkout';
+import { IncompleteCheckoutFilter } from '../../../../models/incomplete-checkout';
 
 interface CheckoutFilterBarProps {
     filter: IncompleteCheckoutFilter;
@@ -16,15 +16,20 @@ export const CheckoutFilterBar: React.FC<CheckoutFilterBarProps> = ({
     isLoading,
 }) => {
     const [search, setSearch] = useState(filter.search || '');
-    const [status, setStatus] = useState<string>(filter.status || 'abandoned');
     const [fromDate, setFromDate] = useState(filter.fromDate || '');
     const [toDate, setToDate] = useState(filter.toDate || '');
+
+    useEffect(() => {
+        setSearch(filter.search || '');
+        setFromDate(filter.fromDate || '');
+        setToDate(filter.toDate || '');
+    }, [filter.search, filter.fromDate, filter.toDate]);
 
     const handleApply = (e: React.FormEvent) => {
         e.preventDefault();
         onFilterChange({
+            ...filter,
             search: search.trim() || undefined,
-            status: status === 'all' ? undefined : (status as CheckoutStatus),
             fromDate: fromDate || undefined,
             toDate: toDate || undefined,
             page: 1,
@@ -33,69 +38,54 @@ export const CheckoutFilterBar: React.FC<CheckoutFilterBarProps> = ({
 
     const handleReset = () => {
         setSearch('');
-        setStatus('abandoned');
         setFromDate('');
         setToDate('');
         onReset();
     };
 
     return (
-        <form onSubmit={handleApply} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm mb-6">
-            <div className="flex flex-col lg:flex-row items-center gap-3">
+        <form onSubmit={handleApply} className="bg-white rounded-xl p-3 sm:p-3.5 border border-gray-200 shadow-2xs">
+            <div className="flex flex-col sm:flex-row items-center gap-2.5">
                 {/* Search Input */}
                 <div className="relative flex-1 w-full">
-                    <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+                    <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
                     <input
                         type="text"
-                        placeholder="Search name, phone, email, address"
+                        placeholder="Search by customer name, phone, email, address, checkout ID..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-gray-400"
+                        className="w-full h-10 pl-9.5 pr-4 bg-gray-50/60 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                     />
                 </div>
 
-                {/* Status Dropdown */}
-                <div className="w-full lg:w-48">
-                    <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-gray-50/70 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all cursor-pointer"
-                    >
-                        <option value="abandoned">Not ordered yet</option>
-                        <option value="active">Active in checkout</option>
-                        <option value="converted">Converted</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="expired">Expired</option>
-                        <option value="all">All Checkouts</option>
-                    </select>
-                </div>
-
                 {/* From Date */}
-                <div className="relative w-full lg:w-44">
+                <div className="relative w-full sm:w-44">
                     <input
                         type="date"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-50/70 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                        className="w-full h-10 px-3 bg-gray-50/60 border border-gray-200 rounded-lg text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                        title="Start Date"
                     />
                 </div>
 
                 {/* To Date */}
-                <div className="relative w-full lg:w-44">
+                <div className="relative w-full sm:w-44">
                     <input
                         type="date"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-50/70 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                        className="w-full h-10 px-3 bg-gray-50/60 border border-gray-200 rounded-lg text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                        title="End Date"
                     />
                 </div>
 
-                {/* Filter & Reset Buttons */}
-                <div className="flex items-center gap-2 w-full lg:w-auto">
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-sm font-medium rounded-lg shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
+                        className="flex-1 sm:flex-none h-10 px-4.5 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                     >
                         <FiFilter className="text-sm" />
                         <span>Filter</span>
@@ -105,9 +95,9 @@ export const CheckoutFilterBar: React.FC<CheckoutFilterBarProps> = ({
                         type="button"
                         onClick={handleReset}
                         title="Reset Filter"
-                        className="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-all cursor-pointer"
+                        className="h-10 w-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors cursor-pointer shrink-0"
                     >
-                        <FiRefreshCw className="text-base" />
+                        <FiRefreshCw className="text-sm" />
                     </button>
                 </div>
             </div>
