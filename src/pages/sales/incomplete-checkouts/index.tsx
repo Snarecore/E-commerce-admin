@@ -1,17 +1,29 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
+    CheckoutStatus,
     IncompleteCheckoutFilter,
     IncompleteCheckoutItem,
     IncompleteCheckoutStats,
     RecoveryAction,
 } from '../../../models/incomplete-checkout';
 import { incompleteCheckoutService } from '../../../services/incomplete-checkout.service';
+import PageHeader from '../../../components/cards/PageHeader';
+import RefreshButton from '../../../components/table-components/RefreshButton';
+import Pagination from '../../../components/pagination';
 import { CheckoutKpiCards } from './components/CheckoutKpiCards';
 import { CheckoutFilterBar } from './components/CheckoutFilterBar';
 import { CheckoutTable } from './components/CheckoutTable';
 import { CheckoutDetailsModal } from './components/CheckoutDetailsModal';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+
+const STATUS_TABS: Array<{ key: CheckoutStatus | 'all'; label: string }> = [
+    { key: 'abandoned', label: 'Not ordered yet' },
+    { key: 'active', label: 'Active in checkout' },
+    { key: 'converted', label: 'Converted' },
+    { key: 'cancelled', label: 'Cancelled' },
+    { key: 'expired', label: 'Expired' },
+    { key: 'all', label: 'All Checkouts' },
+];
 
 const IncompleteCheckoutsPage: React.FC = () => {
     const [stats, setStats] = useState<IncompleteCheckoutStats | undefined>(undefined);
@@ -64,6 +76,14 @@ const IncompleteCheckoutsPage: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    const handleTabChange = (key: CheckoutStatus | 'all') => {
+        setFilter((prev) => ({
+            ...prev,
+            status: key === 'all' ? undefined : key,
+            page: 1,
+        }));
+    };
 
     // Handle Quick Recovery Call
     const handleCall = async (item: IncompleteCheckoutItem) => {
@@ -161,20 +181,45 @@ const IncompleteCheckoutsPage: React.FC = () => {
         }
     };
 
+    const currentTab = filter.status || 'all';
+
     return (
-        <div className="space-y-6">
-            {/* Page Title */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Incomplete Checkouts</h1>
-                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                        Monitor drop-offs, recover lost orders, and follow up with potential customers.
-                    </p>
-                </div>
+        <div className="flex flex-col gap-3.5">
+            {/* Page Header */}
+            <div className="flex items-center justify-between flex-wrap gap-3">
+                <PageHeader
+                    headerTitle="Incomplete Checkouts"
+                    headerDescription="Monitor drop-offs, recover lost orders, and follow up with potential customers."
+                />
+                <RefreshButton onClick={fetchData} loading={isLoading} />
             </div>
 
             {/* KPI Metric Cards */}
             <CheckoutKpiCards stats={stats} isLoading={isLoading && !stats} />
+
+            {/* Tab Bar */}
+            <div className="flex flex-wrap gap-1 bg-white border border-gray-200 rounded-xl p-1.5 shadow-2xs">
+                {STATUS_TABS.map((tab) => {
+                    const isActive = currentTab === tab.key;
+                    return (
+                        <button
+                            key={tab.key}
+                            onClick={() => handleTabChange(tab.key)}
+                            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                                isActive
+                                    ? tab.key === 'converted'
+                                        ? 'bg-emerald-600 text-white shadow-xs'
+                                        : tab.key === 'cancelled'
+                                        ? 'bg-rose-600 text-white shadow-xs'
+                                        : 'bg-orange-500 text-white shadow-xs'
+                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
 
             {/* Filter Bar */}
             <CheckoutFilterBar
@@ -204,36 +249,25 @@ const IncompleteCheckoutsPage: React.FC = () => {
                 onWhatsApp={handleWhatsApp}
             />
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-sm text-xs text-gray-600">
+            {/* Pagination & Count */}
+            {total > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-2xs text-xs text-gray-500">
                     <span>
-                        Showing {items.length} of {total} checkouts
+                        Showing <strong className="text-gray-800">{items.length}</strong> of{' '}
+                        <strong className="text-gray-800">{total}</strong> checkouts
                     </span>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setFilter((prev) => ({ ...prev, page: Math.max(1, (prev.page || 1) - 1) }))}
-                            disabled={filter.page === 1}
-                            className="p-2 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
-                        >
-                            <FiChevronLeft />
-                        </button>
-                        <span className="font-semibold text-gray-800">
-                            Page {filter.page} of {totalPages}
-                        </span>
-                        <button
-                            onClick={() =>
+                    {totalPages > 1 && (
+                        <Pagination
+                            pageCount={totalPages}
+                            currentPageNumber={filter.page || 1}
+                            handlePagination={(data) => {
                                 setFilter((prev) => ({
                                     ...prev,
-                                    page: Math.min(totalPages, (prev.page || 1) + 1),
-                                }))
-                            }
-                            disabled={filter.page === totalPages}
-                            className="p-2 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
-                        >
-                            <FiChevronRight />
-                        </button>
-                    </div>
+                                    page: data.selected + 1,
+                                }));
+                            }}
+                        />
+                    )}
                 </div>
             )}
 

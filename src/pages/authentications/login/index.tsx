@@ -68,6 +68,8 @@ const Login = () => {
 			if (result?.success && result?.data) {
 				const rawData = result.data as any;
 				const userData = rawData?.data?.user || rawData?.user || rawData?.data?.admin || rawData?.admin || (typeof rawData?.data === 'object' ? rawData?.data : rawData);
+				const accessToken = rawData?.data?.accessToken || rawData?.accessToken || "";
+				const refreshToken = rawData?.data?.refreshToken || rawData?.refreshToken || "";
 
 				const normalizedUser = {
 					id: userData?.id || userData?._id || "",
@@ -76,7 +78,7 @@ const Login = () => {
 					role: userData?.role || "admin"
 				};
 
-				setStoredUser(normalizedUser);
+				setStoredUser(normalizedUser, undefined, accessToken, refreshToken);
 				setUser(normalizedUser);
 				navigate("/", { replace: true });
 			}

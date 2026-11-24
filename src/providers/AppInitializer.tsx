@@ -5,6 +5,7 @@ import { userAtom, User, userLoadedAtom } from "../store/user-store";
 import { refreshAccessToken } from "../services/api-service";
 import {
     getStoredUser,
+    getStoredToken,
     setStoredUser,
     removeStoredUser,
     recordUserActivity,
@@ -36,17 +37,30 @@ const AppInitializer = () => {
 
                 const apiUrl = getApiBaseUrl().replace(/\/+$/, "");
 
+                const storedToken = getStoredToken();
+                const headers: HeadersInit = { "Content-Type": "application/json" };
+                if (storedToken) {
+                    headers["Authorization"] = `Bearer ${storedToken}`;
+                }
+
                 let res = await fetch(`${apiUrl}/auth/admin/me`, {
                     method: "GET",
-                    credentials: "include"
+                    credentials: "include",
+                    headers,
                 });
 
                 if (res.status === 401) {
                     const refreshed = await refreshAccessToken();
                     if (refreshed) {
+                        const retryHeaders: HeadersInit = { "Content-Type": "application/json" };
+                        const latestToken = getStoredToken();
+                        if (latestToken) {
+                            retryHeaders["Authorization"] = `Bearer ${latestToken}`;
+                        }
                         res = await fetch(`${apiUrl}/auth/admin/me`, {
                             method: "GET",
-                            credentials: "include"
+                            credentials: "include",
+                            headers: retryHeaders,
                         });
                     }
                 }

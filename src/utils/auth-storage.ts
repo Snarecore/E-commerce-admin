@@ -5,6 +5,8 @@ export const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 export const STORAGE_KEY_USER = "user";
 export const STORAGE_KEY_SESSION_EXPIRES_AT = "session_expires_at";
 export const STORAGE_KEY_LAST_ACTIVITY = "session_last_activity";
+export const STORAGE_KEY_TOKEN = "cloth_admin_token";
+export const STORAGE_KEY_REFRESH_TOKEN = "cloth_admin_refresh_token";
 
 /**
  * Parses JWT token and checks if it's expired or nearing expiration.
@@ -46,23 +48,59 @@ export function getStoredUser(): User | null {
 }
 
 /**
- * Returns the current stored access token (optional, deprecated in favor of HttpOnly cookies).
+ * Returns the current stored access token.
  */
 export function getStoredToken(): string {
-    return "";
+    if (typeof window === "undefined") return "";
+    try {
+        return sessionStorage.getItem(STORAGE_KEY_TOKEN) || localStorage.getItem(STORAGE_KEY_TOKEN) || "";
+    } catch {
+        return "";
+    }
 }
 
 /**
- * Returns the stored refresh token (deprecated in favor of HttpOnly cookies).
+ * Returns the stored refresh token.
  */
 export function getStoredRefreshToken(): string {
-    return "";
+    if (typeof window === "undefined") return "";
+    try {
+        return sessionStorage.getItem(STORAGE_KEY_REFRESH_TOKEN) || localStorage.getItem(STORAGE_KEY_REFRESH_TOKEN) || "";
+    } catch {
+        return "";
+    }
 }
 
 /**
- * Saves or updates safe non-sensitive user profile data.
+ * Sets the stored access token.
  */
-export function setStoredUser(user: User, customExpiryMs?: number): void {
+export function setStoredToken(token: string): void {
+    if (typeof window === "undefined" || !token) return;
+    try {
+        sessionStorage.setItem(STORAGE_KEY_TOKEN, token);
+        localStorage.setItem(STORAGE_KEY_TOKEN, token);
+    } catch (e) {
+        console.error("Failed to save access token:", e);
+    }
+}
+
+/**
+ * Sets the stored refresh token.
+ */
+export function setStoredRefreshToken(token: string): void {
+    if (typeof window === "undefined" || !token) return;
+    try {
+        sessionStorage.setItem(STORAGE_KEY_REFRESH_TOKEN, token);
+        localStorage.setItem(STORAGE_KEY_REFRESH_TOKEN, token);
+    } catch (e) {
+        console.error("Failed to save refresh token:", e);
+    }
+}
+
+/**
+ * Saves or updates safe user profile data and optional tokens.
+ */
+export function setStoredUser(user: User, customExpiryMs?: number, token?: string, refreshToken?: string): void {
     if (typeof window === "undefined") return;
     try {
         const safeUser = {
@@ -74,6 +112,13 @@ export function setStoredUser(user: User, customExpiryMs?: number): void {
         const userStr = JSON.stringify(safeUser);
         sessionStorage.setItem(STORAGE_KEY_USER, userStr);
         localStorage.setItem(STORAGE_KEY_USER, userStr);
+
+        if (token) {
+            setStoredToken(token);
+        }
+        if (refreshToken) {
+            setStoredRefreshToken(refreshToken);
+        }
 
         const currentExpiry = getSessionExpiryTime();
         const expiryTime = customExpiryMs || currentExpiry || (Date.now() + SESSION_DURATION_MS);
@@ -124,10 +169,14 @@ export function removeStoredUser(): void {
     if (typeof window === "undefined") return;
     try {
         sessionStorage.removeItem(STORAGE_KEY_USER);
+        sessionStorage.removeItem(STORAGE_KEY_TOKEN);
+        sessionStorage.removeItem(STORAGE_KEY_REFRESH_TOKEN);
         sessionStorage.removeItem(STORAGE_KEY_SESSION_EXPIRES_AT);
         sessionStorage.removeItem(STORAGE_KEY_LAST_ACTIVITY);
 
         localStorage.removeItem(STORAGE_KEY_USER);
+        localStorage.removeItem(STORAGE_KEY_TOKEN);
+        localStorage.removeItem(STORAGE_KEY_REFRESH_TOKEN);
         localStorage.removeItem(STORAGE_KEY_SESSION_EXPIRES_AT);
         localStorage.removeItem(STORAGE_KEY_LAST_ACTIVITY);
 
