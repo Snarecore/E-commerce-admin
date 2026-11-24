@@ -28,6 +28,7 @@ export const pageMetaQueryKey = "page-meta";
 export const commissionRateQueryKey = "commission-rate-cms";
 export const megaDiscountQueryKey = "setting/mega-discount";
 export const auditLogQueryKey = "audit-logs";
+export const auditStatsQueryKey = "audit-logs/stats";
 export const popupQueryKey = "popups";
 export const paymentQueryKey = "payments";
 export const emailSettingQueryKey = "email-setting";

@@ -6,7 +6,7 @@ import { Link, useLocation, NavLink } from "react-router-dom";
 import { GoDotFill, GoHome } from "react-icons/go";
 import { SiPayloadcms } from "react-icons/si";
 import { MdAdminPanelSettings, MdContactPage, MdStorefront, MdOutlinePalette, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdOutlineTune } from "react-icons/md";
-import { FiShoppingCart, FiZap, FiShield, FiCreditCard, FiAlertTriangle, FiMail, FiTruck, FiClock } from "react-icons/fi";
+import { FiShoppingCart, FiZap, FiShield, FiCreditCard, FiAlertTriangle, FiMail, FiTruck, FiClock, FiActivity } from "react-icons/fi";
 import { FaFacebookMessenger, FaTags, FaUser } from "react-icons/fa";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { useUnreadChatCount } from "../../hooks/useUnreadChatCount";
@@ -144,6 +144,13 @@ const menu = [
 				path: "/reports/profit",
 				subItems: [],
 			},
+			{
+				id: 699,
+				name: "Audit Logs",
+				icon: <FiActivity />,
+				path: "/audit-logs",
+				subItems: [],
+			},
 		],
 	},
 	{
@@ -258,13 +265,6 @@ const menu = [
 				name: "FAQ",
 				icon: <RiExchangeBoxFill />,
 				path: "/faq",
-				subItems: [],
-			},
-			{
-				id: 18,
-				name: "Audit Logs",
-				icon: <TbFileText />,
-				path: "/audit-logs",
 				subItems: [],
 			},
 			{

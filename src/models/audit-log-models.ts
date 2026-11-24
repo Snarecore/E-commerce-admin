@@ -14,7 +14,29 @@ export interface SnapshotChange {
     after: Record<string, any> | null;
 }
 
-export type AuditChange = FieldDiffChange | SnapshotChange;
+export interface MutationChange {
+    type?: string;
+    summary?: string;
+    description?: string;
+    changedFields?: Record<string, FieldDiffItem>;
+    before?: Record<string, any> | null;
+    after?: Record<string, any> | null;
+    payload?: Record<string, any> | null;
+    params?: Record<string, any> | null;
+    query?: Record<string, any> | null;
+    error?: string | null;
+}
+
+export type AuditChange = FieldDiffChange | SnapshotChange | MutationChange | Record<string, any>;
+
+export interface AuditStats {
+    total: number;
+    today: number;
+    successCount: number;
+    failedCount: number;
+    moduleStats: Array<{ module: string; count: number }>;
+    topAdmins: Array<{ name: string; email: string; count: number }>;
+}
 
 export interface AuditLogItem {
     id: string;

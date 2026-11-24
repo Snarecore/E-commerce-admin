@@ -100,7 +100,8 @@
         "commissionRateUrl": "commission-rate-cms"
     },
     "audit": {
-        "auditLogsUrl": "audit-logs"
+        "auditLogsUrl": "audit-logs",
+        "auditStatsUrl": "audit-logs/stats"
     },
     "reports": {
         "profitSummaryUrl": "reports/profit/summary",
